@@ -1,0 +1,73 @@
+# Backend (Maven)
+
+/backend/target/
+.mvn/wrapper/maven-wrapper.jar
+
+# STS
+/backend/.apt_generated
+/backend/.classpath
+/backend/.factorypath
+/backend/.project
+/backend/.settings/
+/backend/.springBeans
+/backend/.sts4-cache
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+/backend/nbproject/private/
+/backend/nbbuild/
+/backend/dist/
+/backend/nbdist/
+/backend/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Frontend (Next.js)
+
+# Dependencies
+/frontend/node_modules/
+/frontend/.pnp
+/frontend/.pnp.*
+
+# Build
+/frontend/.next/
+/frontend/out/
+/frontend/build/
+
+# Environment
+.env
+/frontend/.env*
+!/frontend/.env.example
+
+# Vercel
+/frontend/.vercel/
+
+# TypeScript
+/frontend/*.tsbuildinfo
+
+# Coverage & Tests
+/frontend/coverage/
+/frontend/playwright-report/
+/frontend/test-results/
+
+# Cache
+/frontend/.eslintcache
+/frontend/.turbo/
+
+# Logs
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/pnpm-debug.log*
+
+# Lockfiles
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+# bun.lockb
