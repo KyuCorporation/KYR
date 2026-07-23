@@ -1,16 +1,15 @@
-# Backend (Maven)
-
-/backend/target/
+# backend-core (Maven)
+/backend-core/target/
 .mvn/wrapper/maven-wrapper.jar
 
 # STS
-/backend/.apt_generated
-/backend/.classpath
-/backend/.factorypath
-/backend/.project
-/backend/.settings/
-/backend/.springBeans
-/backend/.sts4-cache
+/backend-core/.apt_generated
+/backend-core/.classpath
+/backend-core/.factorypath
+/backend-core/.project
+/backend-core/.settings/
+/backend-core/.springBeans
+/backend-core/.sts4-cache
 
 # IntelliJ IDEA
 .idea
@@ -19,11 +18,11 @@
 *.ipr
 
 # NetBeans
-/backend/nbproject/private/
-/backend/nbbuild/
-/backend/dist/
-/backend/nbdist/
-/backend/.nb-gradle/
+/backend-core/nbproject/private/
+/backend-core/nbbuild/
+/backend-core/dist/
+/backend-core/nbdist/
+/backend-core/.nb-gradle/
 
 # VS Code
 .vscode/
