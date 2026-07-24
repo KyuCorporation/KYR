@@ -1,0 +1,18 @@
+[
+  {
+    "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Bus Terminus - Rod, BR-469 - Km 18, Foz do Iguaçu - PR, 85853-830",
+    "fonte": "https://maps.app.goo.gl/mWfjwq78VQKvUKL16",
+    "descricao": "Principal atração da região e Patrimônio Natural da Humanidade, abriga as famosas quedas d'água. Oferece infraestrutura completa para passeios ecológicos e contemplação da natureza em meio à Mata Atlântica."
+  },
+  {
+    "nome": "Parque das Aves",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 12450 - KM 17,1 - Parque Nacional, Foz do Iguaçu - PR, 85859-899",
+    "fonte": "https://maps.app.goo.gl/DhiuABmW3ETV7Lkd9",
+    "descricao": "Maior parque de aves da América Latina, dedicado à conservação de espécies da Mata Atlântica. Oferece uma experiência imersiva com trilhas e viveiros onde o visitante tem contato direto com araras, tucanos e outras aves."
+  }
+]
