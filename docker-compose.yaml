@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   database:
     image: postgres:15-alpine
     container_name: pwa_postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-local_password_123}
@@ -21,10 +19,10 @@ services:
 
   backend-core:
     build:
-      context: ../backend-core
+      context: ./backend-core
       dockerfile: Dockerfile
     container_name: pwa_backend_core
-    restart: always
+    restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
@@ -35,15 +33,15 @@ services:
       database:
         condition: service_healthy
     volumes:
-      - ../backend-core:/app
+      - ./backend-core:/app
       - ~/.m2:/root/.m2
 
   frontend:
     build:
-      context: ../frontend
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: pwa_frontend
-    restart: always
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
@@ -52,7 +50,7 @@ services:
     depends_on:
       - backend-core
     volumes:
-      - ../frontend:/app
+      - ./frontend:/app
       - /app/node_modules
       - /app/.next
 
