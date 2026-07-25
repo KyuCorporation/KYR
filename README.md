@@ -95,7 +95,7 @@ cd backend-core
 | **Backend Core (Health-check)** | https://kyr-backend-hkq1.onrender.com/actuator/health |
 
 > ⚠️ O free tier do Render hiberna os serviços após períodos de inatividade — a primeira requisição após um tempo parado pode levar até 50s para responder.
-```
+
 
 ### ⚙️ Variáveis de Ambiente Principais
 
