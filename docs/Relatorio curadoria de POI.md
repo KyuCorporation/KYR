@@ -216,3 +216,17 @@ Ampla loja de presentes e artigos regionais variados. Ponto estratégico para tu
 *(Abaixo, visualização do trajeto: Aeroporto → Cataratas Souvenirs → Grand Carimã)*
 ![Mapa de localização da Cataratas Souvenirs](./assets/ponto-aeroporto-para-cataratassouvenirs-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 15. Supermercado Ítalo - Vila Yolanda
+**Trilha:** Compras | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/NaEV8yuxYr3Y8ffT8)
+
+> **Descrição Curada:** 
+Supermercado completo localizado estrategicamente na avenida principal. É a parada ideal para os turistas comprarem lanches, bebidas e conveniências antes de seguirem para o hotel.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Supermercado Ítalo → Grand Carimã)*
+![Mapa de localização do Supermercado Ítalo](./assets/ponto-aeroporto-para-supermercadoitalo-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*

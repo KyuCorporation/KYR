@@ -110,5 +110,13 @@
     "endereco": "Av. das Cataratas, 6075 - Mata Verde, Foz do Iguaçu - PR, 85853-000",
     "fonte": "https://maps.app.goo.gl/MnpPgBg5xjt78bjk8",
     "descricao": "Ampla loja de presentes e artigos regionais variados. Ponto estratégico para turistas garantirem lembranças de última hora na volta para o hotel."
+  },
+  {
+    "nome": "Supermercado Ítalo - Vila Yolanda",
+    "trilha": "compras",
+    "tipo": "alimentacao",
+    "endereco": "R. Edmundo de Barros, 303 - Centro, Foz do Iguaçu - PR, 85851-120",
+    "fonte": "https://maps.app.goo.gl/NaEV8yuxYr3Y8ffT8",
+    "descricao": "Supermercado completo localizado estrategicamente na avenida principal. É a parada ideal para os turistas comprarem lanches, bebidas e conveniências antes de seguirem para o hotel."
   }
 ]
