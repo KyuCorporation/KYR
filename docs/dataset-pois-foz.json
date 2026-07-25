@@ -14,5 +14,29 @@
     "endereco": "Av. das Cataratas, 12450 - KM 17,1 - Parque Nacional, Foz do Iguaçu - PR, 85859-899",
     "fonte": "https://maps.app.goo.gl/DhiuABmW3ETV7Lkd9",
     "descricao": "Maior parque de aves da América Latina, dedicado à conservação de espécies da Mata Atlântica. Oferece uma experiência imersiva com trilhas e viveiros onde o visitante tem contato direto com araras, tucanos e outras aves."
+  },
+  {
+    "nome": "Dreamland Museu de Cera",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas - Vila Yolanda, Foz do Iguaçu - PR, 85853-832",
+    "fonte": "https://maps.app.goo.gl/C7cM35Va4dk7pDNR6",
+    "descricao": "Complexo de entretenimento que conta com dezenas de estátuas de cera de personalidades famosas. O local também abriga o Vale dos Dinossauros e o Maravilhas do Mundo, sendo ideal para fotos."
+  },
+  {
+    "nome": "Wonder Park Foz (Movie Cars)",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 11547 - Foz do Iguaçu, PR",
+    "fonte": "https://maps.app.goo.gl/NhczuxaGdcAZPhVV9",
+    "descricao": "Parque temático que exibe dezenas de carros famosos do cinema e da cultura pop em cenários imersivos. A atração também oferece o espetáculo noturno Water Show, com águas dançantes."
+  },
+  {
+    "nome": "Shopping Catuaí Palladium",
+    "trilha": "compras",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 3570 - Bourbon, Foz do Iguaçu - PR, 85853-000",
+    "fonte": "https://maps.app.goo.gl/DUzSNUA18QjcqPeD7",
+    "descricao": "Um dos maiores shoppings do Paraná, oferecendo ampla variedade de lojas nacionais e internacionais. Conta com opções de entretenimento indoor, cinemas e uma diversificada praça de alimentação."
   }
 ]

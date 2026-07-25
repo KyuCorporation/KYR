@@ -54,3 +54,41 @@ Maior parque de aves da América Latina, dedicado à conservação de espécies 
 *(Abaixo, visualização do trajeto: Aeroporto → Parque das Aves → Grand Carimã)*
 ![Mapa de localização do Parque das Aves](./assets/ponto-aeroporto-para-parquedasaves-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
+
+## 3. Dreamland Museu de Cera"
+**Trilha:** Turismo | **Tipo:** Lazer
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/C7cM35Va4dk7pDNR6)
+
+> **Descrição Curada:** 
+Complexo de entretenimento que conta com dezenas de estátuas de cera de personalidades famosas. O local também abriga o Vale dos Dinossauros e o Maravilhas do Mundo, sendo ideal para fotos.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Dreamland → Grand Carimã)*
+![Mapa de localização da Dreamland](./assets/ponto-aeroporto-para-dreamland-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+## 4. Wonder Park Foz (Movie Cars)
+**Trilha:** Turismo | **Tipo:** Lazer
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/NhczuxaGdcAZPhVV9)
+
+> **Descrição Curada:** 
+Parque temático que exibe dezenas de carros famosos do cinema e da cultura pop em cenários imersivos. A atração também oferece o espetáculo noturno Water Show, com águas dançantes.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Wonder Park Foz → Grand Carimã)*
+![Mapa de localização do Wonder Park Foz](./assets/ponto-aeroporto-para-moviecars-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 5. Shopping Catuaí Palladium
+**Trilha:** Compras | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/DUzSNUA18QjcqPeD7)
+
+> **Descrição Curada:** 
+Um dos maiores shoppings do Paraná, oferecendo ampla variedade de lojas nacionais e internacionais. Conta com uma praça de alimentação diversificada e opções de lazer indoor.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Shopping Catuaí Palladium → Grand Carimã)*
+![Mapa de localização do Shopping Catuaí Palladium](./assets/ponto-aeroporto-para-catuai-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
