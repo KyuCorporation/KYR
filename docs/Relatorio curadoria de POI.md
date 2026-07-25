@@ -55,7 +55,7 @@ Maior parque de aves da América Latina, dedicado à conservação de espécies 
 ![Mapa de localização do Parque das Aves](./assets/ponto-aeroporto-para-parquedasaves-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
 
-## 3. Dreamland Museu de Cera"
+## 3. Dreamland Museu de Cera
 **Trilha:** Turismo | **Tipo:** Lazer
 **Fonte:** [Link Google Maps](https://maps.app.goo.gl/C7cM35Va4dk7pDNR6)
 
@@ -91,4 +91,72 @@ Um dos maiores shoppings do Paraná, oferecendo ampla variedade de lojas naciona
 **Relação Espacial:**
 *(Abaixo, visualização do trajeto: Aeroporto → Shopping Catuaí Palladium → Grand Carimã)*
 ![Mapa de localização do Shopping Catuaí Palladium](./assets/ponto-aeroporto-para-catuai-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+## 6. Parque Aquático Cataratas
+**Trilha:** Turismo | **Tipo:** Lazer
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/HP2Eur6GC69X9fJN6)
+
+> **Descrição Curada:** 
+Balneário com piscinas de água corrente, toboáguas e infraestrutura de lazer para a família. O espaço também conta com um pavilhão que oferece bar e opções de gastronomia popular.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Parque Aquático Cataratas → Grand Carimã)*
+![Mapa de localização do Parque Aquático Cataratas](./assets/ponto-aeroporto-para-parqueaquatico-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 7. Rafain Churrascaria Show
+**Trilha:** Turismo | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/COLOQUE_O_SEU_LINK_CURTO_AQUI)
+
+> **Descrição Curada:** 
+Tradicional churrascaria de Foz do Iguaçu que combina um vasto buffet de carnes com um espetáculo noturno celebrando a cultura latino-americana.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Rafain Churrascaria Show → Grand Carimã)*
+![Mapa de localização da Rafain Churrascaria Show](./assets/ponto-aeroporto-para-rafain-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 8. Cantina da Bea
+**Trilha:** Turismo | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/pJnU4HNPQeamYUUo9)
+
+> **Descrição Curada:** 
+Opção aconchegante e familiar focada em comida caseira e pratos rápidos. Ideal para uma parada gastronômica sem grandes desvios na rota.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Cantina da Bea → Grand Carimã)*
+![Mapa de localização da Cantina da Bea](./assets/ponto-aeroporto-para-cantinabea-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 9. V8 Garagem Bar
+**Trilha:** Turismo | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/WQkuAXFL7j1ud5uu6)
+
+> **Descrição Curada:** 
+Bar temático com inspiração automotiva, oferecendo um ambiente descontraído para o happy hour. Conta com cardápio variado de lanches, porções e bebidas na rota principal.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → V8 Garagem Bar → Grand Carimã)*
+![Mapa de localização do V8 Garagem Bar](./assets/ponto-aeroporto-para-v8garagem-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 10. Empório com Arte
+**Trilha:** Compras | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/rsv3V6B2FcYBHVFS8)
+
+> **Descrição Curada:** 
+Mistura de bistrô, café e loja de artesanato. Perfeito para refeições leves e para adquirir souvenires locais em um ambiente rústico.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Empório com Arte → Grand Carimã)*
+![Mapa de localização do Empório com Arte](./assets/ponto-aeroporto-para-emporio-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
