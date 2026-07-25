@@ -3,13 +3,13 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
   dest: "public",
-  disable: process.env.NODE_ENV === "development", // Desabilita no ambiente dev para não travar o cache do navegador
+  disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
 });
 
 const nextConfig: NextConfig = {
-  /* Suas outras configurações do Next.js entram aqui */
+  turbopack: {},
 };
 
 export default withPWA(nextConfig);
