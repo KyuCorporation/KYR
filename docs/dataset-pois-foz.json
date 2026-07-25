@@ -118,5 +118,29 @@
     "endereco": "R. Edmundo de Barros, 303 - Centro, Foz do Iguaçu - PR, 85851-120",
     "fonte": "https://maps.app.goo.gl/NaEV8yuxYr3Y8ffT8",
     "descricao": "Supermercado completo localizado estrategicamente na avenida principal. É a parada ideal para os turistas comprarem lanches, bebidas e conveniências antes de seguirem para o hotel."
+  },
+  {
+    "nome": "ODA Vinhoteca Duty Free",
+    "trilha": "compras",
+    "tipo": "alimentacao",
+    "endereco": "R. Cândido Ferreira, 539 - Yolanda, Foz do Iguaçu - PR, 85853-240",
+    "fonte": "https://maps.app.goo.gl/MjyP2GnYn3rJSS119",
+    "descricao": "Loja franca (duty-free) especializada em vinhos argentinos, bebidas e empório gastronômico livre de impostos na rota turística principal."
+  },
+  {
+    "nome": "Aquamania Foz",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 7120 - Tamanduã, Foz do Iguaçu - PR, 85863-000",
+    "fonte": "https://maps.app.goo.gl/JzqyHn3x4qegbDLa8",
+    "descricao": "Parque aquático tradicional com toboáguas e piscinas recreativas. Fica estrategicamente posicionado na avenida principal, sendo uma opção de lazer sem grandes deslocamentos."
+  },
+  {
+    "nome": "Adrena Kart Foz",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "R. Heleno Schimmelpfeng, 880 - Yolanda, Foz do Iguaçu - PR, 85853-510",
+    "fonte": "https://maps.app.goo.gl/K2q72bFA4NT3DL7b7",
+    "descricao": "Pista de kart profissional localizada diretamente na rodovia principal, oferecendo uma opção de lazer focada em velocidade e adrenalina para grupos."
   }
 ]

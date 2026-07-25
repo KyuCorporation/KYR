@@ -82,7 +82,7 @@ Parque temático que exibe dezenas de carros famosos do cinema e da cultura pop 
 ---
 
 ## 5. Shopping Catuaí Palladium
-**Trilha:** Compras | **Tipo:** Alimentação
+**Trilha:** Compras | **Tipo:** Lazer
 **Fonte:** [Link Google Maps](https://maps.app.goo.gl/DUzSNUA18QjcqPeD7)
 
 > **Descrição Curada:** 
@@ -229,4 +229,46 @@ Supermercado completo localizado estrategicamente na avenida principal. É a par
 **Relação Espacial:**
 *(Abaixo, visualização do trajeto: Aeroporto → Supermercado Ítalo → Grand Carimã)*
 ![Mapa de localização do Supermercado Ítalo](./assets/ponto-aeroporto-para-supermercadoitalo-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 16. ODA Vinhoteca Duty Free
+**Trilha:** Compras | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/MjyP2GnYn3rJSS119)
+
+> **Descrição Curada:** 
+Loja franca (duty-free) especializada em vinhos argentinos, bebidas e empório gastronômico livre de impostos na rota turística principal.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Oda Duty Free → Grand Carimã)*
+![Mapa de localização da Oda Duty Free](./assets/ponto-aeroporto-para-odadutyfree-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 17. Aquamania Foz
+**Trilha:** Turismo | **Tipo:** Lazer
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/JzqyHn3x4qegbDLa8)
+
+> **Descrição Curada:** 
+Parque aquático tradicional com toboáguas e piscinas recreativas. Fica estrategicamente posicionado na avenida principal, sendo uma opção de lazer sem grandes deslocamentos.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Aquamania Foz → Grand Carimã)*
+![Mapa de localização do Aquamania Foz](./assets/ponto-aeroporto-para-aquamania-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 18. Adrena Kart Foz
+**Trilha:** Turismo | **Tipo:** Lazer
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/K2q72bFA4NT3DL7b7)
+
+> **Descrição Curada:** 
+Pista de kart profissional localizada diretamente na rodovia principal, oferecendo uma opção de lazer focada em velocidade e adrenalina para grupos.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Adrena Kart Foz → Grand Carimã)*
+![Mapa de localização do Adrena Kart Foz](./assets/ponto-aeroporto-para-adrenakart-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
