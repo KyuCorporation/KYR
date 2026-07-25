@@ -160,3 +160,59 @@ Mistura de bistrô, café e loja de artesanato. Perfeito para refeições leves 
 *(Abaixo, visualização do trajeto: Aeroporto → Empório com Arte → Grand Carimã)*
 ![Mapa de localização do Empório com Arte](./assets/ponto-aeroporto-para-emporio-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
+
+## 11. Bona Trattoria Gastronomia
+**Trilha:** Turismo | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/yJZR8frLEr87H4wj6)
+
+> **Descrição Curada:** 
+Opção de culinária italiana tradicional e sofisticada, posicionada estrategicamente no corredor turístico que liga o centro à região do aeroporto.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Bona Trattoria → Grand Carimã)*
+![Mapa de localização da Bona Trattoria](./assets/ponto-aeroporto-para-bona-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 12. Restaurante Tarobá (Bourbon Resort)
+**Trilha:** Turismo | **Tipo:** Alimentação
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/VKg19ARikhtX8uZk7)
+
+> **Descrição Curada:** 
+Restaurante de alta gastronomia situado no início da Avenida das Cataratas, ideal para um jantar requintado sem precisar fazer grandes desvios da rota.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Restaurante Tarobá → Grand Carimã)*
+![Mapa de localização do Restaurante Tarobá](./assets/ponto-aeroporto-para-taroba-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 13. Três Fronteiras Artesanato
+**Trilha:** Compras | **Tipo:** Lazer
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/2c6fh7sQyqyEv1Kw9)
+
+> **Descrição Curada:** 
+Loja de rua independente focada em artesanato local e souvenires, proporcionando uma experiência de compras cultural sem entrar em shoppings.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Três Fronteiras Artesanato → Grand Carimã)*
+![Mapa de localização do Três Fronteiras Artesanato](./assets/ponto-aeroporto-para-tresfronteiras-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
+
+---
+
+## 14. Cataratas Souvenirs
+Detalhe: O nome no maps é 'Pedacinho de Foz - Cataratas Park Hotel'
+
+**Trilha:** Compras | **Tipo:** Lazer
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/MnpPgBg5xjt78bjk8)
+
+> **Descrição Curada:** 
+Ampla loja de presentes e artigos regionais variados. Ponto estratégico para turistas garantirem lembranças de última hora na volta para o hotel.
+
+**Relação Espacial:**
+*(Abaixo, visualização do trajeto: Aeroporto → Cataratas Souvenirs → Grand Carimã)*
+![Mapa de localização da Cataratas Souvenirs](./assets/ponto-aeroporto-para-cataratassouvenirs-para-hotel.png)
+*Fonte: Adaptado de Google Maps pelos autores.*
