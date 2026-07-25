@@ -25,7 +25,21 @@ Fonte: "https://maps.app.goo.gl/8XKeoyQbX5fQxstT7"
 ![Mapa de localização Hotel para Aeroporto](./assets/ponto-aeroporto-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
 
----
+## Distribuição de Classes do Dataset
+
+Este dataset não é uma amostra estatisticamente representativa do universo de pontos turísticos da cidade. A distribuição atual entre as combinações trilha × tipo é:
+
+| Combinação | Contagem | % |
+|---|---|---|
+| Turismo + Lazer | 7 | 38,9% |
+| Turismo + Alimentação | 5 | 27,8% |
+| Compras + Lazer | 3 | 16,7% |
+| Compras + Alimentação | 3 | 16,7% |
+| **Total** | **18** | **100%** |
+
+Por trilha: Turismo = 12 POIs (66,7%) e Compras = 6 POIs (33,3%). O desbalanceamento reflete em parte a própria natureza da região, mas também limita a granularidade de qualquer métrica reportada por classe: com apenas 3 POIs em cada subclasse de Compras, um único item pesa 33,3 pontos percentuais no resultado.
+
+# Detalhamento dos locais
 
 ## 1. Cataratas do Iguaçu (Parque Nacional do Iguaçu)
 Detalhe: O local exato que usamos foi o 'Parque Nacional do Iguaçu - Centro de Visitantes - Cataratas' com o endereço do terminal de ônibus. Pois o turista precisa,obrigatoriamente, passar pelo centro de visitantes para conseguir acessar o local. Foi uma decisão importante de modelagem de dados, dado que o endereço genérico da reserva leva a um ponto distante na mata, quebrando o roteamento do sistema.
@@ -55,6 +69,8 @@ Maior parque de aves da América Latina, dedicado à conservação de espécies 
 ![Mapa de localização do Parque das Aves](./assets/ponto-aeroporto-para-parquedasaves-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
 
+---
+
 ## 3. Dreamland Museu de Cera
 **Trilha:** Turismo | **Tipo:** Lazer
 **Fonte:** [Link Google Maps](https://maps.app.goo.gl/C7cM35Va4dk7pDNR6)
@@ -66,6 +82,8 @@ Complexo de entretenimento que conta com dezenas de estátuas de cera de persona
 *(Abaixo, visualização do trajeto: Aeroporto → Dreamland → Grand Carimã)*
 ![Mapa de localização da Dreamland](./assets/ponto-aeroporto-para-dreamland-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
+
+---
 
 ## 4. Wonder Park Foz (Movie Cars)
 **Trilha:** Turismo | **Tipo:** Lazer
@@ -86,12 +104,14 @@ Parque temático que exibe dezenas de carros famosos do cinema e da cultura pop 
 **Fonte:** [Link Google Maps](https://maps.app.goo.gl/DUzSNUA18QjcqPeD7)
 
 > **Descrição Curada:** 
-Um dos maiores shoppings do Paraná, oferecendo ampla variedade de lojas nacionais e internacionais. Conta com uma praça de alimentação diversificada e opções de lazer indoor.
+Um dos maiores shoppings do Paraná, oferecendo ampla variedade de lojas nacionais e internacionais. Conta com opções de entretenimento indoor, cinema e uma diversificada praça de alimentação.
 
 **Relação Espacial:**
 *(Abaixo, visualização do trajeto: Aeroporto → Shopping Catuaí Palladium → Grand Carimã)*
 ![Mapa de localização do Shopping Catuaí Palladium](./assets/ponto-aeroporto-para-catuai-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
+
+---
 
 ## 6. Parque Aquático Cataratas
 **Trilha:** Turismo | **Tipo:** Lazer
@@ -109,7 +129,7 @@ Balneário com piscinas de água corrente, toboáguas e infraestrutura de lazer 
 
 ## 7. Rafain Churrascaria Show
 **Trilha:** Turismo | **Tipo:** Alimentação
-**Fonte:** [Link Google Maps](https://maps.app.goo.gl/COLOQUE_O_SEU_LINK_CURTO_AQUI)
+**Fonte:** [Link Google Maps](https://maps.app.goo.gl/aPPSKwdf8o9s8rDaA)
 
 > **Descrição Curada:** 
 Tradicional churrascaria de Foz do Iguaçu que combina um vasto buffet de carnes com um espetáculo noturno celebrando a cultura latino-americana.
@@ -160,6 +180,8 @@ Mistura de bistrô, café e loja de artesanato. Perfeito para refeições leves 
 *(Abaixo, visualização do trajeto: Aeroporto → Empório com Arte → Grand Carimã)*
 ![Mapa de localização do Empório com Arte](./assets/ponto-aeroporto-para-emporio-para-hotel.png)
 *Fonte: Adaptado de Google Maps pelos autores.*
+
+---
 
 ## 11. Bona Trattoria Gastronomia
 **Trilha:** Turismo | **Tipo:** Alimentação
