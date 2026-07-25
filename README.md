@@ -87,6 +87,15 @@ npm run dev
 cd backend-core
 ./mvnw spring-boot:run
 ```
+## 🌐 Ambiente em Produção
+
+| Serviço | URL |
+|---|---|
+| **Frontend** | https://kyr-frontend.onrender.com |
+| **Backend Core (Health-check)** | https://kyr-backend-hkq1.onrender.com/actuator/health |
+
+> ⚠️ O free tier do Render hiberna os serviços após períodos de inatividade — a primeira requisição após um tempo parado pode levar até 50s para responder.
+```
 
 ### ⚙️ Variáveis de Ambiente Principais
 
