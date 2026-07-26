@@ -7,6 +7,10 @@ on:
       - 'backend-core/**'
       - '.github/workflows/ci-backend-core.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,6 +25,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+          cache-dependency-path: backend-core/pom.xml
 
       - name: Tornar mvnw executável
         run: chmod +x mvnw

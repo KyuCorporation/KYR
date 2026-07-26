@@ -7,6 +7,10 @@ on:
       - 'ia-service/**'
       - '.github/workflows/ci-ia-service.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,6 +25,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+          cache-dependency-path: ia-service/pom.xml
 
       - name: Tornar mvnw executável
         run: chmod +x mvnw
