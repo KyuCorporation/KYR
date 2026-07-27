@@ -1,4 +1,4 @@
-Este documento registra a curadoria manual dos Pontos de Interesse (POIs) utilizados como baseline para validação do modelo de IA. Todos os pontos estão contidos no eixo geográfico entre o Aeroporto Internacional de Foz do Iguaçu e o local do evento.
+Este documento registra a curadoria manual dos Pontos de Interesse (POIs) utilizados como baseline para validação do modelo de IA. Os pontos abrangem a região de influência entre o Aeroporto Internacional de Foz do Iguaçu e o local do evento, incluindo POIs que se afastam do eixo direto entre os dois pontos, desde que relevantes para o contexto de deslocamento na área.
 
 A validação visual assume o sentido principal de chegada do turista à cidade. A curadoria segue um príncipio de rota nessa ordem: 
 
@@ -241,7 +241,7 @@ Ampla loja de presentes e artigos regionais variados. Ponto estratégico para tu
 
 ---
 
-## 15. Supermercado Ítalo - Vila Yolanda
+## 15. Supermercado Ítalo - Centro
 **Trilha:** Compras | **Tipo:** Alimentação
 **Fonte:** [Link Google Maps](https://maps.app.goo.gl/NaEV8yuxYr3Y8ffT8)
 
