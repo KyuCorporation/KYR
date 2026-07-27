@@ -1,0 +1,146 @@
+[
+  {
+    "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Bus Terminus - Rod, BR-469 - Km 18, Foz do Iguaçu - PR, 85853-830",
+    "fonte": "https://maps.app.goo.gl/mWfjwq78VQKvUKL16",
+    "descricao": "Principal atração da região e Patrimônio Natural da Humanidade, abriga as famosas quedas d'água. Oferece infraestrutura completa para passeios ecológicos e contemplação da natureza em meio à Mata Atlântica."
+  },
+  {
+    "nome": "Parque das Aves",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 12450 - KM 17,1 - Parque Nacional, Foz do Iguaçu - PR, 85859-899",
+    "fonte": "https://maps.app.goo.gl/DhiuABmW3ETV7Lkd9",
+    "descricao": "Maior parque de aves da América Latina, dedicado à conservação de espécies da Mata Atlântica. Oferece uma experiência imersiva com trilhas e viveiros onde o visitante tem contato direto com araras, tucanos e outras aves."
+  },
+  {
+    "nome": "Dreamland Museu de Cera",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas - Vila Yolanda, Foz do Iguaçu - PR, 85853-832",
+    "fonte": "https://maps.app.goo.gl/C7cM35Va4dk7pDNR6",
+    "descricao": "Complexo de entretenimento que conta com dezenas de estátuas de cera de personalidades famosas. O local também abriga o Vale dos Dinossauros e o Maravilhas do Mundo, sendo ideal para fotos."
+  },
+  {
+    "nome": "Wonder Park Foz (Movie Cars)",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 11547 - Foz do Iguaçu, PR",
+    "fonte": "https://maps.app.goo.gl/NhczuxaGdcAZPhVV9",
+    "descricao": "Parque temático que exibe dezenas de carros famosos do cinema e da cultura pop em cenários imersivos. A atração também oferece o espetáculo noturno Water Show, com águas dançantes."
+  },
+  {
+    "nome": "Shopping Catuaí Palladium",
+    "trilha": "compras",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 3570 - Bourbon, Foz do Iguaçu - PR, 85853-000",
+    "fonte": "https://maps.app.goo.gl/DUzSNUA18QjcqPeD7",
+    "descricao": "Um dos maiores shoppings do Paraná, oferecendo ampla variedade de lojas nacionais e internacionais. Conta com opções de entretenimento indoor, cinemas e uma diversificada praça de alimentação."
+  },
+  {
+    "nome": "Parque Aquático Cataratas",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, Km 16,5 - Vila Adriana, Foz do Iguaçu - PR, 85855-750",
+    "fonte": "https://maps.app.goo.gl/HP2Eur6GC69X9fJN6",
+    "descricao": "Balneário com piscinas de água corrente, toboáguas e infraestrutura de lazer para a família. O espaço também conta com um pavilhão que oferece bar e opções de gastronomia popular."
+  },
+  {
+    "nome": "Rafain Churrascaria Show",
+    "trilha": "turismo",
+    "tipo": "alimentacao",
+    "endereco": "Av. das Cataratas, 1749 - Yolanda, Foz do Iguaçu - PR, 85853-000",
+    "fonte": "https://maps.app.goo.gl/aPPSKwdf8o9s8rDaA",
+    "descricao": "Tradicional churrascaria de Foz do Iguaçu que combina um vasto buffet de carnes com um espetáculo noturno celebrando a cultura latino-americana."
+  },
+  {
+    "nome": "Cantina da Bea",
+    "trilha": "turismo",
+    "tipo": "alimentacao",
+    "endereco": "Av. das Cataratas, 577 - Yolanda, Foz do Iguaçu - PR, 85853-000",
+    "fonte": "https://maps.app.goo.gl/pJnU4HNPQeamYUUo9",
+    "descricao": "Opção aconchegante e familiar focada em comida caseira e pratos rápidos. Ideal para uma parada gastronômica sem grandes desvios na rota."
+  },
+  {
+    "nome": "V8 Garagem Bar",
+    "trilha": "turismo",
+    "tipo": "alimentacao",
+    "endereco": "Av. das Cataratas, 3701 - Mata Verde, Foz do Iguaçu - PR, 85853-000",
+    "fonte": "https://maps.app.goo.gl/WQkuAXFL7j1ud5uu6",
+    "descricao": "Bar temático com inspiração automotiva, oferecendo um ambiente descontraído para o happy hour. Conta com cardápio variado de lanches, porções e bebidas na rota principal."
+  },
+  {
+    "nome": "Empório com Arte",
+    "trilha": "compras",
+    "tipo": "alimentacao",
+    "endereco": "Av. das Cataratas, 569 - Yolanda, Foz do Iguaçu - PR, 85853-200",
+    "fonte": "https://maps.app.goo.gl/rsv3V6B2FcYBHVFS8",
+    "descricao": "Mistura de bistrô, café e loja de artesanato. Perfeito para refeições leves e para adquirir souvenires locais em um ambiente rústico."
+  },
+  {
+    "nome": "Bona Trattoria Gastronomia",
+    "trilha": "turismo",
+    "tipo": "alimentacao",
+    "endereco": "R. Alm. Barroso, 883 - Centro, Foz do Iguaçu - PR, 85851-010",
+    "fonte": "https://maps.app.goo.gl/yJZR8frLEr87H4wj6",
+    "descricao": "Opção de culinária italiana tradicional e sofisticada, posicionada estrategicamente no corredor turístico que liga o centro à região do aeroporto."
+  },
+  {
+    "nome": "Restaurante Tarobá (Bourbon Resort)",
+    "trilha": "turismo",
+    "tipo": "alimentacao",
+    "endereco": "Av. das Cataratas, Km 2,5 - São Roque, Foz do Iguaçu - PR, 85853-000",
+    "fonte": "https://maps.app.goo.gl/VKg19ARikhtX8uZk7",
+    "descricao": "Restaurante de alta gastronomia situado no início da Avenida das Cataratas, ideal para um jantar requintado sem precisar fazer grandes desvios da rota."
+  },
+  {
+    "nome": "Três Fronteiras Artesanato",
+    "trilha": "compras",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, Km,11 - Carimã, Foz do Iguaçu - PR, 85853-000",
+    "fonte": "https://maps.app.goo.gl/2c6fh7sQyqyEv1Kw9",
+    "descricao": "Loja de rua independente focada em artesanato local e souvenires, proporcionando uma experiência de compras cultural sem entrar em shoppings."
+  },
+  {
+    "nome": "Cataratas Souvenirs",
+    "trilha": "compras",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 6075 - Mata Verde, Foz do Iguaçu - PR, 85853-000",
+    "fonte": "https://maps.app.goo.gl/MnpPgBg5xjt78bjk8",
+    "descricao": "Ampla loja de presentes e artigos regionais variados. Ponto estratégico para turistas garantirem lembranças de última hora na volta para o hotel."
+  },
+  {
+    "nome": "Supermercado Ítalo - Centro",
+    "trilha": "compras",
+    "tipo": "alimentacao",
+    "endereco": "R. Edmundo de Barros, 303 - Centro, Foz do Iguaçu - PR, 85851-120",
+    "fonte": "https://maps.app.goo.gl/NaEV8yuxYr3Y8ffT8",
+    "descricao": "Supermercado completo localizado estrategicamente na avenida principal. É a parada ideal para os turistas comprarem lanches, bebidas e conveniências antes de seguirem para o hotel."
+  },
+  {
+    "nome": "ODA Vinhoteca Duty Free",
+    "trilha": "compras",
+    "tipo": "alimentacao",
+    "endereco": "R. Cândido Ferreira, 539 - Yolanda, Foz do Iguaçu - PR, 85853-240",
+    "fonte": "https://maps.app.goo.gl/MjyP2GnYn3rJSS119",
+    "descricao": "Loja franca (duty-free) especializada em vinhos argentinos, bebidas e empório gastronômico livre de impostos na rota turística principal."
+  },
+  {
+    "nome": "Aquamania Foz",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "Av. das Cataratas, 7120 - Tamanduã, Foz do Iguaçu - PR, 85863-000",
+    "fonte": "https://maps.app.goo.gl/JzqyHn3x4qegbDLa8",
+    "descricao": "Parque aquático tradicional com toboáguas e piscinas recreativas. Fica estrategicamente posicionado na avenida principal, sendo uma opção de lazer sem grandes deslocamentos."
+  },
+  {
+    "nome": "Adrena Kart Foz",
+    "trilha": "turismo",
+    "tipo": "lazer",
+    "endereco": "R. Heleno Schimmelpfeng, 880 - Yolanda, Foz do Iguaçu - PR, 85853-510",
+    "fonte": "https://maps.app.goo.gl/K2q72bFA4NT3DL7b7",
+    "descricao": "Pista de kart profissional próxima à rodovia principal, oferecendo uma opção de lazer focada em velocidade e adrenalina para grupos."
+  }
+]
