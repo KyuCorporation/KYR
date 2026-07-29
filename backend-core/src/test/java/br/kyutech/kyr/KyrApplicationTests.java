@@ -1,4 +1,4 @@
-package br.tourapp.kyr;
+package br.kyutech.kyr;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
