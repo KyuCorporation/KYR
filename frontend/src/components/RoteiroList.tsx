@@ -4,8 +4,8 @@ import { PontoDeInteresse, RoteiroResponse, Trilha, TipoPonto } from "@/types/ro
 
 // US-09 — Exibição do roteiro em lista
 // Critérios de aceite:
-// - Lista mostra nome, trilha (turismo/compras) e tipo (alimentação/lazer) de cada ponto
-// - Estados vazio e de erro tratados com mensagens claras
+// Lista mostra nome, trilha (turismo/compras) e tipo (alimentação/lazer) de cada ponto
+// Estados vazio e de erro tratados com mensagens claras
 
 const TRILHA_LABEL: Record<Trilha, string> = {
   turismo: "Turismo",
@@ -26,6 +26,13 @@ const TIPO_BADGE_CLASS: Record<TipoPonto, string> = {
   alimentacao: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",
   lazer: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",
 };
+
+// Fallback neutro para quando o backend mandar um valor fora do union
+// atual (ex: uma trilha/tipo nova que o frontend ainda não conhece).
+// Evita className="... undefined" e mostra o valor cru em vez de sumir.
+
+const BADGE_CLASS_DESCONHECIDO =
+  "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
 
 interface RoteiroListProps {
   data?: RoteiroResponse;
@@ -93,14 +100,18 @@ function RoteiroListItem({ ponto }: { ponto: PontoDeInteresse }) {
       )}
       <div className="mt-3 flex gap-2">
         <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${TRILHA_BADGE_CLASS[ponto.trilha]}`}
+          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+            TRILHA_BADGE_CLASS[ponto.trilha] ?? BADGE_CLASS_DESCONHECIDO
+          }`}
         >
-          {TRILHA_LABEL[ponto.trilha]}
+          {TRILHA_LABEL[ponto.trilha] ?? ponto.trilha}
         </span>
         <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${TIPO_BADGE_CLASS[ponto.tipo]}`}
+          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+            TIPO_BADGE_CLASS[ponto.tipo] ?? BADGE_CLASS_DESCONHECIDO
+          }`}
         >
-          {TIPO_LABEL[ponto.tipo]}
+          {TIPO_LABEL[ponto.tipo] ?? ponto.tipo}
         </span>
       </div>
     </li>
