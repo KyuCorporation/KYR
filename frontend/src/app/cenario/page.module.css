@@ -21,17 +21,22 @@
 .campo input {
   padding: 8px;
   width: 100%;
+  border: 2px solid rgb(0, 113, 243);
+  border-radius: 30px;
 }
 
 .botao {
   padding: 10px;
   font-size: 16px;
+  border: 2px solid rgb(0, 113, 243);
+  border-radius: 30px;
+  width: 50%;
   cursor: pointer;
   transition: color 0.4s ease;
 }
 
 .botaoCarregando {
-  animation: piscarPretoBranco 1s ease-in-out infinite;
+  animation: piscarPretoBranco 500ms ease-in-out infinite;
 }
 
 @keyframes piscarPretoBranco {
