@@ -3,7 +3,7 @@ package br.tourapp.kyr.poi.service;
 import br.tourapp.kyr.poi.client.dto.GooglePlaceDto;
 import br.tourapp.kyr.poi.client.dto.NearbySearchResponseDto;
 import br.tourapp.kyr.poi.web.PoiDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ class PoiNormalizerTest {
 
     @BeforeEach
     void carregarFixture() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
+        JsonMapper mapper = JsonMapper.builder().build();
         try (InputStream fixture = getClass().getResourceAsStream("/fixtures/places-nearby-response.json")) {
             NearbySearchResponseDto resposta = mapper.readValue(fixture, NearbySearchResponseDto.class);
             placesDaFixture = resposta.places();
