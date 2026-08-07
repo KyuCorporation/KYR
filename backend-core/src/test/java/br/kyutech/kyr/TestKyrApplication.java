@@ -1,4 +1,4 @@
-package br.tourapp.kyr;
+package br.kyutech.kyr;
 
 import org.springframework.boot.SpringApplication;
 
