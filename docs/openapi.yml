@@ -1,0 +1,181 @@
+openapi: 3.0.3
+info:
+  title: KYU - API de Roteirização Turística
+  description: >
+    Contrato de API do backend-core, cobrindo o endpoint de geração de
+    roteiros turísticos combinando dados de geolocalização com curadoria
+    via IA.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Ambiente local
+  - url: https://kyr-backend-hkq1.onrender.com
+    description: Ambiente de produção
+
+paths:
+  /roteiros:
+    post:
+      summary: Gera um roteiro turístico entre origem e destino
+      description: >
+        Recebe uma origem e um destino fixos (cenário: aeroporto de Foz do Iguaçu → evento) 
+        e retorna uma lista curada de pontos de interesse (POIs), organizados por trilha e 
+        tipo, com metadados de suporte.
+      operationId: gerarRoteiro
+      tags:
+        - Roteiros
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoteiroRequest'
+            example:
+              origem:
+                nome: "Aeroporto Internacional de Foz do Iguaçu"
+                latitude: -25.6003
+                longitude: -54.4854
+              destino:
+                nome: "Local do evento"
+                latitude: -25.5478
+                longitude: -54.5882
+      responses:
+        '200':
+          description: Roteiro gerado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoteiroResponse'
+        '400':
+          description: Payload inválido (fora do cenário fixo, campos ausentes ou mal formatados)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+        '502':
+          description: Falha ao obter resposta do provedor de LLM (fallback aplicado ou erro repassado)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+
+components:
+  schemas:
+    Ponto:
+      type: object
+      required:
+        - nome
+        - latitude
+        - longitude
+      properties:
+        nome:
+          type: string
+          example: "Aeroporto Internacional de Foz do Iguaçu"
+        latitude:
+          type: number
+          format: double
+          example: -25.6003
+        longitude:
+          type: number
+          format: double
+          example: -54.4854
+
+    RoteiroRequest:
+      type: object
+      required:
+        - origem
+        - destino
+      properties:
+        origem:
+          $ref: '#/components/schemas/Ponto'
+        destino:
+          $ref: '#/components/schemas/Ponto'
+
+    POI:
+      type: object
+      required:
+        - nome
+        - trilha
+        - tipo
+        - endereco
+        - latitude
+        - longitude
+        - fonte
+        - descricao
+        - curado
+      properties:
+        nome:
+          type: string
+          example: "Cataratas do Iguaçu (Parque Nacional do Iguaçu)"
+        trilha:
+          type: string
+          example: turismo
+        tipo:
+          type: string
+          example: lazer
+        endereco:
+          type: string
+          example: "Bus Terminus - Rod, BR-469 - Km 18, Foz do Iguaçu - PR, 85853-830"
+        latitude:
+          type: number
+          format: double
+          example: -25.6953
+        longitude:
+          type: number
+          format: double
+          example: -54.4367
+        fonte:
+          type: string
+          description: Link de referência do ponto, para rastreabilidade
+          example: "https://maps.app.goo.gl/mWfjwq78VQKvUKL16"
+        descricao:
+          type: string
+          example: "Principal atração da região e Patrimônio Natural da Humanidade, abriga as famosas quedas d'água."
+        curado:
+          type: boolean
+          example: true
+
+    RoteiroResponse:
+      type: object
+      required:
+        - pontos
+        - metadados
+      properties:
+        pontos:
+          type: array
+          items:
+            $ref: '#/components/schemas/POI'
+        metadados:
+          type: object
+          properties:
+            totalPontos:
+              type: integer
+              example: 15
+            tempoRespostaMs:
+              type: integer
+              description: Tempo total de processamento da requisição, em milissegundos
+              example: 1240
+            fonte:
+              type: string
+              description: Provedor de LLM utilizado na curadoria
+              example: "ia-service"
+            curadoPorIa:
+              type: boolean
+              example: true
+
+    ErroResponse:
+      type: object
+      required:
+        - erro
+        - mensagem
+      properties:
+        erro:
+          type: string
+          example: "PAYLOAD_INVALIDO"
+        mensagem:
+          type: string
+          example: "Campo 'origem.latitude' é obrigatório e deve ser numérico."
+        campo:
+          type: string
+          nullable: true
+          example: "origem.latitude"
