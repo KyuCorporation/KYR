@@ -18,6 +18,9 @@ export const mockRoteiroComDados: RoteiroResponse = {
       trilha: "turismo",
       tipo: "lazer",
       descricao: "Santuário com aves nativas e exóticas, próximo às Cataratas.",
+      latitude: -25.6685,
+      longitude: -54.4384,
+      endereco: "Av. das Cataratas, 12450 - Foz do Iguaçu - PR",
     },
     {
       id: "poi-02",
@@ -25,6 +28,9 @@ export const mockRoteiroComDados: RoteiroResponse = {
       trilha: "turismo",
       tipo: "lazer",
       descricao: "Um dos principais atrativos naturais do Brasil.",
+      latitude: -25.6953,
+      longitude: -54.4367,
+      endereco: "Bus Terminus - Rod. BR-469 - Km 18, Foz do Iguaçu - PR",
     },
     {
       id: "poi-03",
@@ -32,6 +38,9 @@ export const mockRoteiroComDados: RoteiroResponse = {
       trilha: "compras",
       tipo: "lazer",
       descricao: "Shopping com lojas e praça de alimentação.",
+      latitude: -25.5236,
+      longitude: -54.5793,
+      endereco: "Av. Jorge Schimmelpfeng, 1385 - Foz do Iguaçu - PR",
     },
     {
       id: "poi-04",
@@ -39,6 +48,9 @@ export const mockRoteiroComDados: RoteiroResponse = {
       trilha: "turismo",
       tipo: "alimentacao",
       descricao: "Restaurante típico com show latino-americano.",
+      latitude: -25.5487,
+      longitude: -54.5677,
+      endereco: "Av. das Cataratas, 1749 - Foz do Iguaçu - PR",
     },
   ],
 };
