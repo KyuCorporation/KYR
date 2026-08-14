@@ -70,3 +70,7 @@
 # yarn.lock
 # pnpm-lock.yaml
 # bun.lockb
+
+# ia-service (Maven)
+/ia-service/target/
+/ia-service/.mvn/wrapper/maven-wrapper.jar
