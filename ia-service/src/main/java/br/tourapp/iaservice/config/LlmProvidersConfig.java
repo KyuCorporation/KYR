@@ -14,19 +14,46 @@ import org.springframework.ai.anthropic.api.AnthropicApi;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.google.genai.GoogleGenAiChatModel;
 import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
+import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.reactive.function.client.WebClient;
+import io.micrometer.observation.ObservationRegistry;
 
-// Monta manualmente a cadeia de fallback de LLMs: Claude → Gemini → OpenAI. Cada provedor é opcional, caso a variável de ambiente da respectiva chave não estiver definida, aquele provedor simplesmente não entra na cadeia.
+// Monta manualmente a cadeia de fallback de LLMs: Claude → Gemini → OpenAI.
+// Cada provedor é opcional, caso a variável de ambiente da respectiva chave não estiver definida, aquele provedor simplesmente não entra na cadeia.
 
 @Configuration
 public class LlmProvidersConfig {
 
     private static final Logger log = LoggerFactory.getLogger(LlmProvidersConfig.class);
+
+    // Dependências de infraestrutura injetadas para construção correta dos novos modelos do Spring AI
+    private final RestClient.Builder restClientBuilder;
+    private final WebClient.Builder webClientBuilder;
+    private final ObservationRegistry observationRegistry;
+    private final ToolCallingManager toolCallingManager;
+
+    public LlmProvidersConfig(
+            RestClient.Builder restClientBuilder,
+            ObjectProvider<WebClient.Builder> webClientBuilderProvider,
+            ObjectProvider<ObservationRegistry> observationRegistryProvider,
+            ObjectProvider<ToolCallingManager> toolCallingManagerProvider) {
+
+        this.restClientBuilder = restClientBuilder;
+
+        // Uso de getIfAvailable para não quebrar a aplicação caso alguma dessas libs não esteja no classpath/contexto
+        this.webClientBuilder = webClientBuilderProvider.getIfAvailable();
+        this.observationRegistry = observationRegistryProvider.getIfAvailable(() -> ObservationRegistry.NOOP);
+        this.toolCallingManager = toolCallingManagerProvider.getIfAvailable();
+    }
 
     @Bean
     public List<LlmProvider> llmProviders(FallbackChainProperties props) {
@@ -40,7 +67,7 @@ public class LlmProvidersConfig {
                 apiKey -> openAiProvider(apiKey, props));
 
         if (providers.isEmpty()) {
-            log.warn("Nenhuma chave de LLM configurada");
+            log.warn("Nenhuma chave de LLM configurada na cadeia de fallback.");
         }
 
         return List.copyOf(providers);
@@ -58,16 +85,36 @@ public class LlmProvidersConfig {
     }
 
     private LlmProvider anthropicProvider(String apiKey, FallbackChainProperties props) {
-        AnthropicApi api = new AnthropicApi(apiKey);
+
+        // Instanciamento utilizando exclusivamente o Builder (Construtor agora é private)
+        AnthropicApi.Builder apiBuilder = AnthropicApi.builder()
+                .baseUrl("https://api.anthropic.com")
+                .anthropicVersion("2023-06-01")
+                .apiKey(apiKey) // O builder aceita a String diretamente
+                .restClientBuilder(restClientBuilder.clone())
+                .responseErrorHandler(new DefaultResponseErrorHandler());
+
+        // A injeção condicional do WebClientBuilder previne NullPointerExceptions
+        if (webClientBuilder != null) {
+            apiBuilder.webClientBuilder(webClientBuilder.clone());
+        }
+
+        AnthropicApi api = apiBuilder.build();
+
         AnthropicChatOptions options = AnthropicChatOptions.builder()
                 .model(props.getAnthropicModel())
                 .maxTokens(props.getMaxTokens())
                 .build();
+
+        // Passando as mesmas dependências de infra (Observation/Tooling) para consistência
         ChatModel chatModel = AnthropicChatModel.builder()
                 .anthropicApi(api)
                 .defaultOptions(options)
                 .retryTemplate(semRetentativaInterna())
+                .observationRegistry(observationRegistry)
+                .toolCallingManager(toolCallingManager)
                 .build();
+
         return new SpringAiLlmProvider("anthropic", props.getAnthropicModel(), props.getTimeout(), chatModel);
     }
 
@@ -77,7 +124,16 @@ public class LlmProvidersConfig {
                 .model(props.getGeminiModel())
                 .maxOutputTokens(props.getMaxTokens())
                 .build();
-        ChatModel chatModel = new GoogleGenAiChatModel(client, options);
+
+        // A API do GoogleGenAiChatModel exige injeção das métricas, retry e chamadas de ferramenta
+        ChatModel chatModel = new GoogleGenAiChatModel(
+                client,
+                options,
+                toolCallingManager,
+                semRetentativaInterna(),
+                observationRegistry
+        );
+
         return new SpringAiLlmProvider("gemini", props.getGeminiModel(), props.getTimeout(), chatModel);
     }
 
@@ -87,11 +143,15 @@ public class LlmProvidersConfig {
                 .model(props.getOpenaiModel())
                 .maxTokens(props.getMaxTokens())
                 .build();
+
         ChatModel chatModel = OpenAiChatModel.builder()
                 .openAiApi(api)
                 .defaultOptions(options)
                 .retryTemplate(semRetentativaInterna())
+                .observationRegistry(observationRegistry)
+                .toolCallingManager(toolCallingManager)
                 .build();
+
         return new SpringAiLlmProvider("openai", props.getOpenaiModel(), props.getTimeout(), chatModel);
     }
 
