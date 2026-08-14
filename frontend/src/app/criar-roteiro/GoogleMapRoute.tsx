@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import {
   APIProvider,
   Map,
@@ -74,17 +74,32 @@ function RouteDirections({
   const map = useMap();
   const routesLibrary = useMapsLibrary("routes");
 
-  const [directionsService, setDirectionsService] =
-    useState<google.maps.DirectionsService>();
-  const [directionsRenderer, setDirectionsRenderer] =
-    useState<google.maps.DirectionsRenderer>();
+  // directionsService/directionsRenderer são derivados de routesLibrary e map,
+  // então usamos useMemo em vez de useState+useEffect (evita cascading renders
+  // e o erro react-hooks/set-state-in-effect).
+  const directionsService = useMemo(() => {
+    if (!routesLibrary) return undefined;
+    return new routesLibrary.DirectionsService();
+  }, [routesLibrary]);
 
-  // Cria o service/renderer assim que a lib "routes" e o mapa estiverem prontos.
-  useEffect(() => {
-    if (!routesLibrary || !map) return;
-    setDirectionsService(new routesLibrary.DirectionsService());
-    setDirectionsRenderer(new routesLibrary.DirectionsRenderer({ map }));
+  const directionsRenderer = useMemo(() => {
+    if (!routesLibrary || !map) return undefined;
+    return new routesLibrary.DirectionsRenderer({ map });
   }, [routesLibrary, map]);
+
+  // Tipos derivados diretamente da instância do serviço, sem referenciar o
+  // identificador global "google" em nenhum lugar do arquivo. Isso evita o
+  // erro "Não é possível encontrar o nome 'google'" quando @types/google.maps
+  // não está instalado/resolvido no ambiente de lint/build.
+  type DirectionsRequest = Parameters<
+    NonNullable<typeof directionsService>["route"]
+  >[0];
+  type DirectionsResult = Awaited<
+    ReturnType<NonNullable<typeof directionsService>["route"]>
+  >;
+  type DirectionsLeg = NonNullable<
+    DirectionsResult["routes"][number]["legs"]
+  >[number];
 
   // Sempre que origem, destino, paradas ou modo de transporte mudarem,
   // recalcula a rota real via Directions API.
@@ -100,27 +115,34 @@ function RouteDirections({
       return;
     }
 
+    const request: DirectionsRequest = {
+      origin,
+      destination,
+      waypoints: waypoints
+        .filter(Boolean)
+        .map((address) => ({ location: address, stopover: true })),
+      // O enum TravelMode do Maps usa, em runtime, as mesmas strings das
+      // chaves ("DRIVING", "WALKING", ...), então passamos a própria chave
+      // sem precisar nomear o namespace "google".
+      travelMode: travelMode as DirectionsRequest["travelMode"],
+      provideRouteAlternatives: false,
+    };
+
     directionsService
-      .route({
-        origin,
-        destination,
-        waypoints: waypoints
-          .filter(Boolean)
-          .map((address) => ({ location: address, stopover: true })),
-        travelMode: google.maps.TravelMode[travelMode],
-        provideRouteAlternatives: false,
-      })
-      .then((result) => {
+      .route(request)
+      .then((result: DirectionsResult) => {
         directionsRenderer.setDirections(result);
         onError?.(null);
 
-        const legs = result.routes[0]?.legs ?? [];
+        const legs: DirectionsLeg[] = result.routes[0]?.legs ?? [];
         const totalMeters = legs.reduce(
-          (acc, leg) => acc + (leg.distance?.value ?? 0),
+          (acc: number, leg: DirectionsLeg) =>
+            acc + (leg.distance?.value ?? 0),
           0
         );
         const totalSeconds = legs.reduce(
-          (acc, leg) => acc + (leg.duration?.value ?? 0),
+          (acc: number, leg: DirectionsLeg) =>
+            acc + (leg.duration?.value ?? 0),
           0
         );
 
