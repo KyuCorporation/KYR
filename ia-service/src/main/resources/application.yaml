@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: ia-service
+  docker:
+    compose:
+      enabled: false
+  jackson:
+    # Mantém o mesmo formato de JSON que o protótipo anterior em FastAPI/Pydantic
+    # já expunha (curado_por_ia, modelo_utilizado) — o contrato com o
+    # backend-core (docs/openapi.yaml, ainda não fechado na US-04) não muda.
+    property-naming-strategy: SNAKE_CASE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+server:
+  port: 8000 # mantém paridade com o serviço FastAPI anterior (uvicorn --port 8000)
+
+# Configuração própria da cadeia de fallback (US-06) — ver
+# br.tourapp.iaservice.config.FallbackChainProperties e
+# br.tourapp.iaservice.config.LlmProvidersConfig.
+#
+# As chaves de API NÃO ficam aqui: são lidas diretamente de variável de
+# ambiente (ANTHROPIC_API_KEY / GEMINI_API_KEY / OPENAI_API_KEY) dentro de
+# LlmProvidersConfig, nunca commitadas — ver .env.example na raiz do repo.
+kyu:
+  llm:
+    timeout-seconds: ${LLM_TIMEOUT_SECONDS:8}
+    max-tokens: ${LLM_MAX_TOKENS:1024}
+    anthropic-model: ${ANTHROPIC_MODEL:claude-haiku-4-5-20251001}
+    gemini-model: ${GEMINI_MODEL:gemini-2.5-flash}
+    openai-model: ${OPENAI_MODEL:gpt-4o-mini}

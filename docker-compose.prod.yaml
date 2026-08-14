@@ -27,9 +27,27 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/${DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
     depends_on:
       database:
         condition: service_healthy
+
+  ia-service:
+    build:
+      context: ./ia-service
+      dockerfile: Dockerfile.prod
+    container_name: pwa_ia_service
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-haiku-4-5-20251001}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-8}
 
   frontend:
     build:
