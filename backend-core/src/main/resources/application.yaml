@@ -1,15 +1,23 @@
 spring:
   application:
     name: kyr
-  docker:
-    compose:
-      enabled: false
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
-  endpoint:
-    health:
-      show-details: never
+google:
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:}
+    directions:
+      base-url: https://maps.googleapis.com
+    places:
+      base-url: https://places.googleapis.com
+      search-nearby-path: /v1/places:searchNearby
+    poi:
+      raio-busca-metros: 500
+      max-pontos-intermediarios: 8
+      max-resultados-por-ponto: 10
+    rota:
+      origem:
+        latitude: -25.60028
+        longitude: -54.48500
+      destino:
+        latitude: -25.59680
+        longitude: -54.56250
