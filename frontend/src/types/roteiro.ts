@@ -14,6 +14,10 @@ export interface PontoDeInteresse {
   longitude?: number;
   descricao?: string;
   fonte?: string;
+  // Campos adicionados para US-20 (mapa), presentes no contrato real
+  // (docs/openapi.yml) mas que a US-09 ainda não usava.
+  endereco?: string;
+  curado?: boolean;
 }
 
 export interface Metadados {

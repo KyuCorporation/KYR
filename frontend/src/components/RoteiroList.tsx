@@ -38,9 +38,19 @@ interface RoteiroListProps {
   data?: RoteiroResponse;
   error?: string;
   isLoading?: boolean;
+  /** id do ponto selecionado (ex: clicado no mapa ao lado). Opcional. */
+  pontoSelecionadoId?: string | null;
+  /** chamado ao clicar num item da lista, para sincronizar com o mapa. */
+  onSelecionarPonto?: (id: string) => void;
 }
 
-export default function RoteiroList({ data, error, isLoading }: RoteiroListProps) {
+export default function RoteiroList({
+  data,
+  error,
+  isLoading,
+  pontoSelecionadoId = null,
+  onSelecionarPonto,
+}: RoteiroListProps) {
   if (isLoading) {
     return (
       <div
@@ -82,16 +92,50 @@ export default function RoteiroList({ data, error, isLoading }: RoteiroListProps
       </p>
       <ul className="flex flex-col gap-3">
         {data.pontos.map((ponto) => (
-          <RoteiroListItem key={ponto.id} ponto={ponto} />
+          <RoteiroListItem
+            key={ponto.id}
+            ponto={ponto}
+            selecionado={ponto.id === pontoSelecionadoId}
+            onSelecionar={onSelecionarPonto}
+          />
         ))}
       </ul>
     </div>
   );
 }
 
-function RoteiroListItem({ ponto }: { ponto: PontoDeInteresse }) {
+interface RoteiroListItemProps {
+  ponto: PontoDeInteresse;
+  selecionado?: boolean;
+  onSelecionar?: (id: string) => void;
+}
+
+function RoteiroListItem({ ponto, selecionado = false, onSelecionar }: RoteiroListItemProps) {
+  const clicavel = Boolean(onSelecionar);
+
   return (
-    <li className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <li
+      onClick={clicavel ? () => onSelecionar?.(ponto.id) : undefined}
+      role={clicavel ? "button" : undefined}
+      tabIndex={clicavel ? 0 : undefined}
+      onKeyDown={
+        clicavel
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelecionar?.(ponto.id);
+              }
+            }
+          : undefined
+      }
+      className={`rounded-lg border bg-white p-4 shadow-sm transition-colors dark:bg-zinc-900 ${
+        clicavel ? "cursor-pointer hover:border-orange-300 dark:hover:border-orange-700" : ""
+      } ${
+        selecionado
+          ? "border-orange-500 ring-1 ring-orange-500 dark:border-orange-500"
+          : "border-zinc-200 dark:border-zinc-800"
+      }`}
+    >
       <div className="flex items-start justify-between gap-3">
         <h3 className="font-medium text-zinc-900 dark:text-zinc-50">{ponto.nome}</h3>
       </div>
