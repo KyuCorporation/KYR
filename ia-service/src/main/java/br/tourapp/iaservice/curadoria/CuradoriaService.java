@@ -1,5 +1,6 @@
 package br.tourapp.iaservice.curadoria;
 
+import br.tourapp.iaservice.config.FallbackChainProperties;
 import br.tourapp.iaservice.dto.PontoBrutoDTO;
 import br.tourapp.iaservice.dto.PontoCuradoDTO;
 import br.tourapp.iaservice.dto.RoteiroResponseDTO;
@@ -20,10 +21,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 // Orquestra a curadoria de uma lista de POIs através da cadeia de fallback de LLMs:
-// Claude (timeout curto) → Gemini (timeout curto) → OpenAI (timeout curto) → fallback final: POIs sem curadoria ("curado": false).
+// Mistral local (Ollama, se habilitado) → Claude → Gemini → OpenAI → fallback final: POIs sem curadoria ("curado": false).
 
 // Fluxo para cada provedor da cadeia, na ordem em que LlmProvidersConfig os monta:
 // Chama o provedor com um timeout curto e independente do timeout interno do SDK → se responder dentro do prazo, faz o parsing seguro do JSON → casa cada POI curado com o POI original pelo campo nome. Qualquer falha faz a cadeia seguir para o próximo provedor, sem propagar a exceção. Caso todos falhem, cai no fallback final.
+
+// Nota sobre o limite de caracteres da descrição (kyu.llm.max-descricao-chars): é reforçado apenas
+// via instrução no prompt (ver PromptBuilder). Não há truncamento nem invalidação aqui caso o LLM
+// ultrapasse — decisão consciente, revisitar se algum provedor (em especial modelos locais) mostrar
+// tendência a estourar o limite na prática.
 
 @Service
 public class CuradoriaService {
@@ -37,11 +43,13 @@ public class CuradoriaService {
 
     private final List<LlmProvider> providers;
     private final ObjectMapper objectMapper;
+    private final FallbackChainProperties props;
     private final ExecutorService executor;
 
-    public CuradoriaService(List<LlmProvider> providers, ObjectMapper objectMapper) {
+    public CuradoriaService(List<LlmProvider> providers, ObjectMapper objectMapper, FallbackChainProperties props) {
         this.providers = providers;
         this.objectMapper = objectMapper;
+        this.props = props;
 
         this.executor = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -62,7 +70,7 @@ public class CuradoriaService {
             return new RoteiroResponseDTO(List.of(), false, null);
         }
 
-        String prompt = PromptBuilder.montarPrompt(pontos, objectMapper);
+        String prompt = PromptBuilder.montarPrompt(pontos, objectMapper, props.getMaxDescricaoChars());
 
         for (LlmProvider provider : providers) {
             try {
@@ -145,6 +153,10 @@ public class CuradoriaService {
                 && descricao != null && !descricao.isBlank();
 
         if (valido) {
+            if (descricao.length() > props.getMaxDescricaoChars()) {
+                log.warn("Descrição do POI '{}' excedeu o limite combinado ({} > {} caracteres) — aceitando mesmo assim, por decisão de produto.",
+                        original.nome(), descricao.length(), props.getMaxDescricaoChars());
+            }
             return new PontoCuradoDTO(
                     original.nome(), original.categoria(), original.coordenadas(), trilha, tipo, descricao, true);
         }

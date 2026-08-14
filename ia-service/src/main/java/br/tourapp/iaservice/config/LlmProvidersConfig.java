@@ -15,6 +15,9 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.google.genai.GoogleGenAiChatModel;
 import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
 import org.springframework.ai.model.tool.ToolCallingManager;
+import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.ollama.api.OllamaApi;
+import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
@@ -27,8 +30,10 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 import io.micrometer.observation.ObservationRegistry;
 
-// Monta manualmente a cadeia de fallback de LLMs: Claude → Gemini → OpenAI.
-// Cada provedor é opcional, caso a variável de ambiente da respectiva chave não estiver definida, aquele provedor simplesmente não entra na cadeia.
+// Monta manualmente a cadeia de fallback de LLMs: Mistral (Ollama local) → Claude → Gemini → OpenAI.
+// O Mistral local só entra na cadeia se OLLAMA_ENABLED=true (opt-in, pois depende do daemon do Ollama
+// rodando na máquina). Os demais provedores são opcionais: se a variável de ambiente da respectiva
+// chave não estiver definida, aquele provedor simplesmente não entra na cadeia.
 
 @Configuration
 public class LlmProvidersConfig {
@@ -59,6 +64,10 @@ public class LlmProvidersConfig {
     public List<LlmProvider> llmProviders(FallbackChainProperties props) {
         List<LlmProvider> providers = new ArrayList<>();
 
+        // Mistral local entra primeiro na cadeia, e antes dos demais, para ser tentado antes de
+        // qualquer chamada externa paga
+        adicionarOllamaSeHabilitado(providers, props);
+
         adicionarSeConfigurado(providers, "ANTHROPIC_API_KEY",
                 apiKey -> anthropicProvider(apiKey, props));
         adicionarSeConfigurado(providers, "GEMINI_API_KEY",
@@ -82,6 +91,46 @@ public class LlmProvidersConfig {
         } else {
             log.warn("{} não definida. Este provedor fica de fora da cadeia de fallback.", envVar);
         }
+    }
+
+    // Gate separado do padrão adicionarSeConfigurado porque o Ollama não usa API key: é opt-in via flag,
+    // já que só faz sentido em máquinas com o daemon `ollama serve` rodando localmente.
+    private void adicionarOllamaSeHabilitado(List<LlmProvider> providers, FallbackChainProperties props) {
+        String habilitado = System.getenv("OLLAMA_ENABLED");
+        if (habilitado != null && habilitado.equalsIgnoreCase("true")) {
+            providers.add(ollamaProvider(props));
+            log.info("Mistral local (Ollama) habilitado via OLLAMA_ENABLED: entra na cadeia de fallback.");
+        } else {
+            log.warn("OLLAMA_ENABLED não definida como 'true'. Mistral local fica de fora da cadeia de fallback.");
+        }
+    }
+
+    private LlmProvider ollamaProvider(FallbackChainProperties props) {
+        String baseUrl = System.getenv().getOrDefault("OLLAMA_BASE_URL", "http://localhost:11434");
+        String modelo = System.getenv().getOrDefault("OLLAMA_MODEL", "mistral");
+
+        OllamaApi.Builder apiBuilder = OllamaApi.builder()
+                .baseUrl(baseUrl)
+                .restClientBuilder(restClientBuilder.clone());
+
+        if (webClientBuilder != null) {
+            apiBuilder.webClientBuilder(webClientBuilder.clone());
+        }
+
+        OllamaApi api = apiBuilder.build();
+
+        OllamaChatOptions options = OllamaChatOptions.builder()
+                .model(modelo)
+                .build();
+
+        ChatModel chatModel = OllamaChatModel.builder()
+                .ollamaApi(api)
+                .defaultOptions(options)
+                .observationRegistry(observationRegistry)
+                .toolCallingManager(toolCallingManager)
+                .build();
+
+        return new SpringAiLlmProvider("ollama-mistral", modelo, props.getOllamaTimeout(), chatModel);
     }
 
     private LlmProvider anthropicProvider(String apiKey, FallbackChainProperties props) {
