@@ -70,7 +70,10 @@ export default function RoteiroMap({
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const polylineRef = useRef<google.maps.Polyline | null>(null);
   const onSelecionarPontoRef = useRef(onSelecionarPonto);
-  onSelecionarPontoRef.current = onSelecionarPonto;
+
+  useEffect(() => {
+    onSelecionarPontoRef.current = onSelecionarPonto;
+  }, [onSelecionarPonto]);
 
   // useMemo evita recriar essa lista (e disparar o efeito abaixo) em todo
   // re-render — só recalcula quando o array `pontos` realmente muda.
