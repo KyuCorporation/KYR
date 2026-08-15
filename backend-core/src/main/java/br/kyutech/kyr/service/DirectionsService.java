@@ -38,8 +38,8 @@ public class DirectionsService {
             .map(p -> p.latitude() + "," + p.longitude())
             .reduce((a, b) -> a + "|" + b)
             .orElse("");
- 
-        String url = UriComponentsBuilder.fromHttpUrl(DIRECTIONS_URL)
+
+        String url = UriComponentsBuilder.fromUriString(DIRECTIONS_URL)
             .queryParam("origin", origem.latitude() + "," + origem.longitude())
             .queryParam("destination", destino.latitude() + "," + destino.longitude())
             .queryParam("waypoints", waypointsParam)
