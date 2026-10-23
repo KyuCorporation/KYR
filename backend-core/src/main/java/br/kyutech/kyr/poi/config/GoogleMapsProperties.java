@@ -1,6 +1,6 @@
-package br.tourapp.kyr.poi.config;
+package br.kyutech.kyr.poi.config;
 
-import br.tourapp.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.model.Coordenada;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "google.maps")

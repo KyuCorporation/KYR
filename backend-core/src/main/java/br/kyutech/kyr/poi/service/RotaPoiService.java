@@ -1,18 +1,18 @@
-package br.tourapp.kyr.poi.service;
+package br.kyutech.kyr.poi.service;
 
-import br.tourapp.kyr.poi.client.GoogleDirectionsClient;
-import br.tourapp.kyr.poi.client.GooglePlacesClient;
-import br.tourapp.kyr.poi.client.PolylineDecoder;
-import br.tourapp.kyr.poi.client.dto.DirectionsResponseDto;
-import br.tourapp.kyr.poi.client.dto.DirectionsRouteDto;
-import br.tourapp.kyr.poi.client.dto.DirectionsStepDto;
-import br.tourapp.kyr.poi.client.dto.GooglePlaceDto;
-import br.tourapp.kyr.poi.client.dto.LatLngDto;
-import br.tourapp.kyr.poi.config.GoogleMapsProperties;
-import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
-import br.tourapp.kyr.poi.model.Coordenada;
-import br.tourapp.kyr.poi.web.PoiDto;
-import br.tourapp.kyr.poi.web.RotaResponseDto;
+import br.kyutech.kyr.poi.client.GoogleDirectionsClient;
+import br.kyutech.kyr.poi.client.GooglePlacesClient;
+import br.kyutech.kyr.poi.client.PolylineDecoder;
+import br.kyutech.kyr.poi.client.dto.DirectionsResponseDto;
+import br.kyutech.kyr.poi.client.dto.DirectionsRouteDto;
+import br.kyutech.kyr.poi.client.dto.DirectionsStepDto;
+import br.kyutech.kyr.poi.client.dto.GooglePlaceDto;
+import br.kyutech.kyr.poi.client.dto.LatLngDto;
+import br.kyutech.kyr.poi.config.GoogleMapsProperties;
+import br.kyutech.kyr.poi.exception.GoogleMapsIntegrationException;
+import br.kyutech.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.web.PoiDto;
+import br.kyutech.kyr.poi.web.RotaResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

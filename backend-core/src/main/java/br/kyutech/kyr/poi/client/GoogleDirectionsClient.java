@@ -1,9 +1,9 @@
-package br.tourapp.kyr.poi.client;
+package br.kyutech.kyr.poi.client;
 
-import br.tourapp.kyr.poi.client.dto.DirectionsResponseDto;
-import br.tourapp.kyr.poi.config.GoogleMapsProperties;
-import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
-import br.tourapp.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.client.dto.DirectionsResponseDto;
+import br.kyutech.kyr.poi.config.GoogleMapsProperties;
+import br.kyutech.kyr.poi.exception.GoogleMapsIntegrationException;
+import br.kyutech.kyr.poi.model.Coordenada;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;

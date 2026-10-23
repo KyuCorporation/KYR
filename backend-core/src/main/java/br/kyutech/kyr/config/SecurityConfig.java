@@ -1,4 +1,4 @@
-package br.tourapp.kyr.config;
+package br.kyutech.kyr.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -18,9 +18,9 @@ Tem uma tabela para decodificar na mão, com 6 passos importantes para entender 
 */
 
 
-package br.tourapp.kyr.poi.client;
+package br.kyutech.kyr.poi.client;
 
-import br.tourapp.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.model.Coordenada;
 
 import java.util.ArrayList;
 import java.util.List;

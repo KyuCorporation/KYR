@@ -1,4 +1,4 @@
-package br.tourapp.kyr.poi.web;
+package br.kyutech.kyr.poi.web;
 
 public record ErroRespostaDto(String codigo, String mensagem) {
 }

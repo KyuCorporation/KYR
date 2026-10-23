@@ -1,10 +1,10 @@
-package br.tourapp.kyr.poi.service;
+package br.kyutech.kyr.poi.service;
 
-import br.tourapp.kyr.poi.client.GoogleDirectionsClient;
-import br.tourapp.kyr.poi.client.GooglePlacesClient;
-import br.tourapp.kyr.poi.config.GoogleMapsProperties;
-import br.tourapp.kyr.poi.model.Coordenada;
-import br.tourapp.kyr.poi.web.RotaResponseDto;
+import br.kyutech.kyr.poi.client.GoogleDirectionsClient;
+import br.kyutech.kyr.poi.client.GooglePlacesClient;
+import br.kyutech.kyr.poi.config.GoogleMapsProperties;
+import br.kyutech.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.web.RotaResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

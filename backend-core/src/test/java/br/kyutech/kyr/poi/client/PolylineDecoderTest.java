@@ -1,6 +1,6 @@
-package br.tourapp.kyr.poi.client;
+package br.kyutech.kyr.poi.client;
 
-import br.tourapp.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.model.Coordenada;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 

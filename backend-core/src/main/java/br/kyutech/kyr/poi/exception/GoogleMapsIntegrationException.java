@@ -1,4 +1,4 @@
-package br.tourapp.kyr.poi.exception;
+package br.kyutech.kyr.poi.exception;
 
 public class GoogleMapsIntegrationException extends RuntimeException {
 

@@ -1,14 +1,14 @@
-package br.tourapp.kyr.poi.client;
+package br.kyutech.kyr.poi.client;
 
-import br.tourapp.kyr.poi.client.dto.CircleDto;
-import br.tourapp.kyr.poi.client.dto.GooglePlaceDto;
-import br.tourapp.kyr.poi.client.dto.LocationRestrictionDto;
-import br.tourapp.kyr.poi.client.dto.NearbySearchRequestDto;
-import br.tourapp.kyr.poi.client.dto.NearbySearchResponseDto;
-import br.tourapp.kyr.poi.client.dto.PlaceLocationDto;
-import br.tourapp.kyr.poi.config.GoogleMapsProperties;
-import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
-import br.tourapp.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.client.dto.CircleDto;
+import br.kyutech.kyr.poi.client.dto.GooglePlaceDto;
+import br.kyutech.kyr.poi.client.dto.LocationRestrictionDto;
+import br.kyutech.kyr.poi.client.dto.NearbySearchRequestDto;
+import br.kyutech.kyr.poi.client.dto.NearbySearchResponseDto;
+import br.kyutech.kyr.poi.client.dto.PlaceLocationDto;
+import br.kyutech.kyr.poi.config.GoogleMapsProperties;
+import br.kyutech.kyr.poi.exception.GoogleMapsIntegrationException;
+import br.kyutech.kyr.poi.model.Coordenada;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

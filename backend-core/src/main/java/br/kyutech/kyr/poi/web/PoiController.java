@@ -1,6 +1,6 @@
-package br.tourapp.kyr.poi.web;
+package br.kyutech.kyr.poi.web;
 
-import br.tourapp.kyr.poi.service.RotaPoiService;
+import br.kyutech.kyr.poi.service.RotaPoiService;
 import jakarta.validation.constraints.Positive;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

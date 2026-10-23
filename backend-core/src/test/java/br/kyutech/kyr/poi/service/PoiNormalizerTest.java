@@ -1,8 +1,8 @@
-package br.tourapp.kyr.poi.service;
+package br.kyutech.kyr.poi.service;
 
-import br.tourapp.kyr.poi.client.dto.GooglePlaceDto;
-import br.tourapp.kyr.poi.client.dto.NearbySearchResponseDto;
-import br.tourapp.kyr.poi.web.PoiDto;
+import br.kyutech.kyr.poi.client.dto.GooglePlaceDto;
+import br.kyutech.kyr.poi.client.dto.NearbySearchResponseDto;
+import br.kyutech.kyr.poi.web.PoiDto;
 import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

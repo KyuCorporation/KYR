@@ -1,6 +1,6 @@
-package br.tourapp.kyr.poi.web;
+package br.kyutech.kyr.poi.web;
 
-import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
+import br.kyutech.kyr.poi.exception.GoogleMapsIntegrationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "br.tourapp.kyr.poi")
+@RestControllerAdvice(basePackages = "br.kyutech.kyr.poi")
 
 public class GoogleMapsExceptionHandler {
 

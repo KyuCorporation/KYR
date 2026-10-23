@@ -1,4 +1,4 @@
-package br.tourapp.kyr.poi.config;
+package br.kyutech.kyr.poi.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

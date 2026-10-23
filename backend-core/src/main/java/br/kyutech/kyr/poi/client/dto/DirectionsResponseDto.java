@@ -1,4 +1,4 @@
-package br.tourapp.kyr.poi.client.dto;
+package br.kyutech.kyr.poi.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

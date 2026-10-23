@@ -1,8 +1,8 @@
-package br.tourapp.kyr.poi.client;
+package br.kyutech.kyr.poi.client;
 
-import br.tourapp.kyr.poi.config.GoogleMapsProperties;
-import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
-import br.tourapp.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.config.GoogleMapsProperties;
+import br.kyutech.kyr.poi.exception.GoogleMapsIntegrationException;
+import br.kyutech.kyr.poi.model.Coordenada;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

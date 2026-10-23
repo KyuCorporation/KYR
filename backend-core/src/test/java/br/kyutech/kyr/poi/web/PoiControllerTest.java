@@ -1,8 +1,8 @@
-package br.tourapp.kyr.poi.web;
+package br.kyutech.kyr.poi.web;
 
-import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
-import br.tourapp.kyr.poi.model.Coordenada;
-import br.tourapp.kyr.poi.service.RotaPoiService;
+import br.kyutech.kyr.poi.exception.GoogleMapsIntegrationException;
+import br.kyutech.kyr.poi.model.Coordenada;
+import br.kyutech.kyr.poi.service.RotaPoiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
