@@ -1,5 +1,6 @@
 package br.tourapp.kyr.poi.web;
 
+import br.kyutech.kyr.KyrApplication;
 import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
 import br.tourapp.kyr.poi.model.Coordenada;
 import br.tourapp.kyr.poi.service.RotaPoiService;
@@ -7,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 
@@ -19,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PoiController.class)
+@ContextConfiguration(classes = KyrApplication.class)
+@Import({PoiController.class, GoogleMapsExceptionHandler.class})
 @AutoConfigureMockMvc(addFilters = false)
 class PoiControllerTest {
 
