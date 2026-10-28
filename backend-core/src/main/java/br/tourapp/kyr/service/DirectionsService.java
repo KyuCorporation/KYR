@@ -1,7 +1,7 @@
-package br.kyutech.kyr.service;
+package br.tourapp.kyr.service;
 
-import br.kyutech.kyr.dto.PontoDTO;
-import br.kyutech.kyr.dto.TrechoRotaDTO;
+import br.tourapp.kyr.dto.PontoDTO;
+import br.tourapp.kyr.dto.TrechoRotaDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

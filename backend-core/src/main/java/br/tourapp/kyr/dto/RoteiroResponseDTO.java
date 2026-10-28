@@ -1,4 +1,4 @@
-package br.kyutech.kyr.dto;
+package br.tourapp.kyr.dto;
 
 import java.util.List;
 

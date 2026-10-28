@@ -1,12 +1,12 @@
-package br.kyutech.kyr.controller;
+package br.tourapp.kyr.controller;
 
-import br.kyutech.kyr.dto.MetadadosDTO;
-import br.kyutech.kyr.dto.POIDTO;
-import br.kyutech.kyr.dto.PontoDTO;
-import br.kyutech.kyr.dto.RoteiroRequestDTO;
-import br.kyutech.kyr.dto.RoteiroResponseDTO;
-import br.kyutech.kyr.dto.TrechoRotaDTO;
-import br.kyutech.kyr.service.DirectionsService;
+import br.tourapp.kyr.dto.MetadadosDTO;
+import br.tourapp.kyr.dto.POIDTO;
+import br.tourapp.kyr.dto.PontoDTO;
+import br.tourapp.kyr.dto.RoteiroRequestDTO;
+import br.tourapp.kyr.dto.RoteiroResponseDTO;
+import br.tourapp.kyr.dto.TrechoRotaDTO;
+import br.tourapp.kyr.service.DirectionsService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

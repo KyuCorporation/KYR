@@ -1,4 +1,4 @@
-package br.kyutech.kyr.dto;
+package br.tourapp.kyr.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
