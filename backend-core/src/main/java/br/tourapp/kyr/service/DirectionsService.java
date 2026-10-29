@@ -4,6 +4,7 @@ import br.tourapp.kyr.dto.PontoDTO;
 import br.tourapp.kyr.dto.TrechoRotaDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
  
@@ -48,7 +49,13 @@ public class DirectionsService {
             .toUriString();
  
         @SuppressWarnings("unchecked")
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+        Map<String, Object> response;
+        try {
+            response = restTemplate.getForObject(url, Map.class);
+        } catch (RestClientException ex) {
+            throw new IllegalStateException(
+                "Falha de comunicação com a Directions API (" + ex.getClass().getSimpleName() + ")");
+        }
  
         if (response == null || !"OK".equals(response.get("status"))) {
             String status = response != null ? String.valueOf(response.get("status")) : "SEM_RESPOSTA";
