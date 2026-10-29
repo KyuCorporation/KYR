@@ -6,6 +6,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "google.maps")
 
 public record GoogleMapsProperties(String apiKey, Directions directions, Places places, Poi poi, Rota rota) {
+
+    @Override
+    public String toString() {
+        return "GoogleMapsProperties[apiKey=***, directions=" + directions + ", places=" + places
+                + ", poi=" + poi + ", rota=" + rota + "]";
+    }
+
     public record Directions(String baseUrl) {
     }
 
