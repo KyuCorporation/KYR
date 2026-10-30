@@ -1,6 +1,8 @@
 export type Place = {
   id: string;
   name: string;
+  latitude: number;
+  longitude: number;
   /** Pequena descrição do lugar, usada em cards/tooltips. */
   description: string;
   /** Exatamente 2 categorias/tags do lugar (ex: "Turismo", "Lazer"). */
@@ -11,100 +13,86 @@ export type Place = {
   distanciaKm: number;
 };
 
-/**
- * Lugares mockados para o autocomplete. Quando a API do Google Maps
- * (Places Autocomplete + Directions) for integrada, essa lista sai daqui
- * e passa a vir da API — o resto do fluxo (seleção, validação, soma de
- * tempo/distância) pode continuar praticamente igual.
- */
 export const MOCK_PLACES: Place[] = [
   {
-    id: "recife",
-    name: "Recife - PE",
-    description: "Capital de Pernambuco, conhecida pelos rios e pela arquitetura histórica.",
+    id: "aeroporto-foz",
+    name: "Aeroporto Internacional de Foz do Iguaçu - PR",
+    latitude: -25.5930876,
+    longitude: -54.4909835,
+    description: "Principal porta de entrada aérea da região das Cataratas.",
+    categories: ["Transporte", "Aeroporto"],
+    tempoMin: 10,
+    distanciaKm: 4,
+  },
+  {
+    id: "grand-carima",
+    name: "Grand Carimã Resort & Convention Center - PR",
+    latitude: -25.5768507,
+    longitude: -54.5485245,
+    description: "Resort e centro de convenções na Avenida das Cataratas.",
+    categories: ["Hospedagem", "Eventos"],
+    tempoMin: 18,
+    distanciaKm: 10,
+  },
+  {
+    id: "cataratas-iguacu",
+    name: "Cataratas do Iguaçu - PR",
+    latitude: -25.693905,
+    longitude: -54.4365376,
+    description: "Quedas d'água no Parque Nacional do Iguaçu, Patrimônio Mundial Natural.",
+    categories: ["Turismo", "Natureza"],
+    tempoMin: 28,
+    distanciaKm: 19,
+  },
+  {
+    id: "parque-das-aves",
+    name: "Parque das Aves - PR",
+    latitude: -25.6150914,
+    longitude: -54.4841325,
+    description: "Refúgio de conservação de aves da Mata Atlântica, próximo às Cataratas.",
+    categories: ["Turismo", "Natureza"],
+    tempoMin: 24,
+    distanciaKm: 16,
+  },
+  {
+    id: "marco-tres-fronteiras",
+    name: "Marco das Três Fronteiras - PR",
+    latitude: -25.5901531,
+    longitude: -54.5902488,
+    description: "Ponto de encontro entre Brasil, Argentina e Paraguai.",
     categories: ["Turismo", "Cultura"],
-    tempoMin: 25,
+    tempoMin: 22,
     distanciaKm: 12,
   },
   {
-    id: "recife-antigo",
-    name: "Recife Antigo - PE",
-    description: "Bairro histórico à beira-mar, point de bares, música ao vivo e passeios de barco.",
-    categories: ["Turismo", "Vida Noturna"],
-    tempoMin: 15,
-    distanciaKm: 6,
+    id: "itaipu",
+    name: "Usina Hidrelétrica de Itaipu - PR",
+    latitude: -25.4095768,
+    longitude: -54.5844935,
+    description: "Complexo hidrelétrico binacional com visitas panorâmicas e técnicas.",
+    categories: ["Turismo", "Engenharia"],
+    tempoMin: 32,
+    distanciaKm: 22,
   },
   {
-    id: "aeroporto-recife",
-    name: "Aeroporto Internacional do Recife - PE",
-    description: "Principal aeroporto de Pernambuco, porta de entrada para a região.",
-    categories: ["Transporte", "Aeroporto"],
-    tempoMin: 35,
-    distanciaKm: 18,
-  },
-  {
-    id: "shopping-recife",
-    name: "Shopping Recife - PE",
-    description: "Um dos maiores shoppings da cidade, com lojas, cinema e praça de alimentação.",
-    categories: ["Compras", "Lazer"],
-    tempoMin: 20,
-    distanciaKm: 9,
-  },
-  {
-    id: "olinda",
-    name: "Olinda - PE",
-    description: "Cidade histórica tombada pela UNESCO, famosa pelo Carnaval e pelas ladeiras coloridas.",
+    id: "templo-budista",
+    name: "Templo Budista Chen Tien - PR",
+    latitude: -25.4749664,
+    longitude: -54.5989281,
+    description: "Templo com jardins, esculturas e vista para o Rio Paraná.",
     categories: ["Turismo", "Cultura"],
-    tempoMin: 30,
-    distanciaKm: 15,
+    tempoMin: 25,
+    distanciaKm: 14,
   },
   {
-    id: "boa-viagem",
-    name: "Boa Viagem - PE",
-    description: "Praia urbana mais famosa do Recife, com orla extensa e boa estrutura.",
-    categories: ["Praia", "Lazer"],
+    id: "cataratas-jl",
+    name: "Shopping Cataratas JL - PR",
+    latitude: -25.5331327,
+    longitude: -54.5751846,
+    description: "Centro comercial com lojas, cinema e praça de alimentação.",
+    categories: ["Compras", "Alimentação"],
     tempoMin: 18,
-    distanciaKm: 8,
-  },
-  {
-    id: "candeias",
-    name: "Candeias - PE",
-    description: "Bairro litorâneo de Jaboatão dos Guararapes, com praia mais tranquila.",
-    categories: ["Praia", "Lazer"],
-    tempoMin: 22,
-    distanciaKm: 11,
-  },
-  {
-    id: "gravata",
-    name: "Gravatá - PE",
-    description: "Cidade serrana conhecida pelo clima ameno e pelas trilhas ecológicas.",
-    categories: ["Turismo", "Natureza"],
-    tempoMin: 60,
-    distanciaKm: 84,
-  },
-  {
-    id: "porto-de-galinhas",
-    name: "Porto de Galinhas - PE",
-    description: "Uma das praias mais famosas do Brasil, com piscinas naturais e recifes de coral.",
-    categories: ["Praia", "Turismo"],
-    tempoMin: 75,
-    distanciaKm: 65,
-  },
-  {
-    id: "caruaru",
-    name: "Caruaru - PE",
-    description: "Conhecida pelo maior São João do mundo e pela tradicional feira de artesanato.",
-    categories: ["Cultura", "Compras"],
-    tempoMin: 100,
-    distanciaKm: 130,
-  },
-  {
-    id: "agua-preta",
-    name: "Água Preta - PE",
-    description: "Cidade do interior de Pernambuco, cercada por engenhos e área rural.",
-    categories: ["Natureza", "Turismo"],
-    tempoMin: 90,
-    distanciaKm: 110,
+    distanciaKm: 9,
   },
 ];
 

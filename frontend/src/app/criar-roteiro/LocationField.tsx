@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import styles from "./page.module.css";
 import { SearchIcon, CheckIcon, WarningIcon } from "./icons";
 import { searchPlaces, type Place } from "./mockPlaces";
+import { usePlacesAutocomplete, type GooglePlaceSuggestion } from "@/hooks/usePlacesAutocomplete";
 
 export type LocationFieldValue = {
   text: string;
@@ -32,25 +33,65 @@ export default function LocationField({
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [touched, setTouched] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
+  const [selectionError, setSelectionError] = useState<string | null>(null);
   const blurTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const {
+    suggestions: googleSuggestions,
+    isSearching,
+    resolveSuggestion,
+  } = usePlacesAutocomplete(value.text);
 
-  const suggestions = searchPlaces(value.text);
-  const hasText = value.text.trim().length > 0;
+  const suggestions = googleSuggestions.length > 0
+    ? googleSuggestions.map((suggestion) => ({
+        id: suggestion.id,
+        label: suggestion.label,
+        googleSuggestion: suggestion,
+      }))
+    : searchPlaces(value.text).map((place) => ({
+        id: place.id,
+        label: place.name,
+        place,
+      }));
   const isValid = value.place !== null;
-  const showError = (touched || forceValidate) && hasText && !isValid;
+  const showError = (touched || forceValidate) && !isValid;
   const showValid = isValid;
 
   const handleChange = (text: string) => {
     // Qualquer edição manual invalida a seleção anterior, até escolher
     // uma sugestão de novo.
     onChange({ text, place: null });
+    setSelectionError(null);
     setIsOpen(true);
   };
 
-  const handleSelect = (place: Place) => {
-    onChange({ text: place.name, place });
-    setIsOpen(false);
-    setTouched(true);
+  const handleSelect = async (suggestion: {
+    label: string;
+    place?: Place;
+    googleSuggestion?: GooglePlaceSuggestion;
+  }) => {
+    if (suggestion.place) {
+      onChange({ text: suggestion.place.name, place: suggestion.place });
+      setIsOpen(false);
+      setTouched(true);
+      return;
+    }
+
+    if (!suggestion.googleSuggestion) return;
+    setIsResolving(true);
+    setSelectionError(null);
+    try {
+      const place = await resolveSuggestion(suggestion.googleSuggestion);
+      onChange({ text: place.name, place });
+      setIsOpen(false);
+      setTouched(true);
+    } catch (error) {
+      setSelectionError(
+        error instanceof Error ? error.message : "Não foi possível selecionar esse local.",
+      );
+    } finally {
+      setIsResolving(false);
+    }
   };
 
   const handleFocus = () => {
@@ -88,6 +129,12 @@ export default function LocationField({
             onFocus={handleFocus}
             onBlur={handleBlur}
             autoComplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={isOpen && suggestions.length > 0}
+            aria-haspopup="listbox"
+            aria-controls={`${id}-suggestions`}
+            aria-invalid={showError}
           />
           {showValid && (
             <span className={styles.statusIconValid}>
@@ -101,18 +148,22 @@ export default function LocationField({
           )}
         </div>
 
-        {isOpen && suggestions.length > 0 && (
-          <ul className={styles.suggestionList} role="listbox">
-            {suggestions.map((place) => (
-              <li key={place.id}>
+        {isOpen && (suggestions.length > 0 || isSearching) && (
+          <ul className={styles.suggestionList} id={`${id}-suggestions`} role="listbox">
+            {isSearching && (
+              <li className={styles.suggestionStatus} role="status">Buscando lugares…</li>
+            )}
+            {suggestions.map((suggestion) => (
+              <li key={suggestion.id} role="option" aria-selected={false}>
                 <button
                   type="button"
                   className={styles.suggestionItem}
                   onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleSelect(place)}
+                  disabled={isResolving}
+                  onClick={() => void handleSelect(suggestion)}
                 >
                   <SearchIcon />
-                  <span>{place.name}</span>
+                  <span>{suggestion.label}</span>
                 </button>
               </li>
             ))}
@@ -121,10 +172,12 @@ export default function LocationField({
       </div>
 
       {showError && (
-        <span className={styles.errorText}>
+        <span className={styles.errorText} id={`${id}-error`}>
           <WarningIcon /> {errorMessage ?? "Informe um endereço válido"}
         </span>
       )}
+      {selectionError && <span className={styles.errorText} role="alert">{selectionError}</span>}
+      {isResolving && <span className={styles.suggestionStatus} role="status">Carregando coordenadas…</span>}
     </div>
   );
 }

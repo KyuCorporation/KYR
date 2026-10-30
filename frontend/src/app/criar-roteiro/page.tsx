@@ -1,39 +1,41 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { MapPinLine } from "@phosphor-icons/react";
+import { ApiError, type ApiRequestStatus } from "@/core/api";
+import { gerarRoteiro } from "@/core/gerarRoteiro";
 import styles from "./page.module.css";
 import RouteMapIllustration from "./RouteMapIllustration";
 import GoogleMapRoute, { type RouteInfo, type TravelModeKey } from "./GoogleMapRoute";
 import LocationField, { type LocationFieldValue } from "./LocationField";
+import type { Place } from "./mockPlaces";
 import {
   BackArrowIcon,
   PlusIcon,
   CarIcon,
   WalkIcon,
   BikeIcon,
-  MotoIcon,
+  BusIcon,
   BulbIcon,
   WarningIcon,
 } from "./icons";
 
-type TransportMode = "car" | "walk" | "bike" | "moto";
+type TransportMode = "car" | "walk" | "bike" | "transit";
 
 const TRANSPORT_OPTIONS: { id: TransportMode; label: string; icon: React.ReactNode }[] = [
   { id: "car", label: "Carro", icon: <CarIcon /> },
   { id: "walk", label: "Caminhada", icon: <WalkIcon /> },
   { id: "bike", label: "Bicicleta", icon: <BikeIcon /> },
-  { id: "moto", label: "Moto", icon: <MotoIcon /> },
+  { id: "transit", label: "Transporte Público", icon: <BusIcon /> },
 ];
 
 // Mapeia o modo de transporte da tela para o enum aceito pela Directions API.
-// A Directions API do Google não tem um modo específico para moto, então
-// usamos DRIVING (rotas de veículo motorizado) como equivalente mais próximo.
 const TRAVEL_MODE_MAP: Record<TransportMode, TravelModeKey> = {
   car: "DRIVING",
   walk: "WALKING",
   bike: "BICYCLING",
-  moto: "DRIVING",
+  transit: "TRANSIT",
 };
 
 const EMPTY_FIELD: LocationFieldValue = { text: "", place: null };
@@ -41,6 +43,18 @@ const EMPTY_FIELD: LocationFieldValue = { text: "", place: null };
 /** Retorna "1ª", "2ª", "3ª"... (concorda com "parada", que é feminino). */
 function ordinal(n: number) {
   return `${n}ª`;
+}
+
+function isPlace(value: unknown): value is Place {
+  if (typeof value !== "object" || value === null) return false;
+  const place = value as Record<string, unknown>;
+  return typeof place.id === "string"
+    && typeof place.name === "string"
+    && typeof place.latitude === "number"
+    && typeof place.longitude === "number"
+    && Array.isArray(place.categories)
+    && typeof place.tempoMin === "number"
+    && typeof place.distanciaKm === "number";
 }
 
 export default function CriarRoteiroPage() {
@@ -53,6 +67,26 @@ export default function CriarRoteiroPage() {
   const [tentouGerar, setTentouGerar] = useState(false);
   const [realRouteInfo, setRealRouteInfo] = useState<RouteInfo | null>(null);
   const [routeError, setRouteError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [requestStatus, setRequestStatus] = useState<ApiRequestStatus>("requesting");
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const stored = window.sessionStorage.getItem("kyr:pending-destination");
+        if (!stored) return;
+        window.sessionStorage.removeItem("kyr:pending-destination");
+        const candidate: unknown = JSON.parse(stored);
+        if (!isPlace(candidate)) return;
+        setParadas((current) => [...current, { text: candidate.name, place: candidate }]);
+      } catch {
+        window.sessionStorage.removeItem("kyr:pending-destination");
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const temMapaReal = Boolean(apiKey);
@@ -110,19 +144,49 @@ export default function CriarRoteiroPage() {
     router.push("/");
   };
 
-  const handleGerarRoteiro = () => {
+  const handleGerarRoteiro = async () => {
     setTentouGerar(true);
+    setApiError(null);
 
-    const origemValida = origem.place !== null;
-    const destinoValido = destino.place !== null;
+    const origemSelecionada = origem.place;
+    const destinoSelecionado = destino.place;
     const paradasValidas = paradas.every((p) => p.text.trim() === "" || p.place !== null);
 
-    if (!origemValida || !destinoValido || !paradasValidas) {
+    if (!origemSelecionada || !destinoSelecionado || !paradasValidas) {
       return;
     }
 
-    // Aqui entraria a navegação para a etapa 2 / chamada real de rota.
-    console.log({ origem, destino, transporte, paradas });
+    setIsSubmitting(true);
+    setRequestStatus("requesting");
+
+    try {
+      const resultado = await gerarRoteiro(
+        {
+          origem: {
+            nome: origemSelecionada.name,
+            latitude: origemSelecionada.latitude,
+            longitude: origemSelecionada.longitude,
+          },
+          destino: {
+            nome: destinoSelecionado.name,
+            latitude: destinoSelecionado.latitude,
+            longitude: destinoSelecionado.longitude,
+          },
+        },
+        { onStatusChange: setRequestStatus },
+      );
+
+      window.sessionStorage.setItem("kyr:last-roteiro", JSON.stringify(resultado));
+      router.push("/roteiro/resultado");
+    } catch (error) {
+      setApiError(
+        error instanceof ApiError
+          ? error.message
+          : "Não foi possível gerar o roteiro. Tente novamente.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -221,11 +285,22 @@ export default function CriarRoteiroPage() {
             <button type="button" className={styles.cancelButton} onClick={handleCancelar}>
               Cancelar
             </button>
-            <button type="button" className={styles.primaryButton} onClick={handleGerarRoteiro}>
-              Gerar roteiro
+            <button
+              type="button"
+              className={styles.primaryButton}
+              onClick={() => void handleGerarRoteiro()}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Gerando…" : apiError ? "Tentar novamente" : "Gerar roteiro"}
               <span className={styles.arrow}>→</span>
             </button>
           </div>
+          {apiError && <p className={styles.apiError} role="alert" aria-live="assertive">{apiError}</p>}
+          {(paradas.some((parada) => parada.place !== null) || transporte !== "car") && (
+            <p className={styles.requestStatus}>
+              A API atual recebe apenas origem e destino; paradas e meio de transporte ainda não fazem parte do contrato.
+            </p>
+          )}
         </section>
 
         {/* Coluna direita: mapa + dica */}
@@ -264,8 +339,22 @@ export default function CriarRoteiroPage() {
               <p className={styles.routeErrorText}>{routeError}</p>
             </div>
           )}
+          <p className={styles.mapAttribution}>
+            Coordenadas do catálogo demonstrativo: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
+          </p>
         </section>
       </div>
+      {isSubmitting && (
+        <div className={styles.loadingScreen} role="status" aria-live="polite">
+          <div className={styles.loadingIcon}><MapPinLine size={72} weight="fill" aria-hidden="true" /></div>
+          <h2>Gerando seu roteiro…</h2>
+          <p>
+            {requestStatus === "waking-server"
+              ? "Acordando o servidor… isso pode levar alguns segundos."
+              : "Estamos calculando a melhor rota para você."}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

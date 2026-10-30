@@ -1,32 +1,51 @@
-// Tipos alinhados ao contrato de API definido na US-04 (POST /roteiros).
-// Quando o /docs/openapi.yaml estiver publicado, vale conferir se os campos
-// abaixo continuam batendo exatamente com a especificação real.
-
 export type Trilha = "turismo" | "compras";
 export type TipoPonto = "alimentacao" | "lazer";
+
+export interface LocalRoteiro {
+  nome: string;
+  latitude: number;
+  longitude: number;
+}
 
 export interface PontoDeInteresse {
   id: string;
   nome: string;
   trilha: Trilha;
   tipo: TipoPonto;
-  latitude?: number;
-  longitude?: number;
-  descricao?: string;
-  fonte?: string;
-  // Campos adicionados para US-20 (mapa), presentes no contrato real
-  // (docs/openapi.yml) mas que a US-09 ainda não usava.
-  endereco?: string;
-  curado?: boolean;
+  endereco: string;
+  latitude: number | null;
+  longitude: number | null;
+  fonte: string;
+  descricao: string;
+  distanciaMetros: number | null;
+  duracaoSegundos: number | null;
 }
 
 export interface Metadados {
-  origem: string;
-  destino: string;
-  geradoEm: string;
+  totalPontos: number;
+  tempoRespostaMs: number | null;
+  fonteIA: string;
 }
 
 export interface RoteiroResponse {
+  origem: LocalRoteiro;
+  destino: LocalRoteiro;
   metadados: Metadados;
   pontos: PontoDeInteresse[];
+}
+
+export interface RespostaRoteiroApi {
+  pontos: Array<{
+    nome: string;
+    trilha: string;
+    tipo: string;
+    endereco: string;
+    latitude: number | null;
+    longitude: number | null;
+    fonte: string;
+    descricao: string;
+    distanciaMetros: number | null;
+    duracaoSegundos: number | null;
+  }>;
+  metadados: Metadados;
 }

@@ -88,7 +88,7 @@ export default function RoteiroList({
   return (
     <div className="w-full">
       <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
-        {data.metadados.origem} → {data.metadados.destino}
+        {data.origem.nome} → {data.destino.nome}
       </p>
       <ul className="flex flex-col gap-3">
         {data.pontos.map((ponto) => (

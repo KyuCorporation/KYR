@@ -1,0 +1,429 @@
+.page {
+  min-height: 100vh;
+  color: #263d44;
+  background: #fff;
+}
+
+.hero {
+  position: relative;
+  height: clamp(210px, 31vw, 360px);
+  overflow: hidden;
+  background: #dce8e7;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: center 45%;
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(14, 33, 42, 0.18), transparent 54%, rgba(12, 27, 34, 0.12));
+}
+
+.backButton,
+.iconButton {
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: #34434c;
+  background: #fff;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.13);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.backButton {
+  left: 22px;
+}
+
+.heroActions {
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  right: 22px;
+  display: flex;
+  gap: 10px;
+}
+
+.heroActions .iconButton,
+.heroActions :global(button) {
+  position: static;
+}
+
+.content {
+  position: relative;
+  width: min(100%, 1160px);
+  margin: -25px auto 0;
+  padding: 28px clamp(20px, 4vw, 38px) 36px;
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+}
+
+.destinationHeader h1 {
+  margin: 0;
+  color: #263440;
+  font-size: 25px;
+  font-weight: 750;
+  line-height: 1.24;
+}
+
+.city {
+  margin: 0 0 5px;
+  color: #d65b0c;
+  font-size: 10px;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.category {
+  margin: 5px 0 9px;
+  color: #586873;
+  font-size: 15px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tags span {
+  padding: 5px 11px;
+  color: #68777d;
+  border: 1px solid #dfe3e4;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  padding-bottom: 19px;
+}
+
+.facts div {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: #d65b0c;
+}
+
+.facts span {
+  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #43535d;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.facts strong {
+  color: #263d44;
+  font-size: 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: clamp(22px, 9vw, 95px);
+  border-top: 1px solid #e8dfd9;
+  border-bottom: 1px solid #e8dfd9;
+}
+
+.tabs button {
+  min-height: 42px;
+  padding: 0 2px;
+  color: #55636c;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.tabs .activeTab {
+  color: #d65b0c;
+  border-bottom-color: #d65b0c;
+}
+
+.tabContent {
+  min-height: 106px;
+  padding: 17px 0 12px;
+}
+
+.tabContent > p:first-child {
+  max-width: 700px;
+  margin: 0;
+  color: #465761;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.emptyInfo {
+  color: #6d7a80;
+  font-size: 12px;
+}
+
+.photoCredit {
+  max-width: 480px;
+  margin: 0;
+}
+
+.photoCredit img {
+  width: 100%;
+  height: auto;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.photoCredit figcaption,
+.creditLine {
+  margin: 8px 0 0;
+  color: #778187;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.photoCredit a,
+.creditLine a {
+  color: #53636b;
+  text-underline-offset: 2px;
+}
+
+.tips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: #465761;
+  font-size: 12px;
+}
+
+.addRouteButton {
+  width: min(100%, 470px);
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 0 auto;
+  color: #fff;
+  background: #d65b0c;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.addRouteButton:hover,
+.newRouteButton:hover {
+  background: #b94a08;
+}
+
+.addIcon,
+.newRouteButton span {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.inlineStatus {
+  color: #237b60;
+  font-size: 11px;
+}
+
+.modalBackdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(31, 40, 42, 0.62);
+}
+
+.modal {
+  position: relative;
+  width: min(100%, 620px);
+  max-height: min(82svh, 720px);
+  overflow: auto;
+  padding: 32px 28px 25px;
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 18px 70px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.closeModal {
+  position: absolute;
+  top: 14px;
+  right: 15px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: #68757b;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.modal h2 {
+  margin: 0;
+  color: #263440;
+  font-size: 24px;
+}
+
+.modal > p {
+  margin: 6px 0 25px;
+  color: #586873;
+  font-size: 13px;
+}
+
+.savedRoutes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.savedRoute {
+  width: 100%;
+  min-height: 92px;
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) 22px;
+  align-items: center;
+  gap: 13px;
+  padding: 10px;
+  color: #34434c;
+  background: #fff;
+  border: 1px solid #e1e4e3;
+  border-radius: 5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.savedRoute:hover {
+  border-color: #d65b0c;
+}
+
+.routeThumbnail {
+  height: 68px;
+  display: grid;
+  place-items: center;
+  color: #d65b0c;
+  background: #f7eee8;
+}
+
+.savedRoute strong,
+.savedRoute small {
+  display: block;
+}
+
+.savedRoute strong {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
+.savedRoute small {
+  margin-top: 5px;
+  color: #708087;
+  font-size: 10px;
+}
+
+.emptyRoutes {
+  padding: 18px;
+  color: #6c797f;
+  background: #f7f8f7;
+  font-size: 12px;
+}
+
+.modalStatus {
+  margin: 13px 0 0 !important;
+  color: #237b60 !important;
+}
+
+.newRouteButton {
+  min-height: 45px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  padding: 0 17px;
+  color: #fff;
+  background: #d65b0c;
+  border: 0;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .hero {
+    height: 230px;
+  }
+
+  .content {
+    padding: 23px 18px 30px;
+  }
+
+  .destinationHeader h1 {
+    font-size: 21px;
+  }
+
+  .facts {
+    gap: 13px;
+  }
+
+  .facts div:last-child {
+    flex-basis: 100%;
+  }
+
+  .modal {
+    padding: 29px 17px 20px;
+  }
+
+  .savedRoute {
+    grid-template-columns: 64px minmax(0, 1fr) 20px;
+  }
+}
+
+.factList {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.factList div {
+  display: grid;
+  gap: 2px;
+}
+
+.factList dt {
+  color: #697780;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.factList dd {
+  margin: 0;
+  color: #243641;
+  font-size: 13px;
+  line-height: 1.45;
+}
