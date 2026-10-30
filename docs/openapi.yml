@@ -109,9 +109,17 @@ components:
           example: "Cataratas do Iguaçu (Parque Nacional do Iguaçu)"
         trilha:
           type: string
+          description: Trilha de classificação do POI, definida pela curadoria via IA.
+          enum:
+            - turismo
+            - compras
           example: turismo
         tipo:
           type: string
+          description: Tipo de classificação do POI, definido pela curadoria via IA.
+          enum:
+            - alimentacao
+            - lazer
           example: lazer
         endereco:
           type: string
@@ -130,9 +138,17 @@ components:
           example: "https://maps.app.goo.gl/mWfjwq78VQKvUKL16"
         descricao:
           type: string
+          description: >
+            Descrição curta gerada pela curadoria via IA. Limite de 300 caracteres combinado
+            com o frontend — reforçado via instrução ao LLM, sem truncamento rígido no backend,
+            então consumidores devem tratar defensivamente descrições eventualmente maiores.
+          maxLength: 300
           example: "Principal atração da região e Patrimônio Natural da Humanidade, abriga as famosas quedas d'água."
         curado:
           type: boolean
+          description: >
+            Indica se este POI específico foi curado com sucesso pela IA. Quando false,
+            trilha/tipo/descricao não estão disponíveis (POI de fallback).
           example: true
 
     RoteiroResponse:

@@ -11,6 +11,10 @@ public class FallbackChainProperties {
 
     private int maxTokens = 1024;
 
+    // Limite de caracteres da descrição gerada, combinado com o frontend (US de classificação de POI).
+    // Reforçado apenas via instrução no prompt — não há truncamento nem invalidação no service caso o LLM ultrapasse.
+    private int maxDescricaoChars = 300;
+
     private String anthropicModel = "claude-haiku-4-5-20251001";
     private String geminiModel = "gemini-2.5-flash";
     private String openaiModel = "gpt-4o-mini";
@@ -35,6 +39,14 @@ public class FallbackChainProperties {
         this.maxTokens = maxTokens;
     }
 
+    public int getMaxDescricaoChars() {
+        return maxDescricaoChars;
+    }
+
+    public void setMaxDescricaoChars(int maxDescricaoChars) {
+        this.maxDescricaoChars = maxDescricaoChars;
+    }
+
     public String getAnthropicModel() {
         return anthropicModel;
     }
@@ -57,5 +69,19 @@ public class FallbackChainProperties {
 
     public void setOpenaiModel(String openaiModel) {
         this.openaiModel = openaiModel;
+    }
+
+    private int ollamaTimeoutSeconds = 30;
+
+    public int getOllamaTimeoutSeconds() {
+        return ollamaTimeoutSeconds;
+    }
+
+    public void setOllamaTimeoutSeconds(int ollamaTimeoutSeconds) {
+        this.ollamaTimeoutSeconds = ollamaTimeoutSeconds;
+    }
+
+    public Duration getOllamaTimeout() {
+        return Duration.ofSeconds(ollamaTimeoutSeconds);
     }
 }

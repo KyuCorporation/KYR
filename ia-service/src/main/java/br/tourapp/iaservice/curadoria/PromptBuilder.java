@@ -12,7 +12,7 @@ public final class PromptBuilder {
     private PromptBuilder() {
     }
 
-    public static String montarPrompt(List<PontoBrutoDTO> pontos, ObjectMapper objectMapper) {
+    public static String montarPrompt(List<PontoBrutoDTO> pontos, ObjectMapper objectMapper, int maxDescricaoChars) {
         String pontosJson;
         try {
             pontosJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(pontos);
@@ -29,7 +29,10 @@ public final class PromptBuilder {
                 - "trilha": exatamente "turismo" ou "compras"
                 - "tipo": exatamente "alimentacao" ou "lazer"
                 - "descricao": 1 a 2 frases em português, tom neutro e informativo, destacando o \
-                que torna o local relevante para um turista de passagem pela cidade.
+                que torna o local relevante para um turista de passagem pela cidade. \
+                LIMITE RÍGIDO: no máximo %d caracteres, incluindo espaços e pontuação. \
+                Esse limite é combinado com o frontend, que corta o texto visualmente se for ultrapassado — \
+                prefira uma frase mais curta e completa a uma frase truncada no meio.
 
                 Responda SOMENTE com um JSON no formato abaixo. Sem texto antes ou depois, sem \
                 marcação markdown, sem comentários:
@@ -41,6 +44,6 @@ public final class PromptBuilder {
                 }
 
                 POIs para curadoria:
-                """ + pontosJson;
+                """.formatted(maxDescricaoChars) + pontosJson;
     }
 }
