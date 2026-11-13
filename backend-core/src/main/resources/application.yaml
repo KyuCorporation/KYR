@@ -25,3 +25,6 @@ google:
 ia-service:
   base-url: ${IA_SERVICE_URL:http://localhost:8000}
   timeout-seconds: ${IA_SERVICE_TIMEOUT_SECONDS:40}
+
+roteiro:
+  max-pois-curadoria: ${ROTEIRO_MAX_POIS_CURADORIA:10}
