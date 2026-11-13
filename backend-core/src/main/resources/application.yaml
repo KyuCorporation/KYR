@@ -21,3 +21,7 @@ google:
       destino:
         latitude: -25.59680
         longitude: -54.56250
+
+ia-service:
+  base-url: ${IA_SERVICE_URL:http://localhost:8000}
+  timeout-seconds: ${IA_SERVICE_TIMEOUT_SECONDS:40}
