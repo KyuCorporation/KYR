@@ -2,6 +2,7 @@ package br.tourapp.kyr.poi.service;
 
 import br.tourapp.kyr.poi.client.dto.GooglePlaceDto;
 import br.tourapp.kyr.poi.model.Coordenada;
+import br.tourapp.kyr.poi.model.PoiCandidato;
 import br.tourapp.kyr.poi.web.PoiDto;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,22 @@ public class PoiNormalizer {
     private static final String NOME_DESCONHECIDO = "Local sem nome";
 
     public Optional<PoiDto> normalizar(GooglePlaceDto place) {
+        return normalizarCandidato(place)
+                .map(candidato -> new PoiDto(candidato.nome(), candidato.coordenadas(), candidato.categoria(), candidato.nota()));
+    }
+
+    public Optional<PoiCandidato> normalizarCandidato(GooglePlaceDto place) {
         if (place == null || place.location() == null) {
             return Optional.empty();
         }
 
         Coordenada coordenadas = new Coordenada(place.location().latitude(), place.location().longitude());
-        return Optional.of(new PoiDto(extrairNome(place), coordenadas, extrairCategoria(place), place.rating()));
+        return Optional.of(new PoiCandidato(extrairNome(place), coordenadas, extrairCategoria(place), place.rating(),
+                textoOuNulo(place.formattedAddress()), textoOuNulo(place.googleMapsUri())));
+    }
+
+    private String textoOuNulo(String valor) {
+        return valor != null && !valor.isBlank() ? valor : null;
     }
 
     private String extrairNome(GooglePlaceDto place) {

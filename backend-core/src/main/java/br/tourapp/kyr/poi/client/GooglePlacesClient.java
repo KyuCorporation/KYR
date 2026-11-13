@@ -20,7 +20,7 @@ import java.util.List;
 @Component
 public class GooglePlacesClient {
 
-    private static final String FIELD_MASK = "places.id,places.displayName,places.location,places.primaryType,places.types,places.rating";
+    private static final String FIELD_MASK = "places.id,places.displayName,places.location,places.primaryType,places.types,places.rating,places.formattedAddress,places.googleMapsUri";
 
     private final RestClient restClient;
     private final GoogleMapsProperties properties;
