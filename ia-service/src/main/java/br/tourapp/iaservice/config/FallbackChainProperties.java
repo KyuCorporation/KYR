@@ -16,7 +16,7 @@ public class FallbackChainProperties {
     private int maxDescricaoChars = 300;
 
     private String anthropicModel = "claude-haiku-4-5-20251001";
-    private String geminiModel = "gemini-2.5-flash";
+    private String geminiModel = "gemini-3.5-flash-lite";
     private String openaiModel = "gpt-4o-mini";
 
     public int getTimeoutSeconds() {
