@@ -20,7 +20,14 @@ import java.util.List;
 @Component
 public class GooglePlacesClient {
 
-    private static final String FIELD_MASK = "places.id,places.displayName,places.location,places.primaryType,places.types,places.rating,places.formattedAddress,places.googleMapsUri";
+    private static final String FIELD_MASK = "places.id,places.displayName,places.location,places.primaryType,places.types,places.rating,places.userRatingCount,places.formattedAddress,places.googleMapsUri";
+
+    // Só lugares que fazem sentido em um roteiro turístico (turismo, lazer, alimentação e compras).
+    // Sem esse filtro o Places devolve qualquer negócio perto da rota: táxi, hospedagem, barbearia.
+    static final List<String> TIPOS_INCLUIDOS = List.of(
+            "tourist_attraction", "museum", "art_gallery", "park", "national_park", "historical_landmark",
+            "monument", "zoo", "aquarium", "amusement_park", "botanical_garden", "cultural_center",
+            "restaurant", "cafe", "shopping_mall", "market", "gift_shop");
 
     private final RestClient restClient;
     private final GoogleMapsProperties properties;
@@ -33,7 +40,7 @@ public class GooglePlacesClient {
     public List<GooglePlaceDto> buscarProximos(Coordenada centro, int raioMetros) {
         validarChaveConfigurada();
 
-        NearbySearchRequestDto corpo = new NearbySearchRequestDto(new LocationRestrictionDto(new CircleDto(new PlaceLocationDto(centro.latitude(), centro.longitude()), raioMetros)), properties.poi().maxResultadosPorPonto()); //perdao para quem tiver lendo essa linha eu tb sofri pra fazer
+        NearbySearchRequestDto corpo = new NearbySearchRequestDto(new LocationRestrictionDto(new CircleDto(new PlaceLocationDto(centro.latitude(), centro.longitude()), raioMetros)), properties.poi().maxResultadosPorPonto(), TIPOS_INCLUIDOS); //perdao para quem tiver lendo essa linha eu tb sofri pra fazer
 
         NearbySearchResponseDto resposta;
 

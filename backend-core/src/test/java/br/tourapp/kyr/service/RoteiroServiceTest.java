@@ -251,6 +251,22 @@ class RoteiroServiceTest {
     }
 
     @Test
+    void devePreferirNotaComMuitasAvaliacoesANotaMaximaComPoucas() {
+        PoiCandidato taxi = new PoiCandidato("Táxi nota máxima", new Coordenada(-8.1, -35.0), "taxi_stand", 5.0, 3, null, null);
+        PoiCandidato parque = new PoiCandidato("Parque famoso", new Coordenada(-8.2, -35.1), "park", 4.7, 12000, null, null);
+        PoiCandidato cafe = new PoiCandidato("Café mediano", new Coordenada(-8.3, -35.2), "cafe", 3.9, 800, null, null);
+        placesDevolve(taxi, cafe, parque);
+        when(iaServiceClient.curar(anyList())).thenThrow(new IaServiceException("indisponível"));
+        ordenacaoMantemAOrdem(3);
+
+        service.gerarRoteiro(REQUEST);
+
+        verify(iaServiceClient).curar(pontosEnviados.capture());
+        assertThat(pontosEnviados.getValue()).extracting(PontoBrutoDto::nome)
+                .containsExactly("Parque famoso", "Táxi nota máxima", "Café mediano");
+    }
+
+    @Test
     void deveDeixarPoisSemNotaPorUltimoNaSelecao() {
         PoiCandidato semNota = new PoiCandidato("Sem nota", new Coordenada(-8.1, -35.0), "store", null, null, null);
         placesDevolve(semNota, MERCADO, MUSEU);

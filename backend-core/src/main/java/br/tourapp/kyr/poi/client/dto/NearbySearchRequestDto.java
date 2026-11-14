@@ -1,4 +1,6 @@
 package br.tourapp.kyr.poi.client.dto;
 
-public record NearbySearchRequestDto(LocationRestrictionDto locationRestriction, int maxResultCount) {
+import java.util.List;
+
+public record NearbySearchRequestDto(LocationRestrictionDto locationRestriction, int maxResultCount, List<String> includedTypes) {
 }
