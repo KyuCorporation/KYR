@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 // Orquestra a curadoria de uma lista de POIs através da cadeia de fallback de LLMs:
-// Mistral local (Ollama, se habilitado) → Claude → Gemini → OpenAI → fallback final: POIs sem curadoria ("curado": false).
+// Claude → Gemini → OpenAI → Mistral local (Ollama, se habilitado) → fallback final: POIs sem curadoria ("curado": false).
 
 // Fluxo para cada provedor da cadeia, na ordem em que LlmProvidersConfig os monta:
 // Chama o provedor com um timeout curto e independente do timeout interno do SDK → se responder dentro do prazo, faz o parsing seguro do JSON → casa cada POI curado com o POI original pelo campo nome. Qualquer falha faz a cadeia seguir para o próximo provedor, sem propagar a exceção. Caso todos falhem, cai no fallback final.

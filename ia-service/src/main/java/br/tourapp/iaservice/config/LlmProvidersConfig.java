@@ -30,7 +30,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 import io.micrometer.observation.ObservationRegistry;
 
-// Monta manualmente a cadeia de fallback de LLMs: Mistral (Ollama local) → Claude → Gemini → OpenAI.
+// Monta manualmente a cadeia de fallback de LLMs: Claude → Gemini → OpenAI → Mistral (Ollama local).
 // O Mistral local só entra na cadeia se OLLAMA_ENABLED=true (opt-in, pois depende do daemon do Ollama
 // rodando na máquina). Os demais provedores são opcionais: se a variável de ambiente da respectiva
 // chave não estiver definida, aquele provedor simplesmente não entra na cadeia.
@@ -65,16 +65,16 @@ public class LlmProvidersConfig {
     public List<LlmProvider> llmProviders(FallbackChainProperties props) {
         List<LlmProvider> providers = new ArrayList<>();
 
-        // Mistral local entra primeiro na cadeia, e antes dos demais, para ser tentado antes de
-        // qualquer chamada externa paga
-        adicionarOllamaSeHabilitado(providers, props);
-
         adicionarSeConfigurado(providers, "ANTHROPIC_API_KEY",
                 apiKey -> anthropicProvider(apiKey, props));
         adicionarSeConfigurado(providers, "GEMINI_API_KEY",
                 apiKey -> geminiProvider(apiKey, props));
         adicionarSeConfigurado(providers, "OPENAI_API_KEY",
                 apiKey -> openAiProvider(apiKey, props));
+
+        // Mistral local entra por último, como reserva: em CPU ele leva dezenas de segundos e pode
+        // estourar o timeout, então só é tentado quando os provedores em nuvem falham ou não têm chave
+        adicionarOllamaSeHabilitado(providers, props);
 
         if (providers.isEmpty()) {
             log.warn("Nenhuma chave de LLM configurada na cadeia de fallback.");
