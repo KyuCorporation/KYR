@@ -1,6 +1,11 @@
 name: CI IA Service
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'ia-service/**'
+      - '.github/workflows/ci-ia-service.yml'
   pull_request:
     branches: [main]
     paths:
