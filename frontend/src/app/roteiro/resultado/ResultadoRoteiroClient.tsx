@@ -15,7 +15,8 @@ export default function ResultadoRoteiroClient() {
   const [pontoSelecionadoId, setPontoSelecionadoId] = useState<string | null>(null);
   const [inicializando, setInicializando] = useState(true);
   const [erroMapa, setErroMapa] = useState<string | null>(null);
-  const [roteiroSalvo, setRoteiroSalvo] = useState(false);
+  const [roteiroSalvo, setRoteiroSalvo] = useState<"nao" | "salvando" | "conta" | "dispositivo">("nao");
+  const [erroAoSalvar, setErroAoSalvar] = useState<string | null>(null);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -69,14 +70,20 @@ export default function ResultadoRoteiroClient() {
           <button
             className={styles.saveButton}
             type="button"
-            disabled={roteiroSalvo}
+            disabled={roteiroSalvo !== "nao"}
             onClick={() => {
-              salvarRoteiro(roteiro);
-              setRoteiroSalvo(true);
+              setRoteiroSalvo("salvando");
+              setErroAoSalvar(null);
+              salvarRoteiro(roteiro)
+                .then((salvo) => setRoteiroSalvo(salvo.onde))
+                .catch(() => {
+                  setRoteiroSalvo("nao");
+                  setErroAoSalvar("Não foi possível salvar a rota agora. Tente novamente.");
+                });
             }}
           >
-            <BookmarkSimple size={17} weight={roteiroSalvo ? "fill" : "regular"} aria-hidden="true" />
-            {roteiroSalvo ? "Rota salva" : "Salvar rota"}
+            <BookmarkSimple size={17} weight={roteiroSalvo === "nao" || roteiroSalvo === "salvando" ? "regular" : "fill"} aria-hidden="true" />
+            {roteiroSalvo === "salvando" ? "Salvando…" : roteiroSalvo === "conta" ? "Salva na sua conta" : roteiroSalvo === "dispositivo" ? "Salva neste dispositivo" : "Salvar rota"}
           </button>
           <Link className={styles.brand} href="/" aria-label="Kyr, início">kyr</Link>
         </div>
@@ -106,6 +113,7 @@ export default function ResultadoRoteiroClient() {
         </div>
       )}
 
+      {erroAoSalvar && <p className={styles.mapError} role="alert">{erroAoSalvar}</p>}
       {erroMapa && <p className={styles.mapError} role="alert">{erroMapa}</p>}
 
       <section className={styles.results} aria-label="Pontos e mapa do roteiro">

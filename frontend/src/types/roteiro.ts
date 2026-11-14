@@ -21,6 +21,8 @@ export interface PontoDeInteresse {
   curado: boolean;
   distanciaMetros: number | null;
   duracaoSegundos: number | null;
+  /** ID do lugar no Google Maps: o único dado do lugar que pode ser guardado sem prazo. */
+  placeId: string | null;
 }
 
 export type FonteRota = "google-directions-api" | "fallback-sem-otimizacao";
@@ -53,6 +55,7 @@ export interface RespostaRoteiroApi {
     fonte: string | null;
     descricao: string | null;
     curado: boolean;
+    placeId?: string | null;
     distanciaMetros: number | null;
     duracaoSegundos: number | null;
   }>;

@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import FavoriteButton from "@/components/FavoriteButton";
 import type { Destino } from "@/core/destinos";
-import { adicionarDestinoAoRoteiro, lerRoteirosSalvos } from "@/core/roteirosSalvos";
+import AvaliacoesDoDestino from "@/components/AvaliacoesDoDestino";
+import { adicionarDestinoAoRoteiro, lerRoteirosDoDispositivo, type RoteiroSalvo } from "@/core/roteirosSalvos";
 import styles from "./destino.module.css";
 
 type Aba = "Sobre" | "Avaliações" | "Fatos" | "Dicas";
@@ -16,7 +17,7 @@ export default function DestinoDetalheClient({ destino }: { destino: Destino }) 
   const router = useRouter();
   const [aba, setAba] = useState<Aba>("Sobre");
   const [modalAberto, setModalAberto] = useState(false);
-  const [roteiros, setRoteiros] = useState(lerRoteirosSalvos());
+  const [roteiros, setRoteiros] = useState<RoteiroSalvo[]>([]);
   const [confirmacao, setConfirmacao] = useState<string | null>(null);
   const [shareError, setShareError] = useState<string | null>(null);
 
@@ -37,7 +38,7 @@ export default function DestinoDetalheClient({ destino }: { destino: Destino }) 
   function adicionarAoRoteiro(roteiroId: string, roteiroTitle: string) {
     adicionarDestinoAoRoteiro(roteiroId, destino.slug);
     setConfirmacao(`Adicionado a ${roteiroTitle}.`);
-    setRoteiros(lerRoteirosSalvos());
+    setRoteiros(lerRoteirosDoDispositivo());
   }
 
   function criarRoteiroComDestino() {
@@ -102,9 +103,7 @@ export default function DestinoDetalheClient({ destino }: { destino: Destino }) 
 
         <section className={styles.tabContent} aria-live="polite">
           {aba === "Sobre" && <p>{destino.descricao}</p>}
-          {aba === "Avaliações" && (
-            <p className={styles.emptyInfo}>As avaliações ainda não estão disponíveis nesta versão.</p>
-          )}
+          {aba === "Avaliações" && <AvaliacoesDoDestino slug={destino.slug} />}
           {aba === "Fatos" && (
             <dl className={styles.factList}>
               <div><dt>Endereço</dt><dd>{destino.endereco}</dd></div>
@@ -127,7 +126,7 @@ export default function DestinoDetalheClient({ destino }: { destino: Destino }) 
         </section>
 
         <button className={styles.addRouteButton} type="button" onClick={() => {
-          setRoteiros(lerRoteirosSalvos());
+          setRoteiros(lerRoteirosDoDispositivo());
           setConfirmacao(null);
           setModalAberto(true);
         }}>
@@ -156,13 +155,13 @@ export default function DestinoDetalheClient({ destino }: { destino: Destino }) 
                     onClick={() => adicionarAoRoteiro(roteiro.id, title)}
                   >
                     <span className={styles.routeThumbnail}><MapPin size={22} aria-hidden="true" /></span>
-                    <span><strong>{title}</strong><small>{roteiro.pontos.length} pontos · Kyr neste dispositivo</small></span>
+                    <span><strong>{title}</strong><small>{roteiro.totalPontos} pontos · salvo neste dispositivo</small></span>
                     <ArrowRight size={18} aria-hidden="true" />
                   </button>
                 );
               })}
               {roteiros.length === 0 && (
-                <p className={styles.emptyRoutes}>Nenhuma rota salva neste dispositivo.</p>
+                <p className={styles.emptyRoutes}>Nenhuma rota salva neste dispositivo. Crie uma nova rota já com este destino.</p>
               )}
             </div>
             {confirmacao && <p className={styles.modalStatus} role="status">{confirmacao}</p>}

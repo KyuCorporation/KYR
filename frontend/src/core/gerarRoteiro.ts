@@ -82,6 +82,7 @@ function normalizarPonto(
     curado: typeof item.curado === "boolean" ? item.curado : Boolean(trilha && tipo),
     distanciaMetros: finiteNumber(item.distanciaMetros),
     duracaoSegundos: finiteNumber(item.duracaoSegundos),
+    placeId: stringValue(item.placeId) || null,
   };
 }
 
