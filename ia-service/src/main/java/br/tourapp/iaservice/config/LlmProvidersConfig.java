@@ -57,7 +57,8 @@ public class LlmProvidersConfig {
         // Uso de getIfAvailable para não quebrar a aplicação caso alguma dessas libs não esteja no classpath/contexto
         this.webClientBuilder = webClientBuilderProvider.getIfAvailable();
         this.observationRegistry = observationRegistryProvider.getIfAvailable(() -> ObservationRegistry.NOOP);
-        this.toolCallingManager = toolCallingManagerProvider.getIfAvailable();
+        // Sem um ToolCallingManager no contexto, usa o padrão: o modelo do Gemini não aceita nulo
+        this.toolCallingManager = toolCallingManagerProvider.getIfAvailable(() -> ToolCallingManager.builder().build());
     }
 
     @Bean
