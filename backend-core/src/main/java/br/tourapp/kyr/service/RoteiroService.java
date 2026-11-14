@@ -16,6 +16,7 @@ import br.tourapp.kyr.poi.model.PoisNaRota;
 import br.tourapp.kyr.poi.service.RotaPoiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 // Orquestra o POST /roteiros: POIs do Places na rota informada → curadoria no ia-service → ordenação na Directions.
 // Falha do Places propaga (vira 502); falha da curadoria ou da ordenação degrada a resposta, sem erro para o cliente.
@@ -45,10 +48,20 @@ public class RoteiroService {
     private final IaServiceClient iaServiceClient;
     private final DirectionsService directionsService;
     private final int maxPoisCuradoria;
+    private final CuradoriaCache curadoriaCache;
 
+    // Sem cache de curadoria: usado nos testes.
+    public RoteiroService(RotaPoiService rotaPoiService, IaServiceClient iaServiceClient,
+                          DirectionsService directionsService, int maxPoisCuradoria) {
+        this(rotaPoiService, iaServiceClient, directionsService, maxPoisCuradoria, CuradoriaCache.SEM_CACHE);
+    }
+
+    @Autowired
     public RoteiroService(RotaPoiService rotaPoiService, IaServiceClient iaServiceClient,
                           DirectionsService directionsService,
-                          @Value("${roteiro.max-pois-curadoria:10}") int maxPoisCuradoria) {
+                          @Value("${roteiro.max-pois-curadoria:10}") int maxPoisCuradoria,
+                          CuradoriaCache curadoriaCache) {
+        this.curadoriaCache = curadoriaCache;
         this.rotaPoiService = rotaPoiService;
         this.iaServiceClient = iaServiceClient;
         this.directionsService = directionsService;
@@ -93,25 +106,68 @@ public class RoteiroService {
     }
 
     private Curadoria curar(List<PoiCandidato> selecionados) {
-        List<PontoBrutoDto> pontosBrutos = selecionados.stream()
+        // Lugares que a IA já curou em outro roteiro vêm do cache; só o restante vai para o ia-service.
+        Map<String, CuradoriaCache.Curada> emCache = buscarNoCache(selecionados);
+        List<PoiCandidato> pendentes = selecionados.stream()
+                .filter(poi -> poi.placeId() == null || !emCache.containsKey(poi.placeId()))
+                .toList();
+
+        Map<PoiCandidato, PontoCuradoDto> novos = new IdentityHashMap<>();
+        String modeloDaChamada = null;
+        boolean iaCurou = false;
+
+        if (!pendentes.isEmpty()) {
+            CuradoriaResponseDto resposta = chamarIaService(pendentes);
+            if (resposta != null && resposta.curadoPorIa()) {
+                iaCurou = true;
+                String modelo = resposta.modeloUtilizado();
+                modeloDaChamada = modelo != null && !modelo.isBlank() ? modelo : "ia-service";
+                novos.putAll(casarCurados(pendentes, resposta.pontos()));
+                guardarNoCache(novos, modeloDaChamada);
+            }
+        }
+
+        List<POIDTO> pontos = new ArrayList<>(selecionados.size());
+        String modeloDoCache = null;
+        for (PoiCandidato poi : selecionados) {
+            CuradoriaCache.Curada guardada = poi.placeId() != null ? emCache.get(poi.placeId()) : null;
+            if (guardada != null) {
+                if (modeloDoCache == null) {
+                    modeloDoCache = guardada.modelo();
+                }
+                pontos.add(paraPonto(poi, guardada.trilha(), guardada.tipo(), guardada.descricao(), true));
+            } else {
+                PontoCuradoDto curado = novos.get(poi);
+                boolean foiCurado = curado != null && curado.curado();
+                pontos.add(paraPonto(poi, foiCurado ? curado.trilha() : null, foiCurado ? curado.tipo() : null,
+                        foiCurado ? curado.descricao() : null, foiCurado));
+            }
+        }
+
+        if (iaCurou) {
+            return new Curadoria(pontos, true, modeloDaChamada);
+        }
+        if (modeloDoCache != null) {
+            return new Curadoria(pontos, true, modeloDoCache);
+        }
+        return new Curadoria(pontos, false, FONTE_IA_SEM_CURADORIA);
+    }
+
+    private CuradoriaResponseDto chamarIaService(List<PoiCandidato> pendentes) {
+        List<PontoBrutoDto> pontosBrutos = pendentes.stream()
                 .map(poi -> new PontoBrutoDto(poi.nome(), poi.categoria(),
                         List.of(poi.coordenadas().latitude(), poi.coordenadas().longitude())))
                 .toList();
-
-        CuradoriaResponseDto resposta;
         try {
-            resposta = iaServiceClient.curar(pontosBrutos);
+            return iaServiceClient.curar(pontosBrutos);
         } catch (RuntimeException e) {
             log.warn("Falha na curadoria pelo ia-service, devolvendo roteiro sem curadoria: {}", e.getMessage());
-            return semCuradoria(selecionados);
+            return null;
         }
+    }
 
-        if (!resposta.curadoPorIa()) {
-            return semCuradoria(selecionados);
-        }
-
-        List<PontoCuradoDto> curados = resposta.pontos();
-        boolean mesmaOrdem = curados.size() == selecionados.size();
+    private Map<PoiCandidato, PontoCuradoDto> casarCurados(List<PoiCandidato> enviados, List<PontoCuradoDto> curados) {
+        boolean mesmaOrdem = curados.size() == enviados.size();
         Map<String, PontoCuradoDto> curadosPorNome = new HashMap<>();
         for (PontoCuradoDto curado : curados) {
             if (curado != null && curado.nome() != null) {
@@ -119,39 +175,61 @@ public class RoteiroService {
             }
         }
 
-        List<POIDTO> pontos = new ArrayList<>(selecionados.size());
-        for (int i = 0; i < selecionados.size(); i++) {
-            PoiCandidato poi = selecionados.get(i);
+        Map<PoiCandidato, PontoCuradoDto> casados = new IdentityHashMap<>();
+        for (int i = 0; i < enviados.size(); i++) {
+            PoiCandidato poi = enviados.get(i);
             // O ia-service devolve os pontos na mesma ordem do envio; o nome é só a alternativa
             // para uma resposta de tamanho diferente.
             PontoCuradoDto curado = mesmaOrdem ? curados.get(i) : curadosPorNome.get(poi.nome());
-            pontos.add(paraPonto(poi, curado));
+            if (curado != null) {
+                casados.put(poi, curado);
+            }
         }
-
-        String modelo = resposta.modeloUtilizado();
-        String fonteIA = modelo != null && !modelo.isBlank() ? modelo : "ia-service";
-        return new Curadoria(pontos, true, fonteIA);
+        return casados;
     }
 
-    private Curadoria semCuradoria(List<PoiCandidato> selecionados) {
-        List<POIDTO> pontos = selecionados.stream().map(poi -> paraPonto(poi, null)).toList();
-        return new Curadoria(pontos, false, FONTE_IA_SEM_CURADORIA);
+    // Falha no cache nunca derruba o roteiro: sem leitura, tudo vai para a IA; sem gravação, só não reaproveita.
+    private Map<String, CuradoriaCache.Curada> buscarNoCache(List<PoiCandidato> selecionados) {
+        try {
+            return curadoriaCache.buscar(selecionados.stream().map(PoiCandidato::placeId).filter(Objects::nonNull).toList());
+        } catch (RuntimeException e) {
+            log.warn("Não foi possível ler o cache de curadoria: {}", e.getMessage());
+            return Map.of();
+        }
     }
 
-    private POIDTO paraPonto(PoiCandidato poi, PontoCuradoDto curado) {
-        boolean foiCurado = curado != null && curado.curado();
+    private void guardarNoCache(Map<PoiCandidato, PontoCuradoDto> novos, String modelo) {
+        Map<String, CuradoriaCache.Curada> paraGuardar = new HashMap<>();
+        novos.forEach((poi, curado) -> {
+            if (poi.placeId() != null && curado.curado() && curado.trilha() != null && curado.tipo() != null
+                    && curado.descricao() != null) {
+                paraGuardar.put(poi.placeId(), new CuradoriaCache.Curada(curado.trilha(), curado.tipo(), curado.descricao(), modelo));
+            }
+        });
+        if (paraGuardar.isEmpty()) {
+            return;
+        }
+        try {
+            curadoriaCache.salvar(paraGuardar);
+        } catch (RuntimeException e) {
+            log.warn("Não foi possível gravar o cache de curadoria: {}", e.getMessage());
+        }
+    }
+
+    private POIDTO paraPonto(PoiCandidato poi, String trilha, String tipo, String descricao, boolean curado) {
         return new POIDTO(
                 poi.nome(),
-                foiCurado ? curado.trilha() : null,
-                foiCurado ? curado.tipo() : null,
+                trilha,
+                tipo,
                 poi.endereco(),
                 poi.coordenadas().latitude(),
                 poi.coordenadas().longitude(),
                 poi.linkMaps(),
-                foiCurado ? curado.descricao() : null,
-                foiCurado,
+                descricao,
+                curado,
                 null,
-                null);
+                null,
+                poi.placeId());
     }
 
     private Ordenacao ordenar(RoteiroRequestDTO request, List<POIDTO> pontos) {
