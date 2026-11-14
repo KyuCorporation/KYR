@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.Objects;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 
 // Adapta qualquer modelo de chat do spring ai para LlmProvider.
@@ -40,6 +41,21 @@ public final class SpringAiLlmProvider implements LlmProvider {
     @Override
     public String chamar(String prompt) {
         ChatResponse response = chatModel.call(new Prompt(prompt));
-        return response.getResult().getOutput().getText();
+        return juntarTexto(response);
+    }
+
+    // Alguns modelos (o Gemini, por exemplo) devolvem a resposta dividida em várias partes, e o Spring AI
+    // entrega cada parte como um resultado separado. Ler só o primeiro cortava o JSON no meio.
+    static String juntarTexto(ChatResponse response) {
+        if (response == null || response.getResults() == null) {
+            return null;
+        }
+        StringBuilder texto = new StringBuilder();
+        for (Generation resultado : response.getResults()) {
+            if (resultado != null && resultado.getOutput() != null && resultado.getOutput().getText() != null) {
+                texto.append(resultado.getOutput().getText());
+            }
+        }
+        return texto.isEmpty() ? null : texto.toString();
     }
 }

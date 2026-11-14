@@ -9,7 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class FallbackChainProperties {
     private int timeoutSeconds = 8;
 
-    private int maxTokens = 1024;
+    // 10 POIs com descrição passam de 1024 tokens; com o limite antigo o JSON vinha cortado e a curadoria falhava.
+    private int maxTokens = 4096;
 
     // Limite de caracteres da descrição gerada, combinado com o frontend (US de classificação de POI).
     // Reforçado apenas via instrução no prompt — não há truncamento nem invalidação no service caso o LLM ultrapasse.
