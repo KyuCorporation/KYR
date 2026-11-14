@@ -2,6 +2,16 @@ spring:
   application:
     name: kyr
 
+# Só o health-check fica exposto, sem detalhes (GET /actuator/health).
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 google:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY:}
