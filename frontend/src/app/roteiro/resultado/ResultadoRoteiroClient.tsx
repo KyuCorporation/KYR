@@ -83,7 +83,7 @@ export default function ResultadoRoteiroClient() {
       </header>
 
       <section className={styles.intro}>
-        <p className={styles.eyebrow}>Seu roteiro em Foz do Iguaçu</p>
+        <p className={styles.eyebrow}>Seu roteiro</p>
         <h1>{roteiro.origem.nome} <span>→</span> {roteiro.destino.nome}</h1>
         <div className={styles.metrics}>
           <div><strong>{distance}</strong><span>Distância dos trechos</span></div>
@@ -95,7 +95,7 @@ export default function ResultadoRoteiroClient() {
       {fallback && (
         <div className={styles.fallbackNotice} role="status">
           <WarningCircle size={20} aria-hidden="true" />
-          <span>O servidor não conseguiu otimizar a rota agora. Estes pontos usam a ordem de fallback.</span>
+          <span>Não foi possível otimizar a ordem dos pontos agora. Eles aparecem na ordem em que foram encontrados, sem distância nem tempo.</span>
         </div>
       )}
 

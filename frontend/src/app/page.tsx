@@ -53,7 +53,7 @@ export default function Home() {
           </div>
           <div className={styles.routeNote}>
             <span className={styles.noteIcon}><Compass size={17} weight="fill" aria-hidden="true" /></span>
-            <span>Explore o mundo sem precisar<br />criar uma conta.</span>
+            <span>Explore Foz do Iguaçu sem<br />precisar criar uma conta.</span>
           </div>
         </div>
       </section>
