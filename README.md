@@ -170,7 +170,7 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 | `ANTHROPIC_API_KEY` | ia-service | Habilita o provedor Claude | — |
 | `ANTHROPIC_MODEL` | ia-service | Modelo do Claude | `claude-haiku-4-5-20251001` |
 | `GEMINI_API_KEY` | ia-service | Habilita o provedor Gemini | — |
-| `GEMINI_MODEL` | ia-service | Modelo do Gemini | `gemini-2.5-flash` |
+| `GEMINI_MODEL` | ia-service | Modelo do Gemini | `gemini-3.5-flash-lite` |
 | `OPENAI_API_KEY` | ia-service | Habilita o provedor OpenAI | — |
 | `OPENAI_MODEL` | ia-service | Modelo da OpenAI | `gpt-4o-mini` |
 | `LLM_TIMEOUT_SECONDS` | ia-service | Timeout (s) aplicado a cada provedor da cadeia | `8` |
