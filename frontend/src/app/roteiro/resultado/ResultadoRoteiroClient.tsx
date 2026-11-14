@@ -47,7 +47,9 @@ export default function ResultadoRoteiroClient() {
     );
   }
 
-  const fallback = roteiro.metadados.fonteIA === "fallback-sem-otimizacao";
+  const fallback = roteiro.metadados.fonteRota === "fallback-sem-otimizacao";
+  // Roteiros guardados antes do campo existir não têm curadoPorIa: só avisa quando vier false.
+  const semCuradoria = roteiro.pontos.length > 0 && roteiro.metadados.curadoPorIa === false;
   const distance = formatRouteTotal(
     roteiro.pontos.map((ponto) => ponto.distanciaMetros),
     "distance",
@@ -94,6 +96,13 @@ export default function ResultadoRoteiroClient() {
         <div className={styles.fallbackNotice} role="status">
           <WarningCircle size={20} aria-hidden="true" />
           <span>O servidor não conseguiu otimizar a rota agora. Estes pontos usam a ordem de fallback.</span>
+        </div>
+      )}
+
+      {semCuradoria && (
+        <div className={styles.fallbackNotice} role="status">
+          <WarningCircle size={20} aria-hidden="true" />
+          <span>A curadoria por IA não está disponível agora. Os pontos aparecem sem descrição nem classificação.</span>
         </div>
       )}
 

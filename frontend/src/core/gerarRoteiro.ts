@@ -1,5 +1,6 @@
 import { apiFetch, type ApiRequestStatus } from "@/core/api";
 import type {
+  FonteRota,
   LocalRoteiro,
   Metadados,
   PontoDeInteresse,
@@ -52,6 +53,8 @@ export function normalizarRoteiroResponse(
     totalPontos: finiteNumber(rawMetadata.totalPontos) ?? pontos.length,
     tempoRespostaMs: finiteNumber(rawMetadata.tempoRespostaMs),
     fonteIA: stringValue(rawMetadata.fonteIA),
+    curadoPorIa: rawMetadata.curadoPorIa === true,
+    fonteRota: stringValue(rawMetadata.fonteRota) as FonteRota | "",
   };
 
   return { origem, destino, metadados, pontos };
@@ -62,17 +65,21 @@ function normalizarPonto(
   index: number,
 ): PontoDeInteresse {
   const nome = item.nome as string;
+  const trilha = stringValue(item.trilha);
+  const tipo = stringValue(item.tipo);
 
   return {
     id: `poi-${index + 1}-${slugify(nome)}`,
     nome,
-    trilha: (stringValue(item.trilha) || "desconhecida") as Trilha,
-    tipo: (stringValue(item.tipo) || "desconhecido") as TipoPonto,
+    trilha: (trilha || "desconhecida") as Trilha,
+    tipo: (tipo || "desconhecido") as TipoPonto,
     endereco: stringValue(item.endereco),
     latitude: finiteNumber(item.latitude),
     longitude: finiteNumber(item.longitude),
     fonte: stringValue(item.fonte),
     descricao: stringValue(item.descricao),
+    // Backends antigos não mandam "curado": nesse caso vale ter trilha e tipo preenchidos.
+    curado: typeof item.curado === "boolean" ? item.curado : Boolean(trilha && tipo),
     distanciaMetros: finiteNumber(item.distanciaMetros),
     duracaoSegundos: finiteNumber(item.duracaoSegundos),
   };

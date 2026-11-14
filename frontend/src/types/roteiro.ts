@@ -17,14 +17,22 @@ export interface PontoDeInteresse {
   longitude: number | null;
   fonte: string;
   descricao: string;
+  /** false quando a IA não curou este ponto: trilha, tipo e descrição vêm vazios. */
+  curado: boolean;
   distanciaMetros: number | null;
   duracaoSegundos: number | null;
 }
 
+export type FonteRota = "google-directions-api" | "fallback-sem-otimizacao";
+
 export interface Metadados {
   totalPontos: number;
   tempoRespostaMs: number | null;
+  /** Modelo que fez a curadoria, ou "sem-curadoria". */
   fonteIA: string;
+  curadoPorIa: boolean;
+  /** Vazio quando o backend não informou a fonte da ordenação. */
+  fonteRota: FonteRota | "";
 }
 
 export interface RoteiroResponse {
@@ -37,15 +45,22 @@ export interface RoteiroResponse {
 export interface RespostaRoteiroApi {
   pontos: Array<{
     nome: string;
-    trilha: string;
-    tipo: string;
-    endereco: string;
+    trilha: string | null;
+    tipo: string | null;
+    endereco: string | null;
     latitude: number | null;
     longitude: number | null;
-    fonte: string;
-    descricao: string;
+    fonte: string | null;
+    descricao: string | null;
+    curado: boolean;
     distanciaMetros: number | null;
     duracaoSegundos: number | null;
   }>;
-  metadados: Metadados;
+  metadados: {
+    totalPontos: number;
+    tempoRespostaMs: number;
+    fonteIA: string;
+    curadoPorIa: boolean;
+    fonteRota: FonteRota;
+  };
 }

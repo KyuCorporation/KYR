@@ -78,6 +78,82 @@ describe("normalizarRoteiroResponse", () => {
   });
 });
 
+describe("contrato atual do POST /roteiros", () => {
+  const pontoBase = {
+    nome: "Marco das Três Fronteiras",
+    endereco: "Av. Gen. Meira - Foz do Iguaçu - PR",
+    latitude: -25.5925,
+    longitude: -54.5912,
+    fonte: "https://maps.google.com/?cid=1",
+    distanciaMetros: 1200,
+    duracaoSegundos: 180,
+  };
+
+  it("lê curado por ponto e curadoPorIa e fonteRota dos metadados", () => {
+    const result = normalizarRoteiroResponse({
+      pontos: [
+        { ...pontoBase, trilha: "turismo", tipo: "lazer", descricao: "Mirante na fronteira.", curado: true },
+        { ...pontoBase, nome: "Sem curadoria", trilha: null, tipo: null, descricao: null, curado: false },
+      ],
+      metadados: {
+        totalPontos: 2,
+        tempoRespostaMs: 900,
+        fonteIA: "gemini-3.5-flash-lite",
+        curadoPorIa: true,
+        fonteRota: "google-directions-api",
+      },
+    }, origem, destino);
+
+    expect(result.pontos[0].curado).toBe(true);
+    expect(result.pontos[1]).toMatchObject({ curado: false, descricao: "" });
+    expect(result.metadados).toMatchObject({
+      fonteIA: "gemini-3.5-flash-lite",
+      curadoPorIa: true,
+      fonteRota: "google-directions-api",
+    });
+  });
+
+  it("trata a resposta sem curadoria e com ordenação em fallback", () => {
+    const result = normalizarRoteiroResponse({
+      pontos: [{ ...pontoBase, trilha: null, tipo: null, descricao: null, curado: false, distanciaMetros: null, duracaoSegundos: null }],
+      metadados: {
+        totalPontos: 1,
+        tempoRespostaMs: 300,
+        fonteIA: "sem-curadoria",
+        curadoPorIa: false,
+        fonteRota: "fallback-sem-otimizacao",
+      },
+    }, origem, destino);
+
+    expect(result.metadados.curadoPorIa).toBe(false);
+    expect(result.metadados.fonteRota).toBe("fallback-sem-otimizacao");
+    expect(result.pontos[0].curado).toBe(false);
+  });
+
+  it("deduz curado pela trilha e pelo tipo quando o backend não manda o campo", () => {
+    const result = normalizarRoteiroResponse({
+      pontos: [{ ...pontoBase, trilha: "compras", tipo: "alimentacao", descricao: "Mercado." }],
+      metadados: { totalPontos: 1, tempoRespostaMs: 100, fonteIA: "gemini" },
+    }, origem, destino);
+
+    expect(result.pontos[0].curado).toBe(true);
+    expect(result.metadados.curadoPorIa).toBe(false);
+    expect(result.metadados.fonteRota).toBe("");
+  });
+
+  it("mostra a mensagem do backend quando o Google Maps falha (502)", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      codigo: "erro_integracao_google_maps",
+      mensagem: "Falha de comunicação com a Places API (Forbidden)",
+    }), { status: 502, headers: { "Content-Type": "application/json" } })));
+
+    await expect(gerarRoteiro({ origem, destino })).rejects.toMatchObject({
+      status: 502,
+      message: "Falha de comunicação com a Places API (Forbidden)",
+    });
+  });
+});
+
 describe("formatRouteTotal", () => {
   it("não calcula uma soma quando algum trecho veio nulo", () => {
     expect(formatRouteTotal([1200, null], "distance")).toBe("Indisponível");

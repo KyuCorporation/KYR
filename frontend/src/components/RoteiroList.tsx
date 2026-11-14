@@ -112,6 +112,8 @@ interface RoteiroListItemProps {
 
 function RoteiroListItem({ ponto, selecionado = false, onSelecionar }: RoteiroListItemProps) {
   const clicavel = Boolean(onSelecionar);
+  // Ponto sem curadoria da IA não tem trilha nem tipo: esconde as etiquetas em vez de mostrar "desconhecida".
+  const semClassificacao = ponto.curado === false;
 
   return (
     <li
@@ -142,6 +144,7 @@ function RoteiroListItem({ ponto, selecionado = false, onSelecionar }: RoteiroLi
       {ponto.descricao && (
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{ponto.descricao}</p>
       )}
+      {!semClassificacao && (
       <div className="mt-3 flex gap-2">
         <span
           className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
@@ -158,6 +161,7 @@ function RoteiroListItem({ ponto, selecionado = false, onSelecionar }: RoteiroLi
           {TIPO_LABEL[ponto.tipo] ?? ponto.tipo}
         </span>
       </div>
+      )}
     </li>
   );
 }

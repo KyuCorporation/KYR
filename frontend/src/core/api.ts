@@ -119,7 +119,7 @@ function normalizeApiError(status: number, payload: unknown): ApiError {
 	const validationMessages = extractValidationMessages(body);
 	const message =
 		validationMessages[0] ??
-		firstString(body, ["detail", "message", "title", "error"]) ??
+		firstString(body, ["detail", "mensagem", "message", "title", "error"]) ??
 		"Não foi possível gerar o roteiro. Tente novamente.";
 
 	return new ApiError(message, status, "http", validationMessages);
