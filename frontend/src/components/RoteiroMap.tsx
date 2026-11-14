@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LocalRoteiro, PontoDeInteresse, Trilha } from "@/types/roteiro";
 import { useGoogleMapsScript } from "@/hooks/useGoogleMapsScript";
+import { montarCartaoDoPonto } from "@/components/cartaoDoPonto";
 
 // US-20 — Mapa interativo com os pontos do roteiro
 // Critérios de aceite:
@@ -16,11 +17,6 @@ import { useGoogleMapsScript } from "@/hooks/useGoogleMapsScript";
 // Pré-requisito: variável de ambiente NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 // configurada (ver .env.example). Sem ela, o componente mostra uma
 // mensagem explicando o que falta, em vez de quebrar a tela.
-
-const TRILHA_LABEL: Record<Trilha, string> = {
-  turismo: "Turismo",
-  compras: "Compras",
-};
 
 // Mesma família de cores usada nos badges da RoteiroList, para o mapa
 // e a lista contarem a mesma história visual.
@@ -72,6 +68,7 @@ export default function RoteiroMap({
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<Map<string, google.maps.Marker>>(new Map());
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+  const cartoesRef = useRef<Map<string, string>>(new Map());
   const polylineRef = useRef<google.maps.Polyline | null>(null);
   const directionsRendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
   const onSelecionarPontoRef = useRef(onSelecionarPonto);
@@ -126,12 +123,7 @@ export default function RoteiroMap({
   function abrirInfoWindow(ponto: PontoComCoordenadas, marker: google.maps.Marker) {
     const map = mapRef.current;
     if (!infoWindowRef.current || !map) return;
-    infoWindowRef.current.setContent(
-      `<div style="font-family: Arial, sans-serif; padding: 2px 4px;">
-         <strong>${escapeHtml(ponto.nome)}</strong><br/>
-         <span>${escapeHtml(TRILHA_LABEL[ponto.trilha] ?? ponto.trilha)}</span>
-       </div>`
-    );
+    infoWindowRef.current.setContent(cartoesRef.current.get(ponto.id) ?? "");
     infoWindowRef.current.open({ anchor: marker, map });
   }
 
@@ -156,6 +148,7 @@ export default function RoteiroMap({
     // duplicar quando os dados do roteiro mudarem.
     markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current.clear();
+    cartoesRef.current.clear();
     polylineRef.current?.setMap(null);
     polylineRef.current = null;
     directionsRendererRef.current?.setMap(null);
@@ -189,17 +182,19 @@ export default function RoteiroMap({
       markersRef.current.set("$destino", destinationMarker);
     }
 
-    pontosComCoordenadas.forEach((ponto) => {
+    pontosComCoordenadas.forEach((ponto, indice) => {
       const position = { lat: ponto.latitude, lng: ponto.longitude };
       caminho.push(position);
 
       const marker = new google.maps.Marker({
         position,
         map,
-        title: ponto.nome,
+        title: `${indice + 1}. ${ponto.nome}`,
+        // O número é a ordem de visita, a mesma da lista ao lado.
+        label: { text: String(indice + 1), color: "#ffffff", fontSize: "11px", fontWeight: "700" },
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 9,
+          scale: 11,
           fillColor: TRILHA_MARKER_COLOR[ponto.trilha] ?? COR_MARCADOR_DESCONHECIDO,
           fillOpacity: 1,
           strokeColor: "#ffffff",
@@ -214,6 +209,8 @@ export default function RoteiroMap({
       });
 
       markersRef.current.set(ponto.id, marker);
+      const anterior = indice > 0 ? pontosComCoordenadas[indice - 1].nome : rotaNormalizada?.origem.nome;
+      cartoesRef.current.set(ponto.id, montarCartaoDoPonto(ponto, indice + 1, anterior));
       bounds.extend(position);
     });
 
@@ -349,11 +346,3 @@ export default function RoteiroMap({
   );
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
