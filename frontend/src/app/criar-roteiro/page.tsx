@@ -99,12 +99,15 @@ export default function CriarRoteiroPage() {
     setParadas((prev) => prev.map((p, i) => (i === index ? value : p)));
   };
 
-  // Endereços/nomes usados pela Directions API (Maps real).
-  const origemEndereco = origem.place?.name ?? "";
-  const destinoEndereco = destino.place?.name ?? "";
+  // Pontos enviados à Directions API (Maps real) como "latitude,longitude". Mandar só o nome
+  // faz o Google adivinhar o lugar e pode traçar a rota até outra cidade.
+  const paraCoordenadas = (place: Place | null) =>
+    place ? `${place.latitude},${place.longitude}` : "";
+  const origemEndereco = paraCoordenadas(origem.place);
+  const destinoEndereco = paraCoordenadas(destino.place);
   const paradasEnderecos = paradas
-    .map((p) => p.place?.name)
-    .filter((name): name is string => Boolean(name));
+    .map((p) => paraCoordenadas(p.place))
+    .filter(Boolean);
 
   // Soma mockada: cada lugar selecionado (origem, destino, paradas) tem um
   // tempo/distância fixo, e o total é apenas a soma dos selecionados.
@@ -130,11 +133,10 @@ export default function CriarRoteiroPage() {
     return { tempoTotal: tempoFormatado, distanciaTotal: `${km} km` };
   }, [origem, destino, paradas]);
 
-  // Quando o mapa real está ativo e já calculou uma rota, usamos os valores
-  // reais da Directions API. Caso contrário, caímos no valor mockado.
-  const tempoTotal = temMapaReal && realRouteInfo ? realRouteInfo.durationText : tempoMock;
-  const distanciaTotal =
-    temMapaReal && realRouteInfo ? realRouteInfo.distanceText : distanciaMock;
+  // Com o mapa real, tempo e distância vêm da Directions API ("--" enquanto não há rota calculada).
+  // A soma do catálogo local só vale quando a chave do Google Maps não está configurada.
+  const tempoTotal = temMapaReal ? realRouteInfo?.durationText ?? "--" : tempoMock;
+  const distanciaTotal = temMapaReal ? realRouteInfo?.distanceText ?? "--" : distanciaMock;
 
   const handleCancelar = () => {
     router.push("/");
@@ -298,7 +300,7 @@ export default function CriarRoteiroPage() {
           {apiError && <p className={styles.apiError} role="alert" aria-live="assertive">{apiError}</p>}
           {(paradas.some((parada) => parada.place !== null) || transporte !== "car") && (
             <p className={styles.requestStatus}>
-              A API atual recebe apenas origem e destino; paradas e meio de transporte ainda não fazem parte do contrato.
+              As paradas e o meio de transporte valem para o trajeto do mapa ao lado. Os pontos sugeridos na próxima etapa consideram a origem e o destino, de carro.
             </p>
           )}
         </section>
@@ -308,7 +310,6 @@ export default function CriarRoteiroPage() {
           <div className={styles.mapArea}>
             {temMapaReal ? (
               <GoogleMapRoute
-                apiKey={apiKey as string}
                 origin={origemEndereco}
                 destination={destinoEndereco}
                 waypoints={paradasEnderecos}
@@ -328,8 +329,8 @@ export default function CriarRoteiroPage() {
             <p className={styles.tipText}>
               <strong>Dica da Kyr :</strong>
               <br />
-              Você pode adicionar paradas e personalizar sua rota na próxima
-              etapa.
+              Adicione quantas paradas quiser para ver o trajeto no mapa. Na
+              próxima etapa, a Kyr sugere lugares pelo caminho.
             </p>
           </div>
 
@@ -340,7 +341,7 @@ export default function CriarRoteiroPage() {
             </div>
           )}
           <p className={styles.mapAttribution}>
-            Coordenadas do catálogo demonstrativo: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
+            Mapa, trajeto e busca de lugares: Google Maps. Coordenadas das sugestões iniciais: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
           </p>
         </section>
       </div>
