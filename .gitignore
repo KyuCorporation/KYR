@@ -74,3 +74,6 @@
 # ia-service (Maven)
 /ia-service/target/
 /ia-service/.mvn/wrapper/maven-wrapper.jar
+# PWA: service worker gerado no build do frontend
+/frontend/public/sw.js
+/frontend/public/workbox-*.js
