@@ -1,10 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { Backpack, Compass, Heart, House, MapTrifold, MapPin, ClockCounterClockwise } from "@phosphor-icons/react/ssr";
+import {
+  Backpack,
+  CaretDoubleLeft,
+  CaretDoubleRight,
+  ClockCounterClockwise,
+  Compass,
+  Heart,
+  House,
+  MapPin,
+  MapTrifold,
+  Question,
+} from "@phosphor-icons/react/ssr";
+import { useEffect, useState } from "react";
+import { lerSessao, sair, type Sessao } from "@/core/sessao";
 import styles from "./ExploreSidebar.module.css";
 
-type Props = { active: "explorar" | "favoritos" | "inicio" | "historico" };
+type Props = { active: "explorar" | "favoritos" | "inicio" | "historico" | "ajuda" };
 
 const NAV_ITEMS = [
   { href: "/inicio", label: "Início", icon: House, key: "inicio" },
@@ -12,14 +25,66 @@ const NAV_ITEMS = [
   { href: "/favoritos", label: "Favoritos", icon: Heart, key: "favoritos" },
   { href: "/criar-roteiro", label: "Criar roteiro", icon: MapTrifold, key: "roteiro" },
   { href: "/roteiros", label: "Meus roteiros", icon: ClockCounterClockwise, key: "historico" },
+  { href: "/ajuda", label: "Ajuda", icon: Question, key: "ajuda" },
 ];
 
+const CHAVE_PREFERENCIA = "kyr:sidebar-expandida";
+
 export default function ExploreSidebar({ active }: Props) {
+  // Começa recolhida (igual ao HTML gerado no servidor) e aplica a preferência salva depois de montar.
+  const [expandida, setExpandida] = useState(false);
+  const [sessao, setSessao] = useState<Sessao | null>(null);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        setExpandida(window.localStorage.getItem(CHAVE_PREFERENCIA) === "1");
+      } catch {
+        // Sem acesso ao localStorage: fica recolhida.
+      }
+      setSessao(lerSessao());
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  function alternar() {
+    setExpandida((atual) => {
+      const proxima = !atual;
+      try {
+        window.localStorage.setItem(CHAVE_PREFERENCIA, proxima ? "1" : "0");
+      } catch {
+        // A preferência só deixa de ser lembrada.
+      }
+      return proxima;
+    });
+  }
+
+  function encerrarSessao() {
+    sair();
+    setSessao(null);
+  }
+
   return (
-    <aside className={styles.sidebar}>
-      <Link className={styles.logo} href="/" aria-label="Kyr, início">
-        <MapPin size={24} weight="bold" aria-hidden="true" />
-      </Link>
+    <aside className={`${styles.sidebar} ${expandida ? styles.expandida : ""}`}>
+      <div className={styles.topo}>
+        <Link className={styles.logo} href="/" aria-label="Kyr, página inicial">
+          <MapPin size={24} weight="bold" aria-hidden="true" />
+        </Link>
+        {expandida && <span className={styles.marca}>kyr</span>}
+      </div>
+
+      <button
+        type="button"
+        className={styles.alternar}
+        onClick={alternar}
+        aria-expanded={expandida}
+        aria-label={expandida ? "Recolher menu" : "Expandir menu"}
+        title={expandida ? "Recolher menu" : "Expandir menu"}
+      >
+        {expandida ? <CaretDoubleLeft size={18} aria-hidden="true" /> : <CaretDoubleRight size={18} aria-hidden="true" />}
+        {expandida && <span>Recolher</span>}
+      </button>
+
       <nav className={styles.navigation} aria-label="Menu principal">
         {NAV_ITEMS.map(({ href, label, icon: Icon, key }) => (
           <Link
@@ -28,19 +93,42 @@ export default function ExploreSidebar({ active }: Props) {
             className={`${styles.navLink} ${active === key ? styles.active : ""}`}
             href={href}
             key={key}
-            title={label}
+            title={expandida ? undefined : label}
           >
             <Icon size={22} weight={active === key ? "fill" : "regular"} aria-hidden="true" />
+            {expandida && <span>{label}</span>}
           </Link>
         ))}
       </nav>
-      <div className={styles.accountPrompt}>
-        <Backpack size={38} weight="light" aria-hidden="true" />
-        <strong>Salve suas rotas</strong>
-        <span>Seus favoritos ficam salvos neste dispositivo.</span>
-        <button type="button" disabled title="Login ainda não disponível">Entrar</button>
-        <button type="button" disabled title="Cadastro ainda não disponível">Criar conta</button>
-      </div>
+
+      {expandida ? (
+        <div className={styles.accountPrompt}>
+          {sessao ? (
+            <>
+              <strong>Olá, {sessao.nome.split(" ")[0]}</strong>
+              <span>Seus roteiros salvos ficam na sua conta.</span>
+              <button type="button" className={styles.secundario} onClick={encerrarSessao}>Sair</button>
+            </>
+          ) : (
+            <>
+              <Backpack size={34} weight="light" aria-hidden="true" />
+              <strong>Salve suas rotas</strong>
+              <span>Sem conta, favoritos e roteiros ficam só neste dispositivo.</span>
+              <Link className={styles.primario} href="/entrar">Entrar</Link>
+              <Link className={styles.secundario} href="/cadastro">Criar conta</Link>
+            </>
+          )}
+        </div>
+      ) : (
+        <Link
+          className={styles.contaRecolhida}
+          href={sessao ? "/roteiros" : "/entrar"}
+          aria-label={sessao ? `Conta de ${sessao.nome}` : "Entrar"}
+          title={sessao ? sessao.nome : "Entrar"}
+        >
+          <Backpack size={22} aria-hidden="true" />
+        </Link>
+      )}
     </aside>
   );
 }
