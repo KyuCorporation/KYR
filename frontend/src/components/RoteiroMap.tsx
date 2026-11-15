@@ -292,18 +292,18 @@ export default function RoteiroMap({
     abrirInfoWindow(ponto, marker);
   }, [pontoSelecionadoId, pontosComCoordenadas]);
 
-  const classesBorda = semBorda ? "" : "rounded-lg border border-zinc-200 dark:border-zinc-800";
+  const classesBorda = semBorda ? "" : "rounded-lg border border-[#d5d9d7]";
   const classesBordaTracejada = semBorda
     ? ""
-    : "rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700";
+    : "rounded-lg border border-dashed border-[#d5d9d7]";
 
   if (erro) {
     return (
       <div
         role="alert"
-        className={`flex ${altura} w-full flex-col items-center justify-center gap-1 ${classesBordaTracejada} bg-zinc-50 p-4 text-center text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400`}
+        className={`flex ${altura} w-full flex-col items-center justify-center gap-1 ${classesBordaTracejada} bg-[#f4f5f4] p-4 text-center text-sm text-[#56636c]`}
       >
-        <p className="font-medium text-zinc-700 dark:text-zinc-200">
+        <p className="font-medium text-[#263d44]">
           Não foi possível carregar o mapa.
         </p>
         <p>{erro}</p>
@@ -315,7 +315,7 @@ export default function RoteiroMap({
     return (
       <div
         role="status"
-        className={`flex ${altura} w-full items-center justify-center ${classesBorda} bg-zinc-50 text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400`}
+        className={`flex ${altura} w-full items-center justify-center ${classesBorda} bg-[#f4f5f4] text-sm text-[#56636c]`}
       >
         Carregando mapa...
       </div>
@@ -325,7 +325,7 @@ export default function RoteiroMap({
   if (pontosComCoordenadas.length === 0 && !rotaNormalizada) {
     return (
       <div
-        className={`flex ${altura} w-full items-center justify-center ${classesBordaTracejada} p-4 text-center text-sm text-zinc-500 dark:text-zinc-400`}
+        className={`flex ${altura} w-full items-center justify-center ${classesBordaTracejada} p-4 text-center text-sm text-[#56636c]`}
       >
         Nenhum ponto com coordenadas para exibir no mapa.
       </div>
@@ -341,7 +341,7 @@ export default function RoteiroMap({
         className="absolute inset-0"
       />
       {rotaCarregando && (
-        <div className="absolute left-3 top-3 rounded bg-white px-3 py-2 text-sm text-zinc-700 shadow" role="status">
+        <div className="absolute left-3 top-3 rounded bg-white px-3 py-2 text-sm text-[#263d44] shadow" role="status">
           Calculando trajeto pelas ruas…
         </div>
       )}

@@ -30,11 +30,11 @@ export default function RoteiroDemoClient() {
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-zinc-950 p-4 sm:p-8">
-      <div className="flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-zinc-800 bg-white shadow-2xl dark:bg-zinc-950">
+      <div className="flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-zinc-800 bg-white shadow-2xl">
         {/* Seletor de cenário — só existe nessa página de demonstração,
             não faz parte do layout final (US-08 vai substituir isso). */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
-          <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <div className="flex flex-wrap items-center gap-2 border-b border-[#d5d9d7] px-6 py-3">
+          <span className="text-xs font-medium text-[#56636c]">
             Cenário de teste:
           </span>
           <CenarioButton atual={cenario} valor="comDados" onClick={setCenario}>
@@ -53,17 +53,17 @@ export default function RoteiroDemoClient() {
 
         <div className="flex min-h-0 flex-1">
           {/* Painel esquerdo — lista */}
-          <div className="flex w-full max-w-sm flex-col border-r border-zinc-200 dark:border-zinc-800">
+          <div className="flex w-full max-w-sm flex-col border-r border-[#d5d9d7]">
             <div className="flex items-center gap-2 px-6 py-5">
               <button
                 type="button"
                 onClick={() => router.back()}
                 aria-label="Voltar"
-                className="text-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                className="text-lg text-[#56636c] hover:text-[#1f2d3a]"
               >
                 ←
               </button>
-              <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+              <h1 className="text-base font-semibold text-[#1f2d3a]">
                 Roteiro de turismo
               </h1>
             </div>
@@ -122,8 +122,8 @@ function CenarioButton({
       onClick={() => onClick(valor)}
       className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
         ativo
-          ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
-          : "border-zinc-300 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          ? "border-zinc-900 bg-zinc-900 text-white"
+          : "border-[#d5d9d7] text-[#3f4b52] hover:bg-[#eef0ef]"
       }`}
     >
       {children}
