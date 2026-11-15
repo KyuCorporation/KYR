@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
-import { PontoDeInteresse, Trilha } from "@/types/roteiro";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { LocalRoteiro, PontoDeInteresse, Trilha } from "@/types/roteiro";
 import { useGoogleMapsScript } from "@/hooks/useGoogleMapsScript";
 
 // US-20 — Mapa interativo com os pontos do roteiro
@@ -54,6 +54,8 @@ interface RoteiroMapProps {
   altura?: string;
   /** quando true, remove borda e cantos arredondados próprios (útil quando o mapa ocupa a tela toda e o contêiner pai já cuida disso). */
   semBorda?: boolean;
+  rota?: { origem: LocalRoteiro; destino: LocalRoteiro };
+  onErroRota?: (message: string | null) => void;
 }
 
 export default function RoteiroMap({
@@ -62,6 +64,8 @@ export default function RoteiroMap({
   onSelecionarPonto,
   altura = "h-72",
   semBorda = false,
+  rota,
+  onErroRota,
 }: RoteiroMapProps) {
   const { carregado, erro } = useGoogleMapsScript();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -69,15 +73,55 @@ export default function RoteiroMap({
   const markersRef = useRef<Map<string, google.maps.Marker>>(new Map());
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const polylineRef = useRef<google.maps.Polyline | null>(null);
+  const directionsRendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
   const onSelecionarPontoRef = useRef(onSelecionarPonto);
+  const onErroRotaRef = useRef(onErroRota);
+  const [directionsConcluidas, setDirectionsConcluidas] = useState<string | null>(null);
 
   useEffect(() => {
     onSelecionarPontoRef.current = onSelecionarPonto;
   }, [onSelecionarPonto]);
 
+  useEffect(() => {
+    onErroRotaRef.current = onErroRota;
+  }, [onErroRota]);
+
   // useMemo evita recriar essa lista (e disparar o efeito abaixo) em todo
   // re-render — só recalcula quando o array `pontos` realmente muda.
   const pontosComCoordenadas = useMemo(() => pontos.filter(temCoordenadas), [pontos]);
+  const origemNome = rota?.origem.nome;
+  const origemLatitude = rota?.origem.latitude;
+  const origemLongitude = rota?.origem.longitude;
+  const destinoNome = rota?.destino.nome;
+  const destinoLatitude = rota?.destino.latitude;
+  const destinoLongitude = rota?.destino.longitude;
+  const rotaNormalizada = useMemo(
+    () => origemNome !== undefined && origemLatitude !== undefined && origemLongitude !== undefined
+      && destinoNome !== undefined && destinoLatitude !== undefined && destinoLongitude !== undefined
+      ? {
+          origem: { nome: origemNome, latitude: origemLatitude, longitude: origemLongitude },
+          destino: { nome: destinoNome, latitude: destinoLatitude, longitude: destinoLongitude },
+        }
+      : null,
+    [
+      origemNome,
+      origemLatitude,
+      origemLongitude,
+      destinoNome,
+      destinoLatitude,
+      destinoLongitude,
+    ],
+  );
+  const directionsKey = rotaNormalizada
+    ? [
+        rotaNormalizada.origem.latitude,
+        rotaNormalizada.origem.longitude,
+        rotaNormalizada.destino.latitude,
+        rotaNormalizada.destino.longitude,
+        ...pontosComCoordenadas.map((ponto) => ponto.id),
+      ].join(":")
+    : null;
+  const rotaCarregando = Boolean(rotaNormalizada && directionsConcluidas !== directionsKey);
 
   function abrirInfoWindow(ponto: PontoComCoordenadas, marker: google.maps.Marker) {
     const map = mapRef.current;
@@ -114,11 +158,36 @@ export default function RoteiroMap({
     markersRef.current.clear();
     polylineRef.current?.setMap(null);
     polylineRef.current = null;
+    directionsRendererRef.current?.setMap(null);
+    directionsRendererRef.current = null;
 
-    if (pontosComCoordenadas.length === 0) return;
+    if (pontosComCoordenadas.length === 0 && !rotaNormalizada) return;
 
     const bounds = new google.maps.LatLngBounds();
     const caminho: google.maps.LatLngLiteral[] = [];
+
+    if (rotaNormalizada) {
+      const origemPosition = { lat: rotaNormalizada.origem.latitude, lng: rotaNormalizada.origem.longitude };
+      const destinoPosition = { lat: rotaNormalizada.destino.latitude, lng: rotaNormalizada.destino.longitude };
+      bounds.extend(origemPosition);
+      bounds.extend(destinoPosition);
+      const originMarker = new google.maps.Marker({
+        position: origemPosition,
+        map,
+        title: `Origem: ${rotaNormalizada.origem.nome}`,
+        label: { text: "O", color: "#ffffff", fontWeight: "700" },
+        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: COR_ROTA, fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2 },
+      });
+      const destinationMarker = new google.maps.Marker({
+        position: destinoPosition,
+        map,
+        title: `Destino: ${rotaNormalizada.destino.nome}`,
+        label: { text: "D", color: "#ffffff", fontWeight: "700" },
+        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: COR_ROTA, fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2 },
+      });
+      markersRef.current.set("$origem", originMarker);
+      markersRef.current.set("$destino", destinationMarker);
+    }
 
     pontosComCoordenadas.forEach((ponto) => {
       const position = { lat: ponto.latitude, lng: ponto.longitude };
@@ -148,7 +217,49 @@ export default function RoteiroMap({
       bounds.extend(position);
     });
 
-    // Linha conectando os pontos na ordem do roteiro (o "caminho" pedido).
+    if (rotaNormalizada && directionsKey) {
+      let active = true;
+      const renderer = new google.maps.DirectionsRenderer({
+        map,
+        suppressMarkers: true,
+        preserveViewport: true,
+        polylineOptions: { strokeColor: COR_ROTA, strokeWeight: 5, strokeOpacity: 0.9 },
+      });
+      directionsRendererRef.current = renderer;
+
+      void new google.maps.DirectionsService()
+        .route({
+          origin: { lat: rotaNormalizada.origem.latitude, lng: rotaNormalizada.origem.longitude },
+          destination: { lat: rotaNormalizada.destino.latitude, lng: rotaNormalizada.destino.longitude },
+          waypoints: pontosComCoordenadas.slice(0, 25).map((ponto) => ({
+            location: { lat: ponto.latitude, lng: ponto.longitude },
+            stopover: true,
+          })),
+          optimizeWaypoints: false,
+          travelMode: google.maps.TravelMode.DRIVING,
+        })
+        .then((result) => {
+          if (active) {
+            renderer.setDirections(result);
+            onErroRotaRef.current?.(null);
+            setDirectionsConcluidas(directionsKey);
+          }
+        })
+        .catch(() => {
+          if (active) {
+            onErroRotaRef.current?.("Não foi possível calcular a rota por ruas. Os pontos continuam disponíveis no mapa.");
+            setDirectionsConcluidas(directionsKey);
+          }
+        });
+
+      map.fitBounds(bounds, 48);
+
+      return () => {
+        active = false;
+        renderer.setMap(null);
+      };
+    }
+
     if (caminho.length > 1) {
       polylineRef.current = new google.maps.Polyline({
         path: caminho,
@@ -165,7 +276,7 @@ export default function RoteiroMap({
     } else {
       map.fitBounds(bounds, 48);
     }
-  }, [carregado, pontosComCoordenadas]);
+  }, [carregado, pontosComCoordenadas, rotaNormalizada, directionsKey]);
 
   // Reage à seleção feita fora do mapa (ex: clique num item da lista):
   // centraliza e abre o balão do ponto correspondente.
@@ -181,18 +292,18 @@ export default function RoteiroMap({
     abrirInfoWindow(ponto, marker);
   }, [pontoSelecionadoId, pontosComCoordenadas]);
 
-  const classesBorda = semBorda ? "" : "rounded-lg border border-zinc-200 dark:border-zinc-800";
+  const classesBorda = semBorda ? "" : "rounded-lg border border-[#d5d9d7]";
   const classesBordaTracejada = semBorda
     ? ""
-    : "rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700";
+    : "rounded-lg border border-dashed border-[#d5d9d7]";
 
   if (erro) {
     return (
       <div
         role="alert"
-        className={`flex ${altura} w-full flex-col items-center justify-center gap-1 ${classesBordaTracejada} bg-zinc-50 p-4 text-center text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400`}
+        className={`flex ${altura} w-full flex-col items-center justify-center gap-1 ${classesBordaTracejada} bg-[#f4f5f4] p-4 text-center text-sm text-[#56636c]`}
       >
-        <p className="font-medium text-zinc-700 dark:text-zinc-200">
+        <p className="font-medium text-[#263d44]">
           Não foi possível carregar o mapa.
         </p>
         <p>{erro}</p>
@@ -204,17 +315,17 @@ export default function RoteiroMap({
     return (
       <div
         role="status"
-        className={`flex ${altura} w-full items-center justify-center ${classesBorda} bg-zinc-50 text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400`}
+        className={`flex ${altura} w-full items-center justify-center ${classesBorda} bg-[#f4f5f4] text-sm text-[#56636c]`}
       >
         Carregando mapa...
       </div>
     );
   }
 
-  if (pontosComCoordenadas.length === 0) {
+  if (pontosComCoordenadas.length === 0 && !rotaNormalizada) {
     return (
       <div
-        className={`flex ${altura} w-full items-center justify-center ${classesBordaTracejada} p-4 text-center text-sm text-zinc-500 dark:text-zinc-400`}
+        className={`flex ${altura} w-full items-center justify-center ${classesBordaTracejada} p-4 text-center text-sm text-[#56636c]`}
       >
         Nenhum ponto com coordenadas para exibir no mapa.
       </div>
@@ -222,12 +333,19 @@ export default function RoteiroMap({
   }
 
   return (
-    <div
-      ref={containerRef}
-      role="img"
-      aria-label="Mapa com os pontos do roteiro"
-      className={`${altura} w-full overflow-hidden ${classesBorda}`}
-    />
+    <div className={`relative ${altura} w-full overflow-hidden ${classesBorda}`}>
+      <div
+        ref={containerRef}
+        role="img"
+        aria-label="Mapa com os pontos do roteiro e a rota por ruas"
+        className="absolute inset-0"
+      />
+      {rotaCarregando && (
+        <div className="absolute left-3 top-3 rounded bg-white px-3 py-2 text-sm text-[#263d44] shadow" role="status">
+          Calculando trajeto pelas ruas…
+        </div>
+      )}
+    </div>
   );
 }
 

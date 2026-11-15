@@ -18,13 +18,13 @@ const TIPO_LABEL: Record<TipoPonto, string> = {
 };
 
 const TRILHA_BADGE_CLASS: Record<Trilha, string> = {
-  turismo: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
-  compras: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+  turismo: "bg-emerald-100 text-emerald-800",
+  compras: "bg-amber-100 text-amber-800",
 };
 
 const TIPO_BADGE_CLASS: Record<TipoPonto, string> = {
-  alimentacao: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",
-  lazer: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",
+  alimentacao: "bg-orange-100 text-orange-800",
+  lazer: "bg-sky-100 text-sky-800",
 };
 
 // Fallback neutro para quando o backend mandar um valor fora do union
@@ -32,7 +32,7 @@ const TIPO_BADGE_CLASS: Record<TipoPonto, string> = {
 // Evita className="... undefined" e mostra o valor cru em vez de sumir.
 
 const BADGE_CLASS_DESCONHECIDO =
-  "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
+  "bg-[#eef0ef] text-[#263d44]";
 
 interface RoteiroListProps {
   data?: RoteiroResponse;
@@ -55,7 +55,7 @@ export default function RoteiroList({
     return (
       <div
         role="status"
-        className="flex items-center justify-center py-12 text-sm text-zinc-500 dark:text-zinc-400"
+        className="flex items-center justify-center py-12 text-sm text-[#56636c]"
       >
         Carregando roteiro...
       </div>
@@ -66,18 +66,18 @@ export default function RoteiroList({
     return (
       <div
         role="alert"
-        className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
+        className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
       >
         <p className="font-medium">Não foi possível carregar o roteiro.</p>
-        <p className="mt-1 text-red-600 dark:text-red-400">{error}</p>
+        <p className="mt-1 text-red-600">{error}</p>
       </div>
     );
   }
 
   if (!data || data.pontos.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-        <p className="font-medium text-zinc-700 dark:text-zinc-200">
+      <div className="rounded-lg border border-dashed border-[#d5d9d7] p-8 text-center text-sm text-[#56636c]">
+        <p className="font-medium text-[#263d44]">
           Nenhum ponto encontrado para esse roteiro.
         </p>
         <p className="mt-1">Tente ajustar a origem ou o destino informados.</p>
@@ -87,14 +87,15 @@ export default function RoteiroList({
 
   return (
     <div className="w-full">
-      <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
-        {data.metadados.origem} → {data.metadados.destino}
+      <p className="mb-3 text-sm text-[#56636c]">
+        {data.origem.nome} → {data.destino.nome}
       </p>
       <ul className="flex flex-col gap-3">
-        {data.pontos.map((ponto) => (
+        {data.pontos.map((ponto, indice) => (
           <RoteiroListItem
             key={ponto.id}
             ponto={ponto}
+            ordem={indice + 1}
             selecionado={ponto.id === pontoSelecionadoId}
             onSelecionar={onSelecionarPonto}
           />
@@ -106,12 +107,16 @@ export default function RoteiroList({
 
 interface RoteiroListItemProps {
   ponto: PontoDeInteresse;
+  /** Posição na ordem de visita: o mesmo número do marcador no mapa. */
+  ordem: number;
   selecionado?: boolean;
   onSelecionar?: (id: string) => void;
 }
 
-function RoteiroListItem({ ponto, selecionado = false, onSelecionar }: RoteiroListItemProps) {
+function RoteiroListItem({ ponto, ordem, selecionado = false, onSelecionar }: RoteiroListItemProps) {
   const clicavel = Boolean(onSelecionar);
+  // Ponto sem curadoria da IA não tem trilha nem tipo: esconde as etiquetas em vez de mostrar "desconhecida".
+  const semClassificacao = ponto.curado === false;
 
   return (
     <li
@@ -128,20 +133,27 @@ function RoteiroListItem({ ponto, selecionado = false, onSelecionar }: RoteiroLi
             }
           : undefined
       }
-      className={`rounded-lg border bg-white p-4 shadow-sm transition-colors dark:bg-zinc-900 ${
-        clicavel ? "cursor-pointer hover:border-orange-300 dark:hover:border-orange-700" : ""
+      className={`rounded-lg border bg-white p-4 transition-colors ${
+        clicavel ? "cursor-pointer hover:border-[#e9b48f]" : ""
       } ${
         selecionado
-          ? "border-orange-500 ring-1 ring-orange-500 dark:border-orange-500"
-          : "border-zinc-200 dark:border-zinc-800"
+          ? "border-[#d65b0c] ring-1 ring-[#d65b0c]"
+          : "border-[#d5d9d7]"
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="font-medium text-zinc-900 dark:text-zinc-50">{ponto.nome}</h3>
+      <div className="flex items-start gap-3">
+        <span
+          aria-hidden="true"
+          className="mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-full bg-[#fbefe7] text-xs font-bold text-[#b4480a]"
+        >
+          {ordem}
+        </span>
+        <h3 className="font-semibold text-[#1f2d3a]">{ponto.nome}</h3>
       </div>
       {ponto.descricao && (
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{ponto.descricao}</p>
+        <p className="mt-1 text-sm text-[#3f4b52]">{ponto.descricao}</p>
       )}
+      {!semClassificacao && (
       <div className="mt-3 flex gap-2">
         <span
           className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
@@ -158,6 +170,7 @@ function RoteiroListItem({ ponto, selecionado = false, onSelecionar }: RoteiroLi
           {TIPO_LABEL[ponto.tipo] ?? ponto.tipo}
         </span>
       </div>
+      )}
     </li>
   );
 }

@@ -54,7 +54,7 @@ interface UseGoogleMapsScriptResultado {
 // efeito — evita um setState síncrono dentro do useEffect (cascading render).
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const ERRO_SEM_API_KEY =
-  "Chave do Google Maps não configurada. Defina NEXT_PUBLIC_GOOGLE_MAPS_API_KEY no arquivo .env.";
+  "Chave do Google Maps não configurada. Defina NEXT_PUBLIC_GOOGLE_MAPS_API_KEY em frontend/.env.local.";
 
 export function useGoogleMapsScript(): UseGoogleMapsScriptResultado {
   const [carregado, setCarregado] = useState(false);

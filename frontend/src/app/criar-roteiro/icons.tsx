@@ -5,7 +5,7 @@ import {
   Car,
   PersonSimpleWalk,
   Bicycle,
-  Motorcycle,
+  Bus,
   Lightbulb,
   MapPin,
   CheckCircle,
@@ -36,8 +36,8 @@ export function BikeIcon() {
   return <Bicycle size={26} />;
 }
 
-export function MotoIcon() {
-  return <Motorcycle size={26} />;
+export function BusIcon() {
+  return <Bus size={26} />;
 }
 
 export function BulbIcon() {

@@ -1,11 +1,11 @@
 {
-  "name": "Minha Plataforma IA",
-  "short_name": "AppIA",
-  "description": "Plataforma PWA integrada com Inteligência Artificial",
+  "name": "Kyr - Know Your Route",
+  "short_name": "Kyr",
+  "description": "Crie rotas personalizadas e descubra lugares pelo caminho.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#17352b",
   "icons": [
     {
       "src": "/icon-192x192.png",

@@ -1,12 +1,7 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import {
-  APIProvider,
-  Map,
-  useMap,
-  useMapsLibrary,
-} from "@vis.gl/react-google-maps";
+import { useEffect, useRef, useState } from "react";
+import { useGoogleMapsScript } from "@/hooks/useGoogleMapsScript";
 
 export type RouteInfo = {
   distanceText: string;
@@ -16,12 +11,11 @@ export type RouteInfo = {
 export type TravelModeKey = "DRIVING" | "WALKING" | "BICYCLING" | "TRANSIT";
 
 type Props = {
-  apiKey: string;
-  /** Endereço/nome do local de origem. Vazio = ainda não calcula rota. */
+  /** Origem como "latitude,longitude". Vazio = ainda não calcula rota. */
   origin: string;
-  /** Endereço/nome do local de destino. Vazio = ainda não calcula rota. */
+  /** Destino como "latitude,longitude". Vazio = ainda não calcula rota. */
   destination: string;
-  /** Endereços das paradas, na ordem em que devem ser visitadas. */
+  /** Paradas como "latitude,longitude", na ordem em que devem ser visitadas. */
   waypoints: string[];
   travelMode: TravelModeKey;
   /** Chamado sempre que uma rota é calculada (ou null se não foi possível). */
@@ -32,8 +26,11 @@ type Props = {
 
 const BRAZIL_CENTER = { lat: -14.235, lng: -51.9253 };
 
+// O mapa usa o mesmo carregador do restante do app (useGoogleMapsScript).
+// Carregar o SDK do Google Maps por dois caminhos na mesma página (por exemplo,
+// este hook e o APIProvider do @vis.gl/react-google-maps) cria duas cópias da
+// biblioteca e quebra com "not an instance of Map" e "Loader.provide not called".
 export default function GoogleMapRoute({
-  apiKey,
   origin,
   destination,
   waypoints,
@@ -41,110 +38,82 @@ export default function GoogleMapRoute({
   onRouteInfo,
   onError,
 }: Props) {
-  return (
-    <APIProvider apiKey={apiKey}>
-      <Map
-        defaultCenter={BRAZIL_CENTER}
-        defaultZoom={5}
-        gestureHandling="greedy"
-        disableDefaultUI={false}
-        mapId="criar-roteiro-map"
-        style={{ width: "100%", height: "100%" }}
-      />
-      <RouteDirections
-        origin={origin}
-        destination={destination}
-        waypoints={waypoints}
-        travelMode={travelMode}
-        onRouteInfo={onRouteInfo}
-        onError={onError}
-      />
-    </APIProvider>
-  );
-}
+  const { carregado, erro } = useGoogleMapsScript();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
+  const directionsRendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
+  const onRouteInfoRef = useRef(onRouteInfo);
+  const onErrorRef = useRef(onError);
+  const [mapaPronto, setMapaPronto] = useState(false);
 
-function RouteDirections({
-  origin,
-  destination,
-  waypoints,
-  travelMode,
-  onRouteInfo,
-  onError,
-}: Omit<Props, "apiKey">) {
-  const map = useMap();
-  const routesLibrary = useMapsLibrary("routes");
+  useEffect(() => {
+    onRouteInfoRef.current = onRouteInfo;
+  }, [onRouteInfo]);
 
-  // directionsService/directionsRenderer são derivados de routesLibrary e map,
-  // então usamos useMemo em vez de useState+useEffect (evita cascading renders
-  // e o erro react-hooks/set-state-in-effect).
-  const directionsService = useMemo(() => {
-    if (!routesLibrary) return undefined;
-    return new routesLibrary.DirectionsService();
-  }, [routesLibrary]);
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
-  const directionsRenderer = useMemo(() => {
-    if (!routesLibrary || !map) return undefined;
-    return new routesLibrary.DirectionsRenderer({ map });
-  }, [routesLibrary, map]);
+  // Cria o mapa, o serviço e o desenhador de rotas uma única vez, depois que o SDK carrega.
+  useEffect(() => {
+    if (!carregado || !containerRef.current) return;
 
-  // Tipos derivados diretamente da instância do serviço, sem referenciar o
-  // identificador global "google" em nenhum lugar do arquivo. Isso evita o
-  // erro "Não é possível encontrar o nome 'google'" quando @types/google.maps
-  // não está instalado/resolvido no ambiente de lint/build.
-  type DirectionsRequest = Parameters<
-    NonNullable<typeof directionsService>["route"]
-  >[0];
-  type DirectionsResult = Awaited<
-    ReturnType<NonNullable<typeof directionsService>["route"]>
-  >;
-  type DirectionsLeg = NonNullable<
-    DirectionsResult["routes"][number]["legs"]
-  >[number];
+    const map = new google.maps.Map(containerRef.current, {
+      center: BRAZIL_CENTER,
+      zoom: 5,
+      gestureHandling: "greedy",
+    });
+    const renderer = new google.maps.DirectionsRenderer({ map });
+    directionsServiceRef.current = new google.maps.DirectionsService();
+    directionsRendererRef.current = renderer;
+    setMapaPronto(true);
+
+    return () => {
+      renderer.setMap(null);
+      directionsServiceRef.current = null;
+      directionsRendererRef.current = null;
+      setMapaPronto(false);
+    };
+  }, [carregado]);
 
   // Sempre que origem, destino, paradas ou modo de transporte mudarem,
   // recalcula a rota real via Directions API.
   const waypointsKey = waypoints.join("|");
 
   useEffect(() => {
-    if (!directionsService || !directionsRenderer) return;
+    const directionsService = directionsServiceRef.current;
+    const directionsRenderer = directionsRendererRef.current;
+    if (!mapaPronto || !directionsService || !directionsRenderer) return;
 
     if (!origin || !destination) {
       directionsRenderer.set("directions", null);
-      onRouteInfo?.(null);
-      onError?.(null);
+      onRouteInfoRef.current?.(null);
+      onErrorRef.current?.(null);
       return;
     }
 
-    const request: DirectionsRequest = {
-      origin,
-      destination,
-      waypoints: waypoints
-        .filter(Boolean)
-        .map((address) => ({ location: address, stopover: true })),
-      // O enum TravelMode do Maps usa, em runtime, as mesmas strings das
-      // chaves ("DRIVING", "WALKING", ...), então passamos a própria chave
-      // sem precisar nomear o namespace "google".
-      travelMode: travelMode as DirectionsRequest["travelMode"],
-      provideRouteAlternatives: false,
-    };
+    let ativo = true;
 
     directionsService
-      .route(request)
-      .then((result: DirectionsResult) => {
+      .route({
+        origin,
+        destination,
+        waypoints: waypointsKey
+          .split("|")
+          .filter(Boolean)
+          .map((address) => ({ location: address, stopover: true })),
+        // O enum TravelMode do Maps usa, em runtime, as mesmas strings das chaves.
+        travelMode: travelMode as google.maps.TravelMode,
+        provideRouteAlternatives: false,
+      })
+      .then((result) => {
+        if (!ativo) return;
         directionsRenderer.setDirections(result);
-        onError?.(null);
+        onErrorRef.current?.(null);
 
-        const legs: DirectionsLeg[] = result.routes[0]?.legs ?? [];
-        const totalMeters = legs.reduce(
-          (acc: number, leg: DirectionsLeg) =>
-            acc + (leg.distance?.value ?? 0),
-          0
-        );
-        const totalSeconds = legs.reduce(
-          (acc: number, leg: DirectionsLeg) =>
-            acc + (leg.duration?.value ?? 0),
-          0
-        );
+        const legs = result.routes[0]?.legs ?? [];
+        const totalMeters = legs.reduce((acc, leg) => acc + (leg.distance?.value ?? 0), 0);
+        const totalSeconds = legs.reduce((acc, leg) => acc + (leg.duration?.value ?? 0), 0);
 
         const km = totalMeters / 1000;
         const distanceText = km >= 1 ? `${km.toFixed(1)} km` : `${totalMeters} m`;
@@ -152,21 +121,35 @@ function RouteDirections({
         const totalMinutes = Math.round(totalSeconds / 60);
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
-        const durationText =
-          hours > 0 ? `${hours}h ${minutes}min` : `${minutes} min`;
+        const durationText = hours > 0 ? `${hours}h ${minutes}min` : `${minutes} min`;
 
-        onRouteInfo?.({ distanceText, durationText });
+        onRouteInfoRef.current?.({ distanceText, durationText });
       })
       .catch((error: unknown) => {
+        if (!ativo) return;
         console.error("Não foi possível calcular a rota:", error);
         directionsRenderer.set("directions", null);
-        onRouteInfo?.(null);
-        onError?.(friendlyDirectionsError(error, travelMode));
+        onRouteInfoRef.current?.(null);
+        onErrorRef.current?.(friendlyDirectionsError(error, travelMode));
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [directionsService, directionsRenderer, origin, destination, waypointsKey, travelMode]);
 
-  return null;
+    return () => {
+      ativo = false;
+    };
+  }, [mapaPronto, origin, destination, waypointsKey, travelMode]);
+
+  if (erro) {
+    return (
+      <div
+        role="alert"
+        style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", padding: 16, textAlign: "center" }}
+      >
+        Não foi possível carregar o mapa. {erro}
+      </div>
+    );
+  }
+
+  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 }
 
 /** Traduz os status de erro da Directions API em mensagens que fazem sentido pro usuário final. */
@@ -188,5 +171,5 @@ function friendlyDirectionsError(error: unknown, travelMode: TravelModeKey): str
   if (status === "OVER_QUERY_LIMIT" || status === "REQUEST_DENIED") {
     return "Não foi possível consultar o Google Maps agora. Verifique a chave de API configurada.";
   }
-  return "Não foi possível calcular a rota para esse trajeto. Mostrando uma estimativa aproximada.";
+  return "Não foi possível calcular a rota para esse trajeto. Confira os endereços e tente novamente.";
 }
