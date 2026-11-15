@@ -11,6 +11,8 @@ import br.tourapp.kyr.poi.client.dto.LatLngDto;
 import br.tourapp.kyr.poi.config.GoogleMapsProperties;
 import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
 import br.tourapp.kyr.poi.model.Coordenada;
+import br.tourapp.kyr.poi.model.PoiCandidato;
+import br.tourapp.kyr.poi.model.PoisNaRota;
 import br.tourapp.kyr.poi.web.PoiDto;
 import br.tourapp.kyr.poi.web.RotaResponseDto;
 import org.springframework.stereotype.Service;
@@ -38,9 +40,19 @@ public class RotaPoiService {
     }
 
     public RotaResponseDto buscarRoteiro(Integer raioMetrosParam) {
+        PoisNaRota poisNaRota = buscarPoisNaRota(properties.rota().origem(), properties.rota().destino(), raioMetrosParam);
+
+        List<PoiDto> pois = poisNaRota.candidatos().stream()
+                .map(candidato -> new PoiDto(candidato.nome(), candidato.coordenadas(), candidato.categoria(), candidato.nota()))
+                .toList();
+
+        return new RotaResponseDto(pois, poisNaRota.rota());
+    }
+
+    public PoisNaRota buscarPoisNaRota(Coordenada origem, Coordenada destino, Integer raioMetrosParam) {
         int raioMetros = raioMetrosParam != null ? raioMetrosParam : properties.poi().raioBuscaMetros();
 
-        DirectionsResponseDto resposta = directionsClient.buscarRota(properties.rota().origem(), properties.rota().destino());
+        DirectionsResponseDto resposta = directionsClient.buscarRota(origem, destino);
 
         DirectionsRouteDto primeiraRota = resposta.routes().stream()
                 .findFirst()
@@ -60,12 +72,12 @@ public class RotaPoiService {
             }
         }
 
-        List<PoiDto> pois = placesUnicos.values().stream()
-                .map(normalizer::normalizar)
+        List<PoiCandidato> candidatos = placesUnicos.values().stream()
+                .map(normalizer::normalizarCandidato)
                 .flatMap(Optional::stream)
                 .toList();
 
-        return new RotaResponseDto(pois, linhaDaRota);
+        return new PoisNaRota(candidatos, linhaDaRota);
     }
 
     private List<Coordenada> extrairPontosIntermediarios(DirectionsRouteDto rota, int maxPontos) {

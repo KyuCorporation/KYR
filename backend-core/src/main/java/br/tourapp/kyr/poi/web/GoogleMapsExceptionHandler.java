@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "br.tourapp.kyr.poi")
+@RestControllerAdvice(basePackages = {"br.tourapp.kyr.poi", "br.tourapp.kyr.controller"})
 
 public class GoogleMapsExceptionHandler {
 

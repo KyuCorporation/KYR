@@ -5,7 +5,7 @@ info:
     Contrato de API do backend-core, cobrindo o endpoint de geração de
     roteiros turísticos combinando dados de geolocalização com curadoria
     via IA.
-  version: 1.0.0
+  version: 1.1.0
 
 servers:
   - url: http://localhost:8080
@@ -18,9 +18,20 @@ paths:
     post:
       summary: Gera um roteiro turístico entre origem e destino
       description: >
-        Recebe uma origem e um destino fixos (cenário: aeroporto de Foz do Iguaçu → evento) 
-        e retorna uma lista curada de pontos de interesse (POIs), organizados por trilha e 
-        tipo, com metadados de suporte.
+        Recebe uma origem e um destino quaisquer, busca pontos de interesse (POIs) no
+        Google Places ao longo da rota entre os dois, mantém os mais bem avaliados
+        (até 10 por padrão), envia-os à curadoria por IA (ia-service) e ordena o
+        resultado com a Google Directions API.
+
+        Degradação: se a curadoria falhar ou demorar demais, a resposta é 200 com os
+        POIs sem curadoria (`curado` falso, `metadados.curadoPorIa` falso e
+        `metadados.fonteIA` igual a `sem-curadoria`). Se a ordenação falhar, a resposta
+        é 200 com os POIs na ordem da seleção, sem distância nem duração
+        (`metadados.fonteRota` igual a `fallback-sem-otimizacao`). Se o Google Places
+        ou a busca da rota falharem, a resposta é 502. Se nenhum POI for encontrado,
+        a resposta é 200 com `pontos` vazio.
+
+        O roteiro gerado não é persistido.
       operationId: gerarRoteiro
       tags:
         - Roteiros
@@ -41,23 +52,28 @@ paths:
                 longitude: -54.5882
       responses:
         '200':
-          description: Roteiro gerado com sucesso
+          description: Roteiro gerado (com ou sem curadoria, com ou sem ordenação otimizada)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RoteiroResponse'
         '400':
-          description: Payload inválido (fora do cenário fixo, campos ausentes ou mal formatados)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErroResponse'
+          description: >
+            Corpo inválido (origem ou destino ausentes, ou `nome`, `latitude` ou
+            `longitude` ausentes ou mal formatados). O corpo do erro é o padrão do
+            Spring Boot, não o `ErroResponse`.
         '502':
-          description: Falha ao obter resposta do provedor de LLM (fallback aplicado ou erro repassado)
+          description: >
+            Falha na integração com o Google Maps (Places ou busca da rota), inclusive
+            quando a chave `GOOGLE_MAPS_API_KEY` não está configurada. A mensagem nunca
+            contém a chave da API.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErroResponse'
+              example:
+                codigo: "erro_integracao_google_maps"
+                mensagem: "Falha de comunicação com a Places API (Forbidden)"
 
 components:
   schemas:
@@ -95,13 +111,8 @@ components:
       type: object
       required:
         - nome
-        - trilha
-        - tipo
-        - endereco
         - latitude
         - longitude
-        - fonte
-        - descricao
         - curado
       properties:
         nome:
@@ -109,20 +120,24 @@ components:
           example: "Cataratas do Iguaçu (Parque Nacional do Iguaçu)"
         trilha:
           type: string
-          description: Trilha de classificação do POI, definida pela curadoria via IA.
+          nullable: true
+          description: Trilha de classificação do POI, definida pela curadoria via IA. Nula quando `curado` é falso.
           enum:
             - turismo
             - compras
           example: turismo
         tipo:
           type: string
-          description: Tipo de classificação do POI, definido pela curadoria via IA.
+          nullable: true
+          description: Tipo de classificação do POI, definido pela curadoria via IA. Nulo quando `curado` é falso.
           enum:
             - alimentacao
             - lazer
           example: lazer
         endereco:
           type: string
+          nullable: true
+          description: Endereço formatado devolvido pelo Google Places.
           example: "Bus Terminus - Rod, BR-469 - Km 18, Foz do Iguaçu - PR, 85853-830"
         latitude:
           type: number
@@ -134,22 +149,41 @@ components:
           example: -54.4367
         fonte:
           type: string
-          description: Link de referência do ponto, para rastreabilidade
-          example: "https://maps.app.goo.gl/mWfjwq78VQKvUKL16"
+          nullable: true
+          description: Link do lugar no Google Maps, para rastreabilidade.
+          example: "https://maps.google.com/?cid=1234567890"
         descricao:
           type: string
+          nullable: true
           description: >
-            Descrição curta gerada pela curadoria via IA. Limite de 300 caracteres combinado
-            com o frontend — reforçado via instrução ao LLM, sem truncamento rígido no backend,
-            então consumidores devem tratar defensivamente descrições eventualmente maiores.
+            Descrição curta gerada pela curadoria via IA. Nula quando `curado` é falso.
+            Limite de 300 caracteres combinado com o frontend — reforçado via instrução
+            ao LLM, sem truncamento rígido no backend, então consumidores devem tratar
+            defensivamente descrições eventualmente maiores.
           maxLength: 300
           example: "Principal atração da região e Patrimônio Natural da Humanidade, abriga as famosas quedas d'água."
         curado:
           type: boolean
           description: >
             Indica se este POI específico foi curado com sucesso pela IA. Quando false,
-            trilha/tipo/descricao não estão disponíveis (POI de fallback).
+            trilha/tipo/descricao são nulos.
           example: true
+        distanciaMetros:
+          type: integer
+          format: int64
+          nullable: true
+          description: >
+            Distância, em metros, do trecho que chega a este POI (a partir da origem ou
+            do POI anterior). Nula quando a ordenação caiu no fallback.
+          example: 12500
+        duracaoSegundos:
+          type: integer
+          format: int64
+          nullable: true
+          description: >
+            Duração, em segundos, do trecho que chega a este POI. Nula quando a
+            ordenação caiu no fallback.
+          example: 900
 
     RoteiroResponse:
       type: object
@@ -163,35 +197,49 @@ components:
             $ref: '#/components/schemas/POI'
         metadados:
           type: object
+          required:
+            - totalPontos
+            - tempoRespostaMs
+            - fonteIA
+            - curadoPorIa
+            - fonteRota
           properties:
             totalPontos:
               type: integer
-              example: 15
+              description: Quantidade de itens em `pontos`.
+              example: 10
             tempoRespostaMs:
               type: integer
+              format: int64
               description: Tempo total de processamento da requisição, em milissegundos
               example: 1240
-            fonte:
+            fonteIA:
               type: string
-              description: Provedor de LLM utilizado na curadoria
-              example: "ia-service"
+              description: >
+                Modelo de LLM que fez a curadoria (por exemplo, `gemini-2.5-flash`), ou
+                `sem-curadoria` quando a curadoria não aconteceu.
+              example: "gemini-2.5-flash"
             curadoPorIa:
               type: boolean
+              description: Indica se o ia-service curou o roteiro.
               example: true
+            fonteRota:
+              type: string
+              description: Fonte da ordenação dos POIs.
+              enum:
+                - google-directions-api
+                - fallback-sem-otimizacao
+              example: "google-directions-api"
 
     ErroResponse:
       type: object
       required:
-        - erro
+        - codigo
         - mensagem
       properties:
-        erro:
+        codigo:
           type: string
-          example: "PAYLOAD_INVALIDO"
+          example: "erro_integracao_google_maps"
         mensagem:
           type: string
-          example: "Campo 'origem.latitude' é obrigatório e deve ser numérico."
-        campo:
-          type: string
-          nullable: true
-          example: "origem.latitude"
+          example: "Falha de comunicação com a Places API (Forbidden)"

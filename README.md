@@ -20,7 +20,7 @@ O projeto é um monorepo com três aplicações, separando orquestração, intel
 flowchart TD
     A["Frontend (PWA)<br/>Next.js 16"] -.->|integração pendente| C["Backend Core<br/>Spring Boot 4.1"]
     C --> G["Google Maps<br/>Directions + Places"]
-    C -.->|integração pendente| E["IA Service<br/>Spring Boot 3.5 + Spring AI"]
+    C -->|POST /curar-roteiro| E["IA Service<br/>Spring Boot 3.5 + Spring AI"]
     C -.->|sem persistência ainda| D[("PostgreSQL 15")]
     E --> F["LLMs: Claude → Gemini → OpenAI"]
 ```
@@ -28,7 +28,7 @@ flowchart TD
 Linhas tracejadas indicam ligações previstas que ainda não estão implementadas (veja [Estado atual](#-estado-atual-do-mvp)).
 
 - **Frontend**: PWA em Next.js (App Router), Tailwind CSS v4 e Google Maps, pensado para uso mobile-first.
-- **Backend Core**: Spring Boot (Java 25). Responsável por orquestração, regras de negócio e contratos de API. Consulta Google Directions e Places.
+- **Backend Core**: Spring Boot (Java 25). Responsável por orquestração, regras de negócio e contratos de API. Consulta Google Directions e Places e envia os POIs ao IA Service para curadoria.
 - **IA Service**: Spring Boot (Java 21) + Spring AI. Faz a curadoria dos POIs (classifica em `trilha` e `tipo` e gera a descrição) com uma cadeia de fallback entre provedores de LLM: Claude → Gemini → OpenAI → resposta sem curadoria. Cada provedor entra na cadeia somente se sua chave de API estiver configurada.
 - **Database**: PostgreSQL 15, com Flyway previsto para migrações.
 
@@ -144,7 +144,7 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 
 | Método | Rota | Descrição |
 |---|---|---|
-| `POST` | `/roteiros` | Recebe origem e destino (`nome`, `latitude`, `longitude`) e devolve um roteiro ordenado via Google Directions. Hoje usa um conjunto fixo de 2 POIs; se a Directions API falhar, devolve a ordem original (`fonteIA = "fallback-sem-otimizacao"`). |
+| `POST` | `/roteiros` | Recebe origem e destino quaisquer (`nome`, `latitude`, `longitude`), busca POIs no Google Places ao longo da rota, envia os mais bem avaliados (até 10 por padrão) à curadoria do `ia-service` e ordena o resultado via Google Directions. Detalhes abaixo. |
 | `GET` | `/api/v1/rotas/pois` | Busca POIs reais (Google Places) ao longo da rota aeroporto → evento. Aceita `raioMetros` opcional. Erros do Google retornam `502`. |
 
 ### IA Service (`:8000`)
@@ -154,7 +154,23 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 | `POST` | `/curar-roteiro` | Recebe uma lista de POIs brutos (`nome`, `categoria`, `coordenadas`) e devolve cada um classificado em `trilha` (`turismo` \| `compras`) e `tipo` (`alimentacao` \| `lazer`), com descrição em português. A resposta usa `snake_case` (`curado_por_ia`, `modelo_utilizado`). |
 | `GET` | `/actuator/health` | Health-check. |
 
-> O contrato do `POST /roteiros` em `docs/openapi.yml` ainda não reflete todos os campos retornados pelo código atual. Em caso de divergência, vale o código.
+### Resposta do `POST /roteiros`
+
+O contrato completo está em [`docs/openapi.yml`](./docs/openapi.yml).
+
+- `pontos[]`: `nome`, `trilha`, `tipo`, `endereco`, `latitude`, `longitude`, `fonte` (link do lugar no Google Maps), `descricao`, `curado`, `distanciaMetros` e `duracaoSegundos`.
+- `metadados`: `totalPontos`, `tempoRespostaMs`, `fonteIA` (modelo que curou, ou `sem-curadoria`), `curadoPorIa` e `fonteRota` (`google-directions-api` ou `fallback-sem-otimizacao`).
+
+| Situação | Resposta |
+|---|---|
+| Tudo funcionou | `200`, POIs curados e ordenados, com distância e duração por trecho |
+| `ia-service` fora do ar, com erro ou lento demais | `200` sem curadoria: `curado = false`, `trilha`/`tipo`/`descricao` nulos, `curadoPorIa = false`, `fonteIA = "sem-curadoria"` |
+| Directions API falhou | `200` na ordem da seleção, sem distância nem duração, `fonteRota = "fallback-sem-otimizacao"` |
+| Nenhum POI encontrado na rota | `200` com `pontos` vazio |
+| Corpo inválido | `400` |
+| Google Places ou busca da rota falharam (inclusive sem `GOOGLE_MAPS_API_KEY`) | `502` com `{ "codigo": "erro_integracao_google_maps", "mensagem": "..." }` |
+
+O roteiro gerado não é gravado no banco.
 
 ## ⚙️ Variáveis de Ambiente
 
@@ -164,6 +180,9 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 | `DB_PASSWORD` | PostgreSQL | Senha do banco | `local_password_123` |
 | `DB_NAME` | PostgreSQL | Nome do banco | `pwa_db` |
 | `GOOGLE_MAPS_API_KEY` | backend-core | Chave das APIs Directions e Places | — |
+| `IA_SERVICE_URL` | backend-core | Endereço do `ia-service` (no Docker Compose já vem como `http://ia-service:8000`) | `http://localhost:8000` |
+| `IA_SERVICE_TIMEOUT_SECONDS` | backend-core | Tempo máximo (s) de espera pela curadoria antes de devolver o roteiro sem ela | `40` |
+| `ROTEIRO_MAX_POIS_CURADORIA` | backend-core | Quantidade máxima de POIs (os de maior nota) enviados à curadoria | `10` |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | frontend | Chave pública do Maps JavaScript API (em `frontend/.env.local`) | — |
 | `NEXT_PUBLIC_API_URL` | frontend | URL do backend acessada pelo navegador | `http://localhost:8080` |
 | `INTERNAL_API_URL` | frontend | URL do backend acessada pelo servidor Next.js dentro do Docker | `http://backend-core:8080` |
@@ -196,8 +215,8 @@ Os workflows em `.github/workflows/` rodam em PRs para `main`: `ci-backend-core.
 
 ## 📌 Estado atual do MVP
 
-- **Pronto**: curadoria com cadeia de fallback de LLMs no `ia-service`; busca de POIs e rota (Directions + Places) no `backend-core`; formulário de criação de roteiro, mapa e lista de POIs no frontend.
-- **Pendente**: o frontend ainda não chama o backend (usa dados mockados), o backend ainda não chama o `ia-service`, e o PostgreSQL ainda não é usado pela aplicação (sem entidades nem migrações Flyway).
+- **Pronto**: curadoria com cadeia de fallback de LLMs no `ia-service`; `POST /roteiros` do `backend-core` integrado de ponta a ponta no backend (Places na rota informada → curadoria no `ia-service` → ordenação na Directions); formulário de criação de roteiro, mapa e lista de POIs no frontend.
+- **Pendente**: o frontend ainda não chama o backend (usa dados mockados), e o PostgreSQL ainda não é usado pela aplicação (sem entidades nem migrações Flyway).
 
 Para o detalhamento técnico (contratos, divergências, dívidas conhecidas e convenções), consulte o [`CONTEXT.md`](./CONTEXT.md).
 

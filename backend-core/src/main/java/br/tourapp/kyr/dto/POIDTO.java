@@ -9,12 +9,13 @@ public record POIDTO(
         Double longitude,
         String fonte,
         String descricao,
+        boolean curado,
         Long distanciaMetros,
         Long duracaoSegundos
 ) {
 
-    public POIDTO(String nome, String trilha, String tipo, String endereco,
-                  Double latitude, Double longitude, String fonte, String descricao) {
-        this(nome, trilha, tipo, endereco, latitude, longitude, fonte, descricao, null, null);
+    public POIDTO comTrecho(Long distanciaMetros, Long duracaoSegundos) {
+        return new POIDTO(nome, trilha, tipo, endereco, latitude, longitude, fonte, descricao, curado,
+                distanciaMetros, duracaoSegundos);
     }
 }
