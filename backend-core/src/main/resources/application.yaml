@@ -28,3 +28,5 @@ ia-service:
 
 roteiro:
   max-pois-curadoria: ${ROTEIRO_MAX_POIS_CURADORIA:10}
+  # Por quantos dias a curadoria de um lugar é reaproveitada antes de voltar para a IA.
+  cache-curadoria-dias: ${ROTEIRO_CACHE_CURADORIA_DIAS:30}
