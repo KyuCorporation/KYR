@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import br.tourapp.iaservice.config.FallbackChainProperties;
 import br.tourapp.iaservice.dto.PontoBrutoDTO;
 import br.tourapp.iaservice.dto.RoteiroResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,12 +26,16 @@ class LlmFallbackChainTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // Instância com valores default (maxDescricaoChars=300, timeouts padrão) — nenhum teste aqui
+    // depende de um valor específico dessas propriedades, só do comportamento da cadeia de fallback.
+    private final FallbackChainProperties props = new FallbackChainProperties();
+
     @Test
     void avancaParaProximoProvedorQuandoOPrimeiroEstouraOTimeout() {
         LlmProvider claude = providerLento("claude", Duration.ofMillis(150), Duration.ofMillis(600));
         LlmProvider gemini = providerComSucesso("gemini", "gemini-2.5-flash", respostaCompleta());
 
-        CuradoriaService service = new CuradoriaService(List.of(claude, gemini), objectMapper);
+        CuradoriaService service = new CuradoriaService(List.of(claude, gemini), objectMapper, props);
 
         RoteiroResponseDTO resultado = service.curarPontos(PONTOS_EXEMPLO);
 
@@ -44,7 +49,7 @@ class LlmFallbackChainTest {
         LlmProvider claude = providerComErro("claude");
         LlmProvider gemini = providerComSucesso("gemini", "gemini-2.5-flash", respostaCompleta());
 
-        CuradoriaService service = new CuradoriaService(List.of(claude, gemini), objectMapper);
+        CuradoriaService service = new CuradoriaService(List.of(claude, gemini), objectMapper, props);
 
         RoteiroResponseDTO resultado = service.curarPontos(PONTOS_EXEMPLO);
 
@@ -58,7 +63,7 @@ class LlmFallbackChainTest {
         LlmProvider gemini = providerComErro("gemini");
         LlmProvider openai = providerComErro("openai");
 
-        CuradoriaService service = new CuradoriaService(List.of(claude, gemini, openai), objectMapper);
+        CuradoriaService service = new CuradoriaService(List.of(claude, gemini, openai), objectMapper, props);
 
         RoteiroResponseDTO resultado = service.curarPontos(PONTOS_EXEMPLO);
 
@@ -74,7 +79,7 @@ class LlmFallbackChainTest {
 
     @Test
     void caiNoFallbackCompletoQuandoNenhumProvedorEstaConfigurado() {
-        CuradoriaService service = new CuradoriaService(List.of(), objectMapper);
+        CuradoriaService service = new CuradoriaService(List.of(), objectMapper, props);
 
         RoteiroResponseDTO resultado = service.curarPontos(PONTOS_EXEMPLO);
 
@@ -92,7 +97,7 @@ class LlmFallbackChainTest {
                 """;
         LlmProvider gemini = providerComSucesso("gemini", "gemini-2.5-flash", respostaParcial);
 
-        CuradoriaService service = new CuradoriaService(List.of(gemini), objectMapper);
+        CuradoriaService service = new CuradoriaService(List.of(gemini), objectMapper, props);
 
         RoteiroResponseDTO resultado = service.curarPontos(PONTOS_EXEMPLO);
 
@@ -108,7 +113,7 @@ class LlmFallbackChainTest {
     @Test
     void naoPropagaExcecaoDoProvedor() {
         LlmProvider claude = providerComErro("claude");
-        CuradoriaService service = new CuradoriaService(List.of(claude), objectMapper);
+        CuradoriaService service = new CuradoriaService(List.of(claude), objectMapper, props);
 
         service.curarPontos(PONTOS_EXEMPLO);
     }
