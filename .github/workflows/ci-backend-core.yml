@@ -1,6 +1,11 @@
 name: CI Backend Core
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend-core/**'
+      - '.github/workflows/ci-backend-core.yml'
   pull_request:
     branches: [main]
     paths:

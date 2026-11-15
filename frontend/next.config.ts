@@ -9,6 +9,8 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
+  // O Dockerfile.prod copia .next/standalone para a imagem final.
+  output: "standalone",
   turbopack: {},
 };
 

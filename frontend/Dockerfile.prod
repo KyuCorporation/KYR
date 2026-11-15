@@ -13,6 +13,10 @@ COPY . .
 # A variável de ambiente para a URL da API precisa estar presente no build para o Next.js
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+# A chave do mapa (Maps JavaScript API) entra no bundle do navegador, então também precisa existir no build.
+# É a chave pública, restrita por domínio; nunca a chave do backend.
+ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
 RUN npm run build
 
 # Etapa 3: Runner (Produção)
