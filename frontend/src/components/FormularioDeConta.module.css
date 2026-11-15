@@ -1,0 +1,125 @@
+.pagina {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  color: #263d44;
+  background: #f4f5f4;
+}
+
+.cartao {
+  width: min(100%, 420px);
+  padding: 32px 28px;
+  background: #fff;
+  border: 1px solid #dfe3e1;
+  border-radius: 12px;
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  color: #1f2d3a;
+  font-size: 20px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.marca span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #d65b0c;
+  border-radius: 7px;
+}
+
+.cartao h1 {
+  margin: 0;
+  color: #1f2d3a;
+  font-size: 26px;
+}
+
+.apoio {
+  margin: 8px 0 22px;
+  color: #56636c;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formulario label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #263d44;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.formulario input {
+  min-height: 44px;
+  padding: 0 12px;
+  color: #1f2d3a;
+  border: 1px solid #c4cac7;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.formulario input:focus-visible {
+  outline: 2px solid #c2520b;
+  outline-offset: 1px;
+}
+
+.formulario small {
+  color: #637078;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.formulario button {
+  min-height: 46px;
+  color: #fff;
+  background: #c2520b;
+  border: 0;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.formulario button:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+.erro {
+  margin: 0;
+  padding: 10px 12px;
+  color: #8a1c1c;
+  background: #fdecec;
+  border: 1px solid #f3c2c2;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.troca {
+  margin: 16px 0 0;
+  color: #56636c;
+  font-size: 14px;
+  text-align: center;
+}
+
+.troca a {
+  color: #b4480a;
+  font-weight: 700;
+}

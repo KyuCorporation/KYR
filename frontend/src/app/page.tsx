@@ -16,15 +16,11 @@ export default function Home() {
           <Link href="/explorar">Explorar</Link>
           <a href="#sobre">Sobre</a>
           <Link href="/explorar">Destinos</Link>
-          <a href="#ajuda">Ajuda</a>
+          <Link href="/ajuda">Ajuda</Link>
         </nav>
         <div className={styles.accountActions}>
-          <button className={styles.signIn} type="button" disabled title="Login ainda não disponível">
-            Entrar
-          </button>
-          <button className={styles.signUp} type="button" disabled title="Cadastro ainda não disponível">
-            Criar conta
-          </button>
+          <Link className={styles.signIn} href="/entrar">Entrar</Link>
+          <Link className={styles.signUp} href="/cadastro">Criar conta</Link>
         </div>
       </header>
 
@@ -47,13 +43,11 @@ export default function Home() {
             <Link className={styles.primaryAction} href="/explorar">
               Explorar agora <ArrowRight size={19} weight="bold" aria-hidden="true" />
             </Link>
-            <button className={styles.secondaryAction} type="button" disabled title="Cadastro ainda não disponível">
-              Criar conta
-            </button>
+            <Link className={styles.secondaryAction} href="/cadastro">Criar conta</Link>
           </div>
           <div className={styles.routeNote}>
             <span className={styles.noteIcon}><Compass size={17} weight="fill" aria-hidden="true" /></span>
-            <span>Explore Foz do Iguaçu sem<br />precisar criar uma conta.</span>
+            <span>Explore Foz do Iguaçu sem conta.<br />Crie uma para guardar seus roteiros.</span>
           </div>
         </div>
       </section>

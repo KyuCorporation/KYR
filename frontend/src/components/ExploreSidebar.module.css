@@ -1,22 +1,42 @@
 .sidebar {
   position: sticky;
   top: 0;
-  width: 70px;
+  width: 72px;
   height: 100svh;
-  flex: 0 0 70px;
+  flex: 0 0 72px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 12px;
+  overflow-y: auto;
   border-right: 1px solid #d5d9d7;
   background: #fff;
+  transition: width 0.18s ease, flex-basis 0.18s ease;
+}
+
+.expandida {
+  width: 232px;
+  flex-basis: 232px;
+  align-items: stretch;
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0 18px;
+}
+
+.expandida .topo {
+  padding-left: 4px;
 }
 
 .logo {
   width: 42px;
   height: 42px;
+  flex: 0 0 42px;
   display: grid;
   place-items: center;
-  margin: 20px 0 29px;
   color: #fff;
   background: #d65b0c;
   border-radius: 7px;
@@ -27,22 +47,71 @@
   transform: rotate(-45deg);
 }
 
+.marca {
+  color: #1f2d3a;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.alternar {
+  width: 42px;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: #56636c;
+  background: #f4f5f4;
+  border: 0;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.expandida .alternar {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0 12px;
+}
+
+.alternar:hover {
+  color: #d65b0c;
+  background: #fbefe7;
+}
+
 .navigation {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+}
+
+.expandida .navigation {
+  align-items: stretch;
 }
 
 .navLink {
   width: 42px;
   height: 42px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   color: #56636c;
   border-radius: 7px;
+  font-size: 15px;
+  font-weight: 600;
   text-decoration: none;
+}
+
+.expandida .navLink {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0 12px;
 }
 
 .navLink:hover,
@@ -52,51 +121,70 @@
 }
 
 .accountPrompt {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   margin-top: auto;
-  padding: 18px 5px 14px;
+  padding: 18px 4px 16px;
   color: #263d44;
   border-top: 1px solid #d5d9d7;
-  text-align: center;
 }
 
 .accountPrompt strong {
-  font-size: 9px;
+  font-size: 15px;
 }
 
 .accountPrompt span {
-  color: #637078;
-  font-size: 8px;
-  line-height: 1.25;
+  color: #56636c;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
-.accountPrompt button {
+.primario,
+.secundario {
   width: 100%;
-  min-height: 24px;
-  padding: 0 2px;
-  color: white;
-  background: #d65b0c;
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0 10px;
   border: 0;
-  border-radius: 4px;
-  font-size: 9px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.accountPrompt button:last-child {
+.primario {
+  color: #fff;
+  background: #c2520b;
+}
+
+.secundario {
   color: #263d44;
   background: #e7e8e7;
 }
 
-.accountPrompt button:disabled {
-  cursor: not-allowed;
+.contaRecolhida {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  margin: auto 0 16px;
+  color: #56636c;
+  border-radius: 7px;
 }
 
+.contaRecolhida:hover {
+  color: #d65b0c;
+  background: #fbefe7;
+}
+
+/* No celular o menu vira uma barra inferior só com ícones; não há o que expandir. */
 @media (max-width: 700px) {
-  .sidebar {
+  .sidebar,
+  .expandida {
     position: fixed;
     z-index: 5;
     top: auto;
@@ -105,19 +193,33 @@
     height: 60px;
     flex-basis: 60px;
     flex-direction: row;
+    align-items: center;
     justify-content: center;
+    padding: 0;
+    overflow: visible;
     border-top: 1px solid #d5d9d7;
     border-right: 0;
   }
 
-  .logo,
-  .accountPrompt {
+  .topo,
+  .alternar,
+  .accountPrompt,
+  .contaRecolhida,
+  .navLink span {
     display: none;
   }
 
-  .navigation {
+  .navigation,
+  .expandida .navigation {
     flex-direction: row;
+    align-items: center;
     justify-content: space-around;
     gap: 0;
+  }
+
+  .expandida .navLink {
+    width: 42px;
+    justify-content: center;
+    padding: 0;
   }
 }

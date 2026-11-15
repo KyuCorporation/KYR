@@ -1,0 +1,69 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  color: #263d44;
+  background: #fff;
+}
+
+.main {
+  flex: 1 1 0;
+  max-width: 860px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 45px clamp(22px, 5vw, 72px) 34px;
+}
+
+.header h1 {
+  margin: 0;
+  color: #1f2d3a;
+  font-size: 26px;
+}
+
+.header p {
+  margin: 6px 0 26px;
+  color: #56636c;
+  font-size: 15px;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item {
+  padding: 14px 16px;
+  border: 1px solid #dfe3e1;
+  border-radius: 8px;
+}
+
+.item summary {
+  color: #1f2d3a;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.item p {
+  margin: 10px 0 0;
+  color: #3f4b52;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.item a {
+  color: #b4480a;
+  font-weight: 700;
+}
+
+.creditos {
+  margin: 28px 0 0;
+  color: #637078;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .main {
+    padding: 25px 16px 86px;
+  }
+}
