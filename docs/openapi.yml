@@ -5,7 +5,7 @@ info:
     Contrato de API do backend-core, cobrindo o endpoint de geração de
     roteiros turísticos combinando dados de geolocalização com curadoria
     via IA.
-  version: 1.1.0
+  version: 1.2.0
 
 servers:
   - url: http://localhost:8080
@@ -31,7 +31,11 @@ paths:
         ou a busca da rota falharem, a resposta é 502. Se nenhum POI for encontrado,
         a resposta é 200 com `pontos` vazio.
 
-        O roteiro gerado não é persistido.
+        A curadoria de cada lugar fica guardada por 30 dias, indexada pelo ID do lugar; lugares já
+        curados não voltam ao ia-service. Nesse caso `metadados.fonteIA` traz o modelo que fez a
+        curadoria guardada.
+
+        O roteiro gerado não é persistido por este endpoint (ver `/roteiros-salvos`).
       operationId: gerarRoteiro
       tags:
         - Roteiros
@@ -75,8 +79,290 @@ paths:
                 codigo: "erro_integracao_google_maps"
                 mensagem: "Falha de comunicação com a Places API (Forbidden)"
 
+  /auth/cadastro:
+    post:
+      summary: Cria uma conta e abre uma sessão
+      tags: [Conta]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CadastroRequest'
+      responses:
+        '201':
+          description: Conta criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessaoResponse'
+        '400':
+          description: Dados inválidos (nome vazio, e-mail inválido ou senha fora de 8 a 72 caracteres)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+        '409':
+          description: Já existe uma conta com esse e-mail (`email_ja_cadastrado`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+
+  /auth/login:
+    post:
+      summary: Abre uma sessão com e-mail e senha
+      tags: [Conta]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, senha]
+              properties:
+                email: { type: string, format: email }
+                senha: { type: string }
+      responses:
+        '200':
+          description: Sessão aberta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessaoResponse'
+        '401':
+          description: E-mail ou senha incorretos (`credenciais_invalidas`). A mensagem é a mesma nos dois casos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+
+  /auth/eu:
+    get:
+      summary: Devolve o usuário dono da sessão
+      tags: [Conta]
+      security: [{ sessao: [] }]
+      responses:
+        '200':
+          description: Usuário
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /auth/sair:
+    post:
+      summary: Encerra a sessão
+      tags: [Conta]
+      security: [{ sessao: [] }]
+      responses:
+        '204':
+          description: Sessão encerrada (também quando o token não existe mais)
+
+  /roteiros-salvos:
+    get:
+      summary: Lista os roteiros salvos na conta
+      tags: [Roteiros salvos]
+      security: [{ sessao: [] }]
+      responses:
+        '200':
+          description: Até 100 roteiros, do mais recente para o mais antigo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoteiroSalvo'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+    post:
+      summary: Salva um roteiro na conta
+      description: >
+        Guarda a origem e o destino escolhidos e os IDs dos lugares sugeridos. Nomes, endereços e
+        notas dos lugares do Google não são gravados (termos da Places API). Para rever os lugares,
+        o cliente gera o roteiro de novo com a mesma origem e o mesmo destino.
+      tags: [Roteiros salvos]
+      security: [{ sessao: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [origem, destino]
+              properties:
+                origem:
+                  $ref: '#/components/schemas/Ponto'
+                destino:
+                  $ref: '#/components/schemas/Ponto'
+                placeIds:
+                  type: array
+                  maxItems: 25
+                  items: { type: string }
+      responses:
+        '201':
+          description: Roteiro salvo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoteiroSalvo'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /roteiros-salvos/{id}:
+    delete:
+      summary: Remove um roteiro salvo da conta
+      tags: [Roteiros salvos]
+      security: [{ sessao: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '204':
+          description: Removido
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '404':
+          description: Roteiro inexistente ou de outra conta (`roteiro_nao_encontrado`)
+
+  /destinos/{slug}/avaliacoes:
+    parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Identificador do destino no catálogo do Kyr (por exemplo, `parque-das-aves`)
+        schema: { type: string, pattern: '^[a-z0-9-]{1,120}$' }
+    get:
+      summary: Lista as avaliações de um destino do catálogo do Kyr
+      description: Avaliações escritas por usuários do Kyr. Não são avaliações do Google Maps. Não exige login.
+      tags: [Avaliações]
+      responses:
+        '200':
+          description: Média, total e as 50 avaliações mais recentes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Avaliacoes'
+    put:
+      summary: Cria ou substitui a avaliação do usuário para o destino
+      tags: [Avaliações]
+      security: [{ sessao: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nota]
+              properties:
+                nota: { type: integer, minimum: 1, maximum: 5 }
+                comentario: { type: string, maxLength: 600 }
+      responses:
+        '200':
+          description: Avaliações do destino já com a nova
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Avaliacoes'
+        '400':
+          description: Nota fora de 1 a 5 ou comentário longo demais
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
 components:
+  securitySchemes:
+    sessao:
+      type: http
+      scheme: bearer
+      description: >
+        Token devolvido por `/auth/cadastro` e `/auth/login`, válido por 30 dias. No frontend ele fica
+        em um cookie httpOnly e é repassado pelas rotas `/api/*` do Next.
+  responses:
+    NaoAutenticado:
+      description: Sem token, token inválido ou sessão vencida (`nao_autenticado`)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroResponse'
   schemas:
+    CadastroRequest:
+      type: object
+      required: [nome, email, senha]
+      properties:
+        nome: { type: string, maxLength: 120 }
+        email: { type: string, format: email, maxLength: 254 }
+        senha: { type: string, minLength: 8, maxLength: 72 }
+
+    Usuario:
+      type: object
+      required: [nome, email]
+      properties:
+        nome: { type: string }
+        email: { type: string, format: email }
+
+    SessaoResponse:
+      type: object
+      required: [token, usuario]
+      properties:
+        token:
+          type: string
+          description: Token da sessão. Só aparece nesta resposta; o banco guarda apenas o SHA-256 dele.
+        usuario:
+          $ref: '#/components/schemas/Usuario'
+
+    LocalSalvo:
+      type: object
+      required: [nome]
+      properties:
+        nome: { type: string }
+        latitude:
+          type: number
+          format: double
+          nullable: true
+          description: Nula depois de 30 dias (limite dos termos do Google para guardar coordenadas).
+        longitude: { type: number, format: double, nullable: true }
+
+    RoteiroSalvo:
+      type: object
+      required: [id, origem, destino, totalPontos, placeIds, criadoEm, podeReabrir]
+      properties:
+        id: { type: integer, format: int64 }
+        origem:
+          $ref: '#/components/schemas/LocalSalvo'
+        destino:
+          $ref: '#/components/schemas/LocalSalvo'
+        totalPontos: { type: integer }
+        placeIds:
+          type: array
+          items: { type: string }
+        criadoEm: { type: string, format: date-time }
+        podeReabrir:
+          type: boolean
+          description: Falso quando as coordenadas já foram apagadas.
+
+    Avaliacoes:
+      type: object
+      required: [total, avaliacoes]
+      properties:
+        media: { type: number, format: double, nullable: true }
+        total: { type: integer }
+        avaliacoes:
+          type: array
+          items:
+            type: object
+            required: [autor, nota, comentario, criadoEm]
+            properties:
+              autor:
+                type: string
+                description: Primeiro nome de quem avaliou.
+              nota: { type: integer, minimum: 1, maximum: 5 }
+              comentario: { type: string }
+              criadoEm: { type: string, format: date-time }
+
     Ponto:
       type: object
       required:
@@ -168,6 +454,13 @@ components:
             Indica se este POI específico foi curado com sucesso pela IA. Quando false,
             trilha/tipo/descricao são nulos.
           example: true
+        placeId:
+          type: string
+          nullable: true
+          description: >
+            ID do lugar no Google Maps. É o único dado do lugar que o cliente pode guardar sem prazo;
+            nome, endereço e demais campos não devem ser armazenados.
+          example: "ChIJN1t_tDeuEmsRUsoyG83frY4"
         distanciaMetros:
           type: integer
           format: int64

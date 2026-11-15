@@ -18,18 +18,18 @@ O projeto é um monorepo com três aplicações, separando orquestração, intel
 
 ```mermaid
 flowchart TD
-    A["Frontend (PWA)<br/>Next.js 16"] -.->|integração pendente| C["Backend Core<br/>Spring Boot 4.1"]
+    A["Frontend (PWA)<br/>Next.js 16"] -->|POST /roteiros| C["Backend Core<br/>Spring Boot 4.1"]
     C --> G["Google Maps<br/>Directions + Places"]
     C -->|POST /curar-roteiro| E["IA Service<br/>Spring Boot 3.5 + Spring AI"]
     C -.->|sem persistência ainda| D[("PostgreSQL 15")]
-    E --> F["LLMs: Claude → Gemini → OpenAI"]
+    E --> F["LLMs: Claude → Gemini → OpenAI → Mistral local"]
 ```
 
 Linhas tracejadas indicam ligações previstas que ainda não estão implementadas (veja [Estado atual](#-estado-atual-do-mvp)).
 
 - **Frontend**: PWA em Next.js (App Router), Tailwind CSS v4 e Google Maps, pensado para uso mobile-first.
 - **Backend Core**: Spring Boot (Java 25). Responsável por orquestração, regras de negócio e contratos de API. Consulta Google Directions e Places e envia os POIs ao IA Service para curadoria.
-- **IA Service**: Spring Boot (Java 21) + Spring AI. Faz a curadoria dos POIs (classifica em `trilha` e `tipo` e gera a descrição) com uma cadeia de fallback entre provedores de LLM: Claude → Gemini → OpenAI → resposta sem curadoria. Cada provedor entra na cadeia somente se sua chave de API estiver configurada.
+- **IA Service**: Spring Boot (Java 25) + Spring AI. Faz a curadoria dos POIs (classifica em `trilha` e `tipo` e gera a descrição) com uma cadeia de fallback entre provedores de LLM: Claude → Gemini → OpenAI → Mistral local (Ollama) → resposta sem curadoria. Cada provedor em nuvem entra na cadeia somente se sua chave de API estiver configurada; o Mistral local só entra com `OLLAMA_ENABLED=true` e é tentado por último.
 - **Database**: PostgreSQL 15, com Flyway previsto para migrações.
 
 ## 📁 Estrutura do Repositório
@@ -145,7 +145,13 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 | Método | Rota | Descrição |
 |---|---|---|
 | `POST` | `/roteiros` | Recebe origem e destino quaisquer (`nome`, `latitude`, `longitude`), busca POIs no Google Places ao longo da rota, envia os mais bem avaliados (até 10 por padrão) à curadoria do `ia-service` e ordena o resultado via Google Directions. Detalhes abaixo. |
+| `POST` | `/auth/cadastro`, `/auth/login`, `/auth/sair` | Conta e sessão. Cadastro e login devolvem um token (`Authorization: Bearer`), válido por 30 dias. |
+| `GET` | `/auth/eu` | Usuário dono da sessão. |
+| `GET` `POST` | `/roteiros-salvos` | Lista e salva roteiros na conta (origem, destino e IDs dos lugares). Exige login. |
+| `DELETE` | `/roteiros-salvos/{id}` | Remove um roteiro salvo. Exige login. |
+| `GET` `PUT` | `/destinos/{slug}/avaliacoes` | Avaliações dos destinos do catálogo do Kyr. Ler é público; avaliar exige login. |
 | `GET` | `/api/v1/rotas/pois` | Busca POIs reais (Google Places) ao longo da rota aeroporto → evento. Aceita `raioMetros` opcional. Erros do Google retornam `502`. |
+| `GET` | `/actuator/health` | Health-check. |
 
 ### IA Service (`:8000`)
 
@@ -182,6 +188,7 @@ O roteiro gerado não é gravado no banco.
 | `GOOGLE_MAPS_API_KEY` | backend-core | Chave das APIs Directions e Places | — |
 | `IA_SERVICE_URL` | backend-core | Endereço do `ia-service` (no Docker Compose já vem como `http://ia-service:8000`) | `http://localhost:8000` |
 | `IA_SERVICE_TIMEOUT_SECONDS` | backend-core | Tempo máximo (s) de espera pela curadoria antes de devolver o roteiro sem ela | `40` |
+| `ROTEIRO_CACHE_CURADORIA_DIAS` | backend-core | Por quantos dias a curadoria de um lugar é reaproveitada antes de voltar para a IA | `30` |
 | `ROTEIRO_MAX_POIS_CURADORIA` | backend-core | Quantidade máxima de POIs (os de maior nota) enviados à curadoria | `10` |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | frontend | Chave pública do Maps JavaScript API (em `frontend/.env.local`) | — |
 | `NEXT_PUBLIC_API_URL` | frontend | URL do backend acessada pelo navegador | `http://localhost:8080` |
@@ -193,6 +200,7 @@ O roteiro gerado não é gravado no banco.
 | `OPENAI_API_KEY` | ia-service | Habilita o provedor OpenAI | — |
 | `OPENAI_MODEL` | ia-service | Modelo da OpenAI | `gpt-4o-mini` |
 | `LLM_TIMEOUT_SECONDS` | ia-service | Timeout (s) aplicado a cada provedor da cadeia | `8` |
+| `LLM_MAX_TOKENS` | ia-service | Limite de tokens da resposta de cada provedor | `4096` |
 
 ## 🧪 Testes e Integração Contínua
 
@@ -209,14 +217,16 @@ cd frontend && npm run lint && npm run build
 
 - `backend-core`: o teste de contexto usa Testcontainers (requer Docker em execução). `RotaPoiServiceIT` só roda se `GOOGLE_MAPS_API_KEY` estiver definida.
 - `ia-service`: o teste de integração com LLM real só roda com `RUN_LLM_INTEGRATION_TESTS=1` e ao menos uma chave de LLM definida. Ele faz chamadas reais e pode gerar custo.
-- O frontend ainda não tem testes automatizados; o CI roda lint e build.
+- `frontend`: os testes rodam com `npm test` (Vitest).
 
-Os workflows em `.github/workflows/` rodam em PRs para `main`: `ci-backend-core.yml` (Java 25), `ci-ia-service.yml` (Java 21) e `ci-frontend.yml` (Node 24).
+Os workflows em `.github/workflows/` rodam em PRs para `main` e em push na `main`: `ci-backend-core.yml` (Java 25), `ci-ia-service.yml` (Java 25) e `ci-frontend.yml` (Node 24).
 
 ## 📌 Estado atual do MVP
 
-- **Pronto**: curadoria com cadeia de fallback de LLMs no `ia-service`; `POST /roteiros` do `backend-core` integrado de ponta a ponta no backend (Places na rota informada → curadoria no `ia-service` → ordenação na Directions); formulário de criação de roteiro, mapa e lista de POIs no frontend.
-- **Pendente**: o frontend ainda não chama o backend (usa dados mockados), e o PostgreSQL ainda não é usado pela aplicação (sem entidades nem migrações Flyway).
+- **Pronto**: curadoria com cadeia de fallback de LLMs no `ia-service`; `POST /roteiros` do `backend-core` integrado de ponta a ponta no backend (Places na rota informada → curadoria no `ia-service` → ordenação na Directions); frontend ligado ao `POST /roteiros` (criação do roteiro, lista de POIs curados e mapa).
+- **Pronto também**: contas com login, roteiros salvos na conta, avaliações de destinos e cache da curadoria da IA, com a primeira migração Flyway do PostgreSQL.
+- **Dados do Google**: só o ID do lugar (sem prazo) e coordenadas (por até 30 dias) são guardados; nomes, endereços e notas de lugares nunca são gravados.
+- **Pendente**: paradas e meio de transporte ainda não entram no roteiro sugerido (valem só para o trajeto do mapa), e não há recuperação de senha nem confirmação de e-mail.
 
 Para o detalhamento técnico (contratos, divergências, dívidas conhecidas e convenções), consulte o [`CONTEXT.md`](./CONTEXT.md).
 
