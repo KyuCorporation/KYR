@@ -26,6 +26,7 @@ public class PoiNormalizer {
 
         Coordenada coordenadas = new Coordenada(place.location().latitude(), place.location().longitude());
         return Optional.of(new PoiCandidato(extrairNome(place), coordenadas, extrairCategoria(place), place.rating(),
+                place.userRatingCount(),
                 textoOuNulo(place.formattedAddress()), textoOuNulo(place.googleMapsUri())));
     }
 

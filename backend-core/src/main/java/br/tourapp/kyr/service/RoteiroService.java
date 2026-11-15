@@ -35,6 +35,10 @@ public class RoteiroService {
     public static final String FONTE_ROTA_GOOGLE = "google-directions-api";
     public static final String FONTE_ROTA_FALLBACK = "fallback-sem-otimizacao";
 
+    // Um POI precisa de bem mais que PESO_AVALIACOES avaliações para a nota dele pesar mais que a de referência.
+    private static final double PESO_AVALIACOES = 50;
+    private static final double NOTA_DE_REFERENCIA = 4.0;
+
     private static final Logger log = LoggerFactory.getLogger(RoteiroService.class);
 
     private final RotaPoiService rotaPoiService;
@@ -70,9 +74,22 @@ public class RoteiroService {
 
     private List<PoiCandidato> selecionarMaisBemAvaliados(List<PoiCandidato> candidatos) {
         return candidatos.stream()
-                .sorted(Comparator.comparing(PoiCandidato::nota, Comparator.nullsLast(Comparator.reverseOrder())))
+                .sorted(Comparator.comparing(RoteiroService::relevancia, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(Math.max(maxPoisCuradoria, 0))
                 .toList();
+    }
+
+    // Nota ponderada pelo total de avaliações (média bayesiana): um lugar com nota 5,0 e 3 avaliações
+    // não passa na frente de um com 4,7 e milhares. Sem o total de avaliações, vale a nota pura.
+    static Double relevancia(PoiCandidato poi) {
+        if (poi.nota() == null) {
+            return null;
+        }
+        if (poi.totalAvaliacoes() == null) {
+            return poi.nota();
+        }
+        double avaliacoes = Math.max(poi.totalAvaliacoes(), 0);
+        return (avaliacoes * poi.nota() + PESO_AVALIACOES * NOTA_DE_REFERENCIA) / (avaliacoes + PESO_AVALIACOES);
     }
 
     private Curadoria curar(List<PoiCandidato> selecionados) {
