@@ -117,6 +117,7 @@ function RoteiroListItem({ ponto, ordem, selecionado = false, onSelecionar }: Ro
   const clicavel = Boolean(onSelecionar);
   // Ponto sem curadoria da IA não tem trilha nem tipo: esconde as etiquetas em vez de mostrar "desconhecida".
   const semClassificacao = ponto.curado === false;
+  const parada = ponto.parada === true;
 
   return (
     <li
@@ -150,6 +151,11 @@ function RoteiroListItem({ ponto, ordem, selecionado = false, onSelecionar }: Ro
         </span>
         <h3 className="font-semibold text-[#1f2d3a]">{ponto.nome}</h3>
       </div>
+      {parada && (
+        <div className="mt-3 flex gap-2">
+          <span className="rounded-full bg-[#fbefe7] px-2.5 py-0.5 text-xs font-bold text-[#b4480a]">Sua parada</span>
+        </div>
+      )}
       {ponto.descricao && (
         <p className="mt-1 text-sm text-[#3f4b52]">{ponto.descricao}</p>
       )}

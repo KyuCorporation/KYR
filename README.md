@@ -144,7 +144,7 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 
 | Método | Rota | Descrição |
 |---|---|---|
-| `POST` | `/roteiros` | Recebe origem e destino quaisquer (`nome`, `latitude`, `longitude`), busca POIs no Google Places ao longo da rota, envia os mais bem avaliados (até 10 por padrão) à curadoria do `ia-service` e ordena o resultado via Google Directions. Detalhes abaixo. |
+| `POST` | `/roteiros` | Recebe origem e destino quaisquer (`nome`, `latitude`, `longitude`) e, opcionalmente, até 8 `paradas` e o `transporte` (`DRIVING`, `WALKING`, `BICYCLING` ou `TRANSIT`); busca POIs no Google Places ao longo da rota, envia os mais bem avaliados (até 10 por padrão) à curadoria do `ia-service` e ordena o resultado via Google Directions. Detalhes abaixo. |
 | `POST` | `/auth/cadastro`, `/auth/login`, `/auth/sair` | Conta e sessão. Cadastro e login devolvem um token (`Authorization: Bearer`), válido por 30 dias. |
 | `GET` | `/auth/eu` | Usuário dono da sessão. |
 | `GET` `POST` | `/roteiros-salvos` | Lista e salva roteiros na conta (origem, destino e IDs dos lugares). Exige login. |
@@ -226,7 +226,7 @@ Os workflows em `.github/workflows/` rodam em PRs para `main` e em push na `main
 - **Pronto**: curadoria com cadeia de fallback de LLMs no `ia-service`; `POST /roteiros` do `backend-core` integrado de ponta a ponta no backend (Places na rota informada → curadoria no `ia-service` → ordenação na Directions); frontend ligado ao `POST /roteiros` (criação do roteiro, lista de POIs curados e mapa).
 - **Pronto também**: contas com login, roteiros salvos na conta, avaliações de destinos e cache da curadoria da IA, com a primeira migração Flyway do PostgreSQL.
 - **Dados do Google**: só o ID do lugar (sem prazo) e coordenadas (por até 30 dias) são guardados; nomes, endereços e notas de lugares nunca são gravados.
-- **Pendente**: paradas e meio de transporte ainda não entram no roteiro sugerido (valem só para o trajeto do mapa), e não há recuperação de senha nem confirmação de e-mail.
+- **Pendente**: as paradas não ficam guardadas nos roteiros salvos; no transporte público o roteiro não é reordenado; não há recuperação de senha nem confirmação de e-mail.
 
 Para o detalhamento técnico (contratos, divergências, dívidas conhecidas e convenções), consulte o [`CONTEXT.md`](./CONTEXT.md).
 

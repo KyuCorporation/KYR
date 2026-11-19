@@ -5,7 +5,7 @@ info:
     Contrato de API do backend-core, cobrindo o endpoint de geração de
     roteiros turísticos combinando dados de geolocalização com curadoria
     via IA.
-  version: 1.2.0
+  version: 1.3.0
 
 servers:
   - url: http://localhost:8080
@@ -392,6 +392,23 @@ components:
           $ref: '#/components/schemas/Ponto'
         destino:
           $ref: '#/components/schemas/Ponto'
+        paradas:
+          type: array
+          maxItems: 8
+          description: >
+            Paradas escolhidas pela pessoa. Os lugares são buscados ao longo da rota que passa por
+            elas, na ordem informada. Na resposta, elas voltam como pontos com `parada` verdadeiro e
+            entram na ordenação junto com os lugares sugeridos, então a ordem final pode mudar.
+            Não passam pela curadoria.
+          items:
+            $ref: '#/components/schemas/Ponto'
+        transporte:
+          type: string
+          default: DRIVING
+          description: >
+            Meio de transporte das distâncias e tempos. Em TRANSIT a Directions não aceita pontos
+            intermediários: os lugares são buscados pela rota de carro e a ordenação cai no fallback.
+          enum: [DRIVING, WALKING, BICYCLING, TRANSIT]
 
     POI:
       type: object
@@ -461,6 +478,12 @@ components:
             ID do lugar no Google Maps. É o único dado do lugar que o cliente pode guardar sem prazo;
             nome, endereço e demais campos não devem ser armazenados.
           example: "ChIJN1t_tDeuEmsRUsoyG83frY4"
+        parada:
+          type: boolean
+          description: >
+            Verdadeiro quando o ponto é uma parada informada em `paradas`, e não um lugar sugerido.
+            Paradas vêm com `curado` falso e sem `placeId`, `endereco` e `fonte`.
+          example: false
         distanciaMetros:
           type: integer
           format: int64
@@ -523,6 +546,11 @@ components:
                 - google-directions-api
                 - fallback-sem-otimizacao
               example: "google-directions-api"
+            transporte:
+              type: string
+              description: Meio de transporte usado nas distâncias e tempos.
+              enum: [DRIVING, WALKING, BICYCLING, TRANSIT]
+              example: "DRIVING"
 
     ErroResponse:
       type: object

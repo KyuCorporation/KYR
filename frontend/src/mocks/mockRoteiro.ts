@@ -22,6 +22,7 @@ export const mockRoteiroComDados: RoteiroResponse = {
     fonteIA: "gemini-3.5-flash-lite",
     curadoPorIa: true,
     fonteRota: "google-directions-api",
+    transporte: "DRIVING",
   },
   pontos: [
     {
@@ -33,6 +34,7 @@ export const mockRoteiroComDados: RoteiroResponse = {
       descricao: "Santuário com aves nativas e exóticas, próximo às Cataratas.",
       curado: true,
       placeId: null,
+      parada: false,
       latitude: -25.6685,
       longitude: -54.4384,
       endereco: "Av. das Cataratas, 12450 - Foz do Iguaçu - PR",
@@ -48,6 +50,7 @@ export const mockRoteiroComDados: RoteiroResponse = {
       descricao: "Um dos principais atrativos naturais do Brasil.",
       curado: true,
       placeId: null,
+      parada: false,
       latitude: -25.6953,
       longitude: -54.4367,
       endereco: "Bus Terminus - Rod. BR-469 - Km 18, Foz do Iguaçu - PR",
@@ -63,6 +66,7 @@ export const mockRoteiroComDados: RoteiroResponse = {
       descricao: "Shopping com lojas e praça de alimentação.",
       curado: true,
       placeId: null,
+      parada: false,
       latitude: -25.5236,
       longitude: -54.5793,
       endereco: "Av. Jorge Schimmelpfeng, 1385 - Foz do Iguaçu - PR",
@@ -78,6 +82,7 @@ export const mockRoteiroComDados: RoteiroResponse = {
       descricao: "Restaurante típico com show latino-americano.",
       curado: true,
       placeId: null,
+      parada: false,
       latitude: -25.5487,
       longitude: -54.5677,
       endereco: "Av. das Cataratas, 1749 - Foz do Iguaçu - PR",
@@ -104,6 +109,7 @@ export const mockRoteiroVazio: RoteiroResponse = {
     fonteIA: "sem-curadoria",
     curadoPorIa: false,
     fonteRota: "fallback-sem-otimizacao",
+    transporte: "DRIVING",
   },
   pontos: [],
 };

@@ -174,6 +174,11 @@ export default function CriarRoteiroPage() {
             latitude: destinoSelecionado.latitude,
             longitude: destinoSelecionado.longitude,
           },
+          paradas: paradas
+            .map((p) => p.place)
+            .filter((place): place is Place => place !== null)
+            .map((place) => ({ nome: place.name, latitude: place.latitude, longitude: place.longitude })),
+          transporte: TRAVEL_MODE_MAP[transporte],
         },
         { onStatusChange: setRequestStatus },
       );
@@ -298,9 +303,9 @@ export default function CriarRoteiroPage() {
             </button>
           </div>
           {apiError && <p className={styles.apiError} role="alert" aria-live="assertive">{apiError}</p>}
-          {(paradas.some((parada) => parada.place !== null) || transporte !== "car") && (
+          {transporte === "transit" && (
             <p className={styles.requestStatus}>
-              As paradas e o meio de transporte valem para o trajeto do mapa ao lado. Os pontos sugeridos na próxima etapa consideram a origem e o destino, de carro.
+              No transporte público, os lugares sugeridos seguem o trajeto de carro e aparecem sem reordenação, sem distância nem tempo entre eles.
             </p>
           )}
         </section>
@@ -329,8 +334,8 @@ export default function CriarRoteiroPage() {
             <p className={styles.tipText}>
               <strong>Dica da Kyr :</strong>
               <br />
-              Adicione quantas paradas quiser para ver o trajeto no mapa. Na
-              próxima etapa, a Kyr sugere lugares pelo caminho.
+              Adicione até 8 paradas. Na próxima etapa, a Kyr sugere lugares
+              pelo caminho, passando por elas, no meio de transporte escolhido.
             </p>
           </div>
 

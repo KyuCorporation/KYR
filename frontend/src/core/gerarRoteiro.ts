@@ -1,6 +1,7 @@
 import { apiFetch, type ApiRequestStatus } from "@/core/api";
 import type {
   FonteRota,
+  Transporte,
   LocalRoteiro,
   Metadados,
   PontoDeInteresse,
@@ -12,7 +13,12 @@ import type {
 export interface RoteiroParams {
   origem: LocalRoteiro;
   destino: LocalRoteiro;
+  /** Paradas escolhidas, na ordem informada. */
+  paradas?: LocalRoteiro[];
+  transporte?: Transporte;
 }
+
+const TRANSPORTES: Transporte[] = ["DRIVING", "WALKING", "BICYCLING", "TRANSIT"];
 
 export interface GerarRoteiroOptions {
   onStatusChange?: (status: ApiRequestStatus) => void;
@@ -25,7 +31,13 @@ export async function gerarRoteiro(
   const response = await apiFetch<unknown>("/api/roteiros", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ origem: params.origem, destino: params.destino }),
+    body: JSON.stringify({
+      origem: params.origem,
+      destino: params.destino,
+      // Só envia o que foi escolhido: sem paradas e de carro, o corpo é o mesmo de antes.
+      ...(params.paradas && params.paradas.length > 0 ? { paradas: params.paradas } : {}),
+      ...(params.transporte && params.transporte !== "DRIVING" ? { transporte: params.transporte } : {}),
+    }),
     onStatusChange: options.onStatusChange,
   });
 
@@ -55,6 +67,7 @@ export function normalizarRoteiroResponse(
     fonteIA: stringValue(rawMetadata.fonteIA),
     curadoPorIa: rawMetadata.curadoPorIa === true,
     fonteRota: stringValue(rawMetadata.fonteRota) as FonteRota | "",
+    transporte: TRANSPORTES.includes(rawMetadata.transporte as Transporte) ? (rawMetadata.transporte as Transporte) : "DRIVING",
   };
 
   return { origem, destino, metadados, pontos };
@@ -83,6 +96,7 @@ function normalizarPonto(
     distanciaMetros: finiteNumber(item.distanciaMetros),
     duracaoSegundos: finiteNumber(item.duracaoSegundos),
     placeId: stringValue(item.placeId) || null,
+    parada: item.parada === true,
   };
 }
 

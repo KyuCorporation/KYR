@@ -16,6 +16,7 @@ const ponto: PontoDeInteresse = {
   distanciaMetros: 1200,
   duracaoSegundos: 240,
   placeId: "place-marco",
+  parada: false,
 };
 
 describe("montarCartaoDoPonto", () => {
@@ -57,6 +58,16 @@ describe("montarCartaoDoPonto", () => {
 
     expect(html).not.toContain("javascript:");
     expect(html).not.toContain("Abrir no Google Maps");
+  });
+});
+
+describe("cartão de uma parada", () => {
+  it("marca como sua parada e usa o meio de transporte no trecho", () => {
+    const html = montarCartaoDoPonto({ ...ponto, curado: false, parada: true }, 2, "Aeroporto", "WALKING");
+
+    expect(html).toContain("Sua parada");
+    expect(html).toContain("a pé a partir de Aeroporto");
+    expect(html).not.toContain("Turismo");
   });
 });
 

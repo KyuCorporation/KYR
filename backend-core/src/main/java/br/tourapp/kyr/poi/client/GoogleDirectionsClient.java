@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class GoogleDirectionsClient {
@@ -27,7 +29,13 @@ public class GoogleDirectionsClient {
     }
 
     public DirectionsResponseDto buscarRota(Coordenada origem, Coordenada destino) {
+        return buscarRota(origem, destino, List.of(), "driving");
+    }
+
+    // Rota passando pelas paradas, na ordem informada (sem otimizar), no modo de viagem pedido.
+    public DirectionsResponseDto buscarRota(Coordenada origem, Coordenada destino, List<Coordenada> paradas, String modo) {
         validarChaveConfigurada();
+        String waypoints = paradas.stream().map(this::formatarCoordenada).collect(Collectors.joining("|"));
 
         DirectionsResponseDto resposta;
         try {
@@ -36,7 +44,8 @@ public class GoogleDirectionsClient {
                             .path(DIRECTIONS_PATH)
                             .queryParam("origin", formatarCoordenada(origem))
                             .queryParam("destination", formatarCoordenada(destino))
-                            .queryParam("mode", "driving")
+                            .queryParam("mode", modo)
+                            .queryParamIfPresent("waypoints", waypoints.isEmpty() ? Optional.empty() : Optional.of(waypoints))
                             .queryParam("key", properties.apiKey())
                             .build())
                     .retrieve()

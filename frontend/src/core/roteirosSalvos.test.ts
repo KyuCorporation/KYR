@@ -12,10 +12,10 @@ import type { RoteiroResponse } from "@/types/roteiro";
 const roteiro: RoteiroResponse = {
   origem: { nome: "Aeroporto de Foz", latitude: -25.6, longitude: -54.48 },
   destino: { nome: "Centro", latitude: -25.54, longitude: -54.58 },
-  metadados: { totalPontos: 2, tempoRespostaMs: 900, fonteIA: "gemini-3.5-flash-lite", curadoPorIa: true, fonteRota: "google-directions-api" },
+  metadados: { totalPontos: 2, tempoRespostaMs: 900, fonteIA: "gemini-3.5-flash-lite", curadoPorIa: true, fonteRota: "google-directions-api", transporte: "DRIVING" },
   pontos: [
-    { id: "poi-1", nome: "Paris 6 Bistrô", trilha: "turismo", tipo: "alimentacao", endereco: "Av. das Cataratas, 3570", latitude: -25.57, longitude: -54.54, fonte: "https://maps.google.com/?cid=1", descricao: "Bistrô.", curado: true, distanciaMetros: 100, duracaoSegundos: 60, placeId: "place-paris6" },
-    { id: "poi-2", nome: "Aloa Coffee", trilha: "turismo", tipo: "alimentacao", endereco: "R. Mal. Floriano, 1300", latitude: -25.54, longitude: -54.58, fonte: "https://maps.google.com/?cid=2", descricao: "Café.", curado: true, distanciaMetros: 200, duracaoSegundos: 90, placeId: null },
+    { id: "poi-1", nome: "Paris 6 Bistrô", trilha: "turismo", tipo: "alimentacao", endereco: "Av. das Cataratas, 3570", latitude: -25.57, longitude: -54.54, fonte: "https://maps.google.com/?cid=1", descricao: "Bistrô.", curado: true, distanciaMetros: 100, duracaoSegundos: 60, placeId: "place-paris6", parada: false },
+    { id: "poi-2", nome: "Aloa Coffee", trilha: "turismo", tipo: "alimentacao", endereco: "R. Mal. Floriano, 1300", latitude: -25.54, longitude: -54.58, fonte: "https://maps.google.com/?cid=2", descricao: "Café.", curado: true, distanciaMetros: 200, duracaoSegundos: 90, placeId: null, parada: false },
   ],
 };
 
