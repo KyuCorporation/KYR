@@ -11,6 +11,7 @@ import br.tourapp.kyr.iaservice.client.IaServiceClient;
 import br.tourapp.kyr.iaservice.client.dto.CuradoriaResponseDto;
 import br.tourapp.kyr.iaservice.client.dto.PontoBrutoDto;
 import br.tourapp.kyr.iaservice.client.dto.PontoCuradoDto;
+import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
 import br.tourapp.kyr.poi.model.Coordenada;
 import br.tourapp.kyr.poi.model.PoiCandidato;
 import br.tourapp.kyr.poi.model.PoisNaRota;
@@ -103,8 +104,20 @@ public class RoteiroService {
         if (paradas.isEmpty() && transporte == Transporte.DRIVING) {
             return rotaPoiService.buscarPoisNaRota(origem, destino, null);
         }
-        String modo = transporte.aceitaParadas() ? transporte.modoDirections() : Transporte.DRIVING.modoDirections();
-        return rotaPoiService.buscarPoisNaRota(origem, destino, paradas.stream().map(this::paraCoordenada).toList(), modo, null);
+        List<Coordenada> coordenadasDasParadas = paradas.stream().map(this::paraCoordenada).toList();
+        String carro = Transporte.DRIVING.modoDirections();
+        String modo = transporte.aceitaParadas() ? transporte.modoDirections() : carro;
+        if (modo.equals(carro)) {
+            return rotaPoiService.buscarPoisNaRota(origem, destino, coordenadasDasParadas, carro, null);
+        }
+        try {
+            return rotaPoiService.buscarPoisNaRota(origem, destino, coordenadasDasParadas, modo, null);
+        } catch (GoogleMapsIntegrationException e) {
+            // A Directions não tem rota a pé ou de bicicleta em toda região (ZERO_RESULTS). Em vez de falhar
+            // o roteiro inteiro, busca os lugares pela rota de carro; a ordenação ainda tenta o modo escolhido.
+            log.warn("Sem rota no modo {} para buscar lugares, usando a de carro: {}", modo, e.getMessage());
+            return rotaPoiService.buscarPoisNaRota(origem, destino, coordenadasDasParadas, carro, null);
+        }
     }
 
     private List<PoiCandidato> selecionarMaisBemAvaliados(List<PoiCandidato> candidatos) {

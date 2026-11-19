@@ -121,7 +121,8 @@ export default function RoteiroMap({
         ...pontosComCoordenadas.map((ponto) => ponto.id),
       ].join(":")
     : null;
-  const rotaCarregando = Boolean(rotaNormalizada && directionsConcluidas !== directionsKey);
+  // No transporte público a rota não é pedida à Directions, então não há o que esperar.
+  const rotaCarregando = Boolean(rotaNormalizada && transporte !== "TRANSIT" && directionsConcluidas !== directionsKey);
 
   function abrirInfoWindow(ponto: PontoComCoordenadas, marker: google.maps.Marker) {
     const map = mapRef.current;

@@ -10,6 +10,7 @@ import br.tourapp.kyr.iaservice.client.IaServiceClient;
 import br.tourapp.kyr.iaservice.client.dto.CuradoriaResponseDto;
 import br.tourapp.kyr.iaservice.client.dto.PontoBrutoDto;
 import br.tourapp.kyr.iaservice.client.dto.PontoCuradoDto;
+import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
 import br.tourapp.kyr.poi.model.Coordenada;
 import br.tourapp.kyr.poi.model.PoiCandidato;
 import br.tourapp.kyr.poi.model.PoisNaRota;
@@ -128,6 +129,20 @@ class RoteiroServiceParadasTest {
             assertThat(p.distanciaMetros()).isEqualTo(1000L);
         });
         assertThat(resposta.metadados().transporte()).isEqualTo("DRIVING");
+    }
+
+    @Test
+    void semRotaDeBicicletaBuscaOsLugaresPelaRotaDeCarroEmVezDeFalhar() {
+        when(rotaPoiService.buscarPoisNaRota(any(), any(), anyList(), eq("bicycling"), isNull()))
+                .thenThrow(new GoogleMapsIntegrationException("Directions API retornou status ZERO_RESULTS"));
+        when(rotaPoiService.buscarPoisNaRota(any(), any(), anyList(), eq("driving"), isNull()))
+                .thenReturn(new PoisNaRota(List.of(), List.of()));
+
+        RoteiroResponseDTO resposta = service.gerarRoteiro(new RoteiroRequestDTO(ORIGEM, DESTINO, null, Transporte.BICYCLING));
+
+        verify(rotaPoiService).buscarPoisNaRota(any(), any(), anyList(), eq("driving"), isNull());
+        assertThat(resposta.pontos()).isEmpty();
+        assertThat(resposta.metadados().transporte()).isEqualTo("BICYCLING");
     }
 
     @Test
