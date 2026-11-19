@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocalRoteiro, PontoDeInteresse, Trilha } from "@/types/roteiro";
+import { LocalRoteiro, PontoDeInteresse, Transporte, Trilha } from "@/types/roteiro";
 import { useGoogleMapsScript } from "@/hooks/useGoogleMapsScript";
 import { montarCartaoDoPonto } from "@/components/cartaoDoPonto";
 
@@ -52,6 +52,8 @@ interface RoteiroMapProps {
   semBorda?: boolean;
   rota?: { origem: LocalRoteiro; destino: LocalRoteiro };
   onErroRota?: (message: string | null) => void;
+  /** Meio de transporte do roteiro. No transporte público a rota é desenhada como linha reta entre os pontos. */
+  transporte?: Transporte;
 }
 
 export default function RoteiroMap({
@@ -62,6 +64,7 @@ export default function RoteiroMap({
   semBorda = false,
   rota,
   onErroRota,
+  transporte = "DRIVING",
 }: RoteiroMapProps) {
   const { carregado, erro } = useGoogleMapsScript();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -195,7 +198,7 @@ export default function RoteiroMap({
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 11,
-          fillColor: TRILHA_MARKER_COLOR[ponto.trilha] ?? COR_MARCADOR_DESCONHECIDO,
+          fillColor: ponto.parada ? COR_ROTA : TRILHA_MARKER_COLOR[ponto.trilha] ?? COR_MARCADOR_DESCONHECIDO,
           fillOpacity: 1,
           strokeColor: "#ffffff",
           strokeWeight: 2,
@@ -210,11 +213,12 @@ export default function RoteiroMap({
 
       markersRef.current.set(ponto.id, marker);
       const anterior = indice > 0 ? pontosComCoordenadas[indice - 1].nome : rotaNormalizada?.origem.nome;
-      cartoesRef.current.set(ponto.id, montarCartaoDoPonto(ponto, indice + 1, anterior));
+      cartoesRef.current.set(ponto.id, montarCartaoDoPonto(ponto, indice + 1, anterior, transporte));
       bounds.extend(position);
     });
 
-    if (rotaNormalizada && directionsKey) {
+    // A Directions não aceita pontos intermediários no transporte público.
+    if (rotaNormalizada && directionsKey && transporte !== "TRANSIT") {
       let active = true;
       const renderer = new google.maps.DirectionsRenderer({
         map,
@@ -233,7 +237,7 @@ export default function RoteiroMap({
             stopover: true,
           })),
           optimizeWaypoints: false,
-          travelMode: google.maps.TravelMode.DRIVING,
+          travelMode: transporte as google.maps.TravelMode,
         })
         .then((result) => {
           if (active) {
@@ -273,7 +277,7 @@ export default function RoteiroMap({
     } else {
       map.fitBounds(bounds, 48);
     }
-  }, [carregado, pontosComCoordenadas, rotaNormalizada, directionsKey]);
+  }, [carregado, pontosComCoordenadas, rotaNormalizada, directionsKey, transporte]);
 
   // Reage à seleção feita fora do mapa (ex: clique num item da lista):
   // centraliza e abre o balão do ponto correspondente.

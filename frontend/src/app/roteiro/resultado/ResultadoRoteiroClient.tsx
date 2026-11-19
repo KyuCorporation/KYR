@@ -50,7 +50,8 @@ export default function ResultadoRoteiroClient() {
 
   const fallback = roteiro.metadados.fonteRota === "fallback-sem-otimizacao";
   // Roteiros guardados antes do campo existir não têm curadoPorIa: só avisa quando vier false.
-  const semCuradoria = roteiro.pontos.length > 0 && roteiro.metadados.curadoPorIa === false;
+  // As paradas da pessoa nunca passam pela IA; o aviso só vale para os lugares sugeridos.
+  const semCuradoria = roteiro.pontos.some((ponto) => !ponto.parada) && roteiro.metadados.curadoPorIa === false;
   const distance = formatRouteTotal(
     roteiro.pontos.map((ponto) => ponto.distanciaMetros),
     "distance",
@@ -132,6 +133,7 @@ export default function ResultadoRoteiroClient() {
           <RoteiroMap
             pontos={roteiro.pontos}
             rota={{ origem: roteiro.origem, destino: roteiro.destino }}
+            transporte={roteiro.metadados.transporte ?? "DRIVING"}
             pontoSelecionadoId={pontoSelecionadoId}
             onSelecionarPonto={setPontoSelecionadoId}
             onErroRota={setErroMapa}

@@ -1,4 +1,11 @@
-import type { PontoDeInteresse } from "@/types/roteiro";
+import type { PontoDeInteresse, Transporte } from "@/types/roteiro";
+
+const MODO: Record<Transporte, string> = {
+  DRIVING: "de carro",
+  WALKING: "a pé",
+  BICYCLING: "de bicicleta",
+  TRANSIT: "de transporte público",
+};
 
 // Monta o HTML do cartão que abre no mapa quando um ponto do roteiro é clicado.
 // É HTML em texto porque o InfoWindow do Google Maps recebe conteúdo pronto, fora da árvore do React;
@@ -38,9 +45,16 @@ function linkSeguro(url: string): string | null {
  * @param ordem posição do ponto no roteiro, começando em 1
  * @param anterior nome do lugar de onde o trecho parte (a origem ou o ponto anterior)
  */
-export function montarCartaoDoPonto(ponto: PontoDeInteresse, ordem: number, anterior?: string): string {
+export function montarCartaoDoPonto(
+  ponto: PontoDeInteresse,
+  ordem: number,
+  anterior?: string,
+  transporte: Transporte = "DRIVING",
+): string {
   const cor = TRILHA_COR[ponto.trilha] ?? "#52525b";
-  const etiquetas = ponto.curado === false
+  const etiquetas = ponto.parada
+    ? `<span style="padding:2px 9px;border-radius:999px;background:#fbefe7;color:#b4480a;font-size:12px;font-weight:700;">Sua parada</span>`
+    : ponto.curado === false
     ? ""
     : [TRILHA_LABEL[ponto.trilha] ?? ponto.trilha, TIPO_LABEL[ponto.tipo] ?? ponto.tipo]
         .filter(Boolean)
@@ -50,7 +64,7 @@ export function montarCartaoDoPonto(ponto: PontoDeInteresse, ordem: number, ante
   const distancia = formatarDistancia(ponto.distanciaMetros);
   const duracao = formatarDuracao(ponto.duracaoSegundos);
   const trecho = distancia && duracao
-    ? `<p style="margin:8px 0 0;color:#263d44;font-size:13px;"><strong>${escapeHtml(distancia)}</strong> · ${escapeHtml(duracao)} de carro${anterior ? ` a partir de ${escapeHtml(anterior)}` : ""}</p>`
+    ? `<p style="margin:8px 0 0;color:#263d44;font-size:13px;"><strong>${escapeHtml(distancia)}</strong> · ${escapeHtml(duracao)} ${MODO[transporte]}${anterior ? ` a partir de ${escapeHtml(anterior)}` : ""}</p>`
     : "";
 
   const descricao = ponto.descricao

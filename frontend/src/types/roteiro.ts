@@ -1,4 +1,7 @@
 export type Trilha = "turismo" | "compras";
+
+/** Meio de transporte, com os nomes do modo de viagem da Directions API. */
+export type Transporte = "DRIVING" | "WALKING" | "BICYCLING" | "TRANSIT";
 export type TipoPonto = "alimentacao" | "lazer";
 
 export interface LocalRoteiro {
@@ -23,6 +26,8 @@ export interface PontoDeInteresse {
   duracaoSegundos: number | null;
   /** ID do lugar no Google Maps: o único dado do lugar que pode ser guardado sem prazo. */
   placeId: string | null;
+  /** true quando é uma parada escolhida pela pessoa, e não um lugar sugerido. */
+  parada: boolean;
 }
 
 export type FonteRota = "google-directions-api" | "fallback-sem-otimizacao";
@@ -35,6 +40,8 @@ export interface Metadados {
   curadoPorIa: boolean;
   /** Vazio quando o backend não informou a fonte da ordenação. */
   fonteRota: FonteRota | "";
+  /** Meio de transporte das distâncias e tempos. */
+  transporte: Transporte;
 }
 
 export interface RoteiroResponse {
@@ -56,6 +63,7 @@ export interface RespostaRoteiroApi {
     descricao: string | null;
     curado: boolean;
     placeId?: string | null;
+    parada?: boolean;
     distanciaMetros: number | null;
     duracaoSegundos: number | null;
   }>;
@@ -65,5 +73,6 @@ export interface RespostaRoteiroApi {
     fonteIA: string;
     curadoPorIa: boolean;
     fonteRota: FonteRota;
+    transporte?: Transporte;
   };
 }

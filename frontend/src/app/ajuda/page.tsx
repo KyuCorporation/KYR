@@ -29,8 +29,11 @@ const PERGUNTAS: Array<{ pergunta: string; resposta: React.ReactNode }> = [
     pergunta: "Para que servem as paradas e o meio de transporte?",
     resposta: (
       <>
-        Eles mudam o trajeto desenhado no mapa da tela de criação, com o tempo e a distância. Os lugares sugeridos na
-        etapa seguinte consideram a origem e o destino, de carro.
+        Os lugares sugeridos são buscados ao longo do trajeto que passa pelas suas paradas, no meio de transporte
+        escolhido, e as paradas aparecem no roteiro marcadas como &quot;Sua parada&quot;. A ordem de visita é
+        otimizada junto com os lugares sugeridos, então pode não ser a ordem em que você as adicionou. No transporte
+        público, a busca segue o trajeto de carro e o roteiro não é reordenado. As paradas não ficam guardadas quando
+        você salva o roteiro.
       </>
     ),
   },

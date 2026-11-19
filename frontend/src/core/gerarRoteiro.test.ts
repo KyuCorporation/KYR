@@ -154,6 +154,46 @@ describe("contrato atual do POST /roteiros", () => {
   });
 });
 
+describe("paradas e meio de transporte", () => {
+  const respostaVazia = () => new Response(JSON.stringify({
+    pontos: [{ nome: "Parque das Aves", latitude: -25.615, longitude: -54.4841, curado: false, parada: true, distanciaMetros: 900, duracaoSegundos: 700 }],
+    metadados: { totalPontos: 1, tempoRespostaMs: 300, fonteIA: "sem-curadoria", curadoPorIa: false, fonteRota: "google-directions-api", transporte: "WALKING" },
+  }), { headers: { "Content-Type": "application/json" } });
+
+  it("envia paradas e transporte quando escolhidos e lê parada e transporte da resposta", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(respostaVazia());
+    vi.stubGlobal("fetch", fetchMock);
+    const parada = { nome: "Parque das Aves", latitude: -25.615, longitude: -54.4841 };
+
+    const resultado = await gerarRoteiro({ origem, destino, paradas: [parada], transporte: "WALKING" });
+
+    const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(JSON.parse(String(options.body))).toEqual({ origem, destino, paradas: [parada], transporte: "WALKING" });
+    expect(resultado.pontos[0].parada).toBe(true);
+    expect(resultado.metadados.transporte).toBe("WALKING");
+  });
+
+  it("sem paradas e de carro, manda o mesmo corpo de antes", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(respostaVazia());
+    vi.stubGlobal("fetch", fetchMock);
+
+    await gerarRoteiro({ origem, destino, paradas: [], transporte: "DRIVING" });
+
+    const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(JSON.parse(String(options.body))).toEqual({ origem, destino });
+  });
+
+  it("resposta antiga sem transporte nem parada vale carro e lugar sugerido", () => {
+    const result = normalizarRoteiroResponse({
+      pontos: [{ nome: "Café" }],
+      metadados: { totalPontos: 1, tempoRespostaMs: 1, fonteIA: "x" },
+    }, origem, destino);
+
+    expect(result.metadados.transporte).toBe("DRIVING");
+    expect(result.pontos[0].parada).toBe(false);
+  });
+});
+
 describe("formatRouteTotal", () => {
   it("não calcula uma soma quando algum trecho veio nulo", () => {
     expect(formatRouteTotal([1200, null], "distance")).toBe("Indisponível");
