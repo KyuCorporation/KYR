@@ -2,6 +2,7 @@ package br.tourapp.kyr.controller;
 
 import br.tourapp.kyr.dto.MetadadosDTO;
 import br.tourapp.kyr.dto.POIDTO;
+import br.tourapp.kyr.dto.PontoDTO;
 import br.tourapp.kyr.dto.RoteiroResponseDTO;
 import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
 import br.tourapp.kyr.service.RoteiroService;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
@@ -67,6 +69,48 @@ class RoteiroControllerTest {
                 .andExpect(jsonPath("$.metadados.fonteIA").value("gemini-2.5-flash"))
                 .andExpect(jsonPath("$.metadados.curadoPorIa").value(true))
                 .andExpect(jsonPath("$.metadados.fonteRota").value("google-directions-api"));
+    }
+
+    @Test
+    void deveAceitarParadasETransporteEDevolverOsCamposNovos() throws Exception {
+        POIDTO parada = POIDTO.daParada(new PontoDTO("Parque das Aves", -25.615, -54.4841));
+        when(roteiroService.gerarRoteiro(any())).thenReturn(new RoteiroResponseDTO(List.of(parada),
+                new MetadadosDTO(1, 900, "sem-curadoria", false, "google-directions-api", "WALKING")));
+
+        mockMvc.perform(post("/roteiros").contentType(MediaType.APPLICATION_JSON).content("""
+                        {
+                          "origem": {"nome": "Aeroporto", "latitude": -25.6, "longitude": -54.48},
+                          "destino": {"nome": "Centro", "latitude": -25.54, "longitude": -54.58},
+                          "paradas": [{"nome": "Parque das Aves", "latitude": -25.615, "longitude": -54.4841}],
+                          "transporte": "WALKING"
+                        }
+                        """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pontos[0].parada").value(true))
+                .andExpect(jsonPath("$.metadados.transporte").value("WALKING"));
+    }
+
+    @Test
+    void deveRetornar400ComTransporteDesconhecido() throws Exception {
+        mockMvc.perform(post("/roteiros").contentType(MediaType.APPLICATION_JSON).content("""
+                        {
+                          "origem": {"nome": "Aeroporto", "latitude": -25.6, "longitude": -54.48},
+                          "destino": {"nome": "Centro", "latitude": -25.54, "longitude": -54.58},
+                          "transporte": "FOGUETE"
+                        }
+                        """))
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(roteiroService);
+    }
+
+    @Test
+    void deveRetornar400ComMaisDeOitoParadas() throws Exception {
+        String parada = "{\"nome\": \"P\", \"latitude\": -25.6, \"longitude\": -54.5}";
+        String paradas = String.join(",", Collections.nCopies(9, parada));
+        mockMvc.perform(post("/roteiros").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"origem\": " + parada + ", \"destino\": " + parada + ", \"paradas\": [" + paradas + "]}"))
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(roteiroService);
     }
 
     @Test

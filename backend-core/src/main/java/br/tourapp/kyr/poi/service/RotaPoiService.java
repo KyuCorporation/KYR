@@ -50,9 +50,17 @@ public class RotaPoiService {
     }
 
     public PoisNaRota buscarPoisNaRota(Coordenada origem, Coordenada destino, Integer raioMetrosParam) {
+        return buscarPoisNaRota(origem, destino, List.of(), "driving", raioMetrosParam);
+    }
+
+    // Busca lugares ao longo da rota que passa pelas paradas, no modo de viagem informado.
+    public PoisNaRota buscarPoisNaRota(Coordenada origem, Coordenada destino, List<Coordenada> paradas, String modo,
+                                       Integer raioMetrosParam) {
         int raioMetros = raioMetrosParam != null ? raioMetrosParam : properties.poi().raioBuscaMetros();
 
-        DirectionsResponseDto resposta = directionsClient.buscarRota(origem, destino);
+        DirectionsResponseDto resposta = paradas.isEmpty() && "driving".equals(modo)
+                ? directionsClient.buscarRota(origem, destino)
+                : directionsClient.buscarRota(origem, destino, paradas, modo);
 
         DirectionsRouteDto primeiraRota = resposta.routes().stream()
                 .findFirst()

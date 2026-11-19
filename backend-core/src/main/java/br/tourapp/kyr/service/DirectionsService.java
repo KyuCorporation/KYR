@@ -31,6 +31,10 @@ public class DirectionsService {
  
 
     public ResultadoRota calcularRotaOtimizada(PontoDTO origem, PontoDTO destino, List<PontoDTO> waypoints) {
+        return calcularRotaOtimizada(origem, destino, waypoints, "driving");
+    }
+
+    public ResultadoRota calcularRotaOtimizada(PontoDTO origem, PontoDTO destino, List<PontoDTO> waypoints, String modo) {
         if (apiKey == null || apiKey.isBlank()) {
             throw new IllegalStateException("GOOGLE_MAPS_API_KEY não configurada.");
         }
@@ -44,6 +48,7 @@ public class DirectionsService {
             .queryParam("origin", origem.latitude() + "," + origem.longitude())
             .queryParam("destination", destino.latitude() + "," + destino.longitude())
             .queryParam("waypoints", waypointsParam)
+            .queryParam("mode", modo)
             .queryParam("key", apiKey)
             .build()
             .toUriString();

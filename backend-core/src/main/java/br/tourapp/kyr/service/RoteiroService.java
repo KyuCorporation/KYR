@@ -6,6 +6,7 @@ import br.tourapp.kyr.dto.PontoDTO;
 import br.tourapp.kyr.dto.RoteiroRequestDTO;
 import br.tourapp.kyr.dto.RoteiroResponseDTO;
 import br.tourapp.kyr.dto.TrechoRotaDTO;
+import br.tourapp.kyr.dto.Transporte;
 import br.tourapp.kyr.iaservice.client.IaServiceClient;
 import br.tourapp.kyr.iaservice.client.dto.CuradoriaResponseDto;
 import br.tourapp.kyr.iaservice.client.dto.PontoBrutoDto;
@@ -71,18 +72,39 @@ public class RoteiroService {
     public RoteiroResponseDTO gerarRoteiro(RoteiroRequestDTO request) {
         long inicio = System.currentTimeMillis();
 
-        PoisNaRota poisNaRota = rotaPoiService.buscarPoisNaRota(
-                paraCoordenada(request.origem()), paraCoordenada(request.destino()), null);
+        List<PontoDTO> paradas = request.paradasOuVazio();
+        Transporte transporte = request.transporteOuPadrao();
+
+        PoisNaRota poisNaRota = buscarPois(request, paradas, transporte);
 
         List<PoiCandidato> selecionados = selecionarMaisBemAvaliados(poisNaRota.candidatos());
-        if (selecionados.isEmpty()) {
-            return montarResposta(List.of(), inicio, FONTE_IA_SEM_CURADORIA, false, FONTE_ROTA_FALLBACK);
+        if (selecionados.isEmpty() && paradas.isEmpty()) {
+            return montarResposta(List.of(), inicio, FONTE_IA_SEM_CURADORIA, false, FONTE_ROTA_FALLBACK, transporte);
         }
 
-        Curadoria curadoria = curar(selecionados);
-        Ordenacao ordenacao = ordenar(request, curadoria.pontos());
+        Curadoria curadoria = selecionados.isEmpty()
+                ? new Curadoria(List.of(), false, FONTE_IA_SEM_CURADORIA)
+                : curar(selecionados);
 
-        return montarResposta(ordenacao.pontos(), inicio, curadoria.fonteIA(), curadoria.curadoPorIa(), ordenacao.fonteRota());
+        // As paradas entram no roteiro junto com os lugares sugeridos, mas não passam pela IA.
+        List<POIDTO> pontos = new ArrayList<>(paradas.stream().map(POIDTO::daParada).toList());
+        pontos.addAll(curadoria.pontos());
+        Ordenacao ordenacao = ordenar(request, pontos, transporte);
+
+        return montarResposta(ordenacao.pontos(), inicio, curadoria.fonteIA(), curadoria.curadoPorIa(), ordenacao.fonteRota(),
+                transporte);
+    }
+
+    // Sem paradas e de carro, usa a mesma chamada de antes. No transporte público a Directions não aceita
+    // paradas, então a rota usada para achar os lugares é a de carro.
+    private PoisNaRota buscarPois(RoteiroRequestDTO request, List<PontoDTO> paradas, Transporte transporte) {
+        Coordenada origem = paraCoordenada(request.origem());
+        Coordenada destino = paraCoordenada(request.destino());
+        if (paradas.isEmpty() && transporte == Transporte.DRIVING) {
+            return rotaPoiService.buscarPoisNaRota(origem, destino, null);
+        }
+        String modo = transporte.aceitaParadas() ? transporte.modoDirections() : Transporte.DRIVING.modoDirections();
+        return rotaPoiService.buscarPoisNaRota(origem, destino, paradas.stream().map(this::paraCoordenada).toList(), modo, null);
     }
 
     private List<PoiCandidato> selecionarMaisBemAvaliados(List<PoiCandidato> candidatos) {
@@ -232,14 +254,20 @@ public class RoteiroService {
                 poi.placeId());
     }
 
-    private Ordenacao ordenar(RoteiroRequestDTO request, List<POIDTO> pontos) {
+    private Ordenacao ordenar(RoteiroRequestDTO request, List<POIDTO> pontos, Transporte transporte) {
+        if (!transporte.aceitaParadas()) {
+            // Transporte público: a Directions não otimiza pontos intermediários nesse modo.
+            return new Ordenacao(pontos, FONTE_ROTA_FALLBACK);
+        }
         try {
             List<PontoDTO> waypoints = pontos.stream()
                     .map(p -> new PontoDTO(p.nome(), p.latitude(), p.longitude()))
                     .toList();
 
-            DirectionsService.ResultadoRota rota = directionsService.calcularRotaOtimizada(
-                    request.origem(), request.destino(), waypoints);
+            DirectionsService.ResultadoRota rota = transporte == Transporte.DRIVING
+                    ? directionsService.calcularRotaOtimizada(request.origem(), request.destino(), waypoints)
+                    : directionsService.calcularRotaOtimizada(request.origem(), request.destino(), waypoints,
+                            transporte.modoDirections());
 
             return new Ordenacao(aplicarOrdem(pontos, rota.ordemOtimizada(), rota.trechos()), FONTE_ROTA_GOOGLE);
         } catch (RuntimeException e) {
@@ -266,9 +294,10 @@ public class RoteiroService {
     }
 
     private RoteiroResponseDTO montarResposta(List<POIDTO> pontos, long inicio, String fonteIA, boolean curadoPorIa,
-                                              String fonteRota) {
+                                              String fonteRota, Transporte transporte) {
         long tempoResposta = System.currentTimeMillis() - inicio;
-        return new RoteiroResponseDTO(pontos, new MetadadosDTO(pontos.size(), tempoResposta, fonteIA, curadoPorIa, fonteRota));
+        return new RoteiroResponseDTO(pontos, new MetadadosDTO(pontos.size(), tempoResposta, fonteIA, curadoPorIa, fonteRota,
+                transporte.name()));
     }
 
     private Coordenada paraCoordenada(PontoDTO ponto) {
