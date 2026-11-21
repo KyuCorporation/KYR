@@ -28,10 +28,10 @@ function json(status: number, corpo: unknown): Response {
   return new Response(JSON.stringify(corpo), { status, headers: { "content-type": "application/json" } });
 }
 
-function requisicao(corpo?: unknown, bruto?: string): Request {
+function requisicao(corpo?: unknown, bruto?: string, cabecalhos: Record<string, string> = {}): Request {
   return new Request("http://localhost/api/x", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...cabecalhos },
     body: bruto ?? (corpo === undefined ? undefined : JSON.stringify(corpo)),
   });
 }
@@ -116,6 +116,29 @@ describe("/api/auth", () => {
     const resposta = await cadastro(requisicao({ ...USUARIO, senha: "segredo-123" }));
     expect(resposta.status).toBe(201);
     expect(cookies.get(COOKIE_DA_SESSAO)?.value).toBe("token-novo");
+  });
+
+  it("login e cadastro repassam o X-Forwarded-For para o limite de tentativas do backend", async () => {
+    fetch.mockResolvedValue(json(401, { codigo: "credenciais_invalidas" }));
+    const ip = { "x-forwarded-for": "10.0.0.1, 203.0.113.7" };
+
+    await login(requisicao({ email: USUARIO.email, senha: "x" }, undefined, ip));
+    await cadastro(requisicao({ ...USUARIO, senha: "segredo-123" }, undefined, ip));
+    await login(requisicao({ email: USUARIO.email, senha: "x" }));
+
+    expect(chamada(0).init.headers["X-Forwarded-For"]).toBe("10.0.0.1, 203.0.113.7");
+    expect(chamada(1).init.headers["X-Forwarded-For"]).toBe("10.0.0.1, 203.0.113.7");
+    expect(chamada(2).init.headers["X-Forwarded-For"]).toBeUndefined();
+  });
+
+  it("login bloqueado repassa o 429 com a mensagem de espera e não cria cookie", async () => {
+    fetch.mockResolvedValue(json(429, { codigo: "muitas_tentativas", mensagem: "Muitas tentativas. Tente de novo em 15 minutos." }));
+
+    const resposta = await login(requisicao({ email: USUARIO.email, senha: "x" }));
+
+    expect(resposta.status).toBe(429);
+    expect(await resposta.json()).toEqual({ codigo: "muitas_tentativas", mensagem: "Muitas tentativas. Tente de novo em 15 minutos." });
+    expect(cookies.has(COOKIE_DA_SESSAO)).toBe(false);
   });
 
   it("eu apaga o cookie quando o backend diz que a sessão venceu", async () => {

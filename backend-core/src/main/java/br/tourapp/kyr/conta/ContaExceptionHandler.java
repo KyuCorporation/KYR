@@ -1,6 +1,7 @@
 package br.tourapp.kyr.conta;
 
 import br.tourapp.kyr.poi.web.ErroRespostaDto;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,7 +13,11 @@ public class ContaExceptionHandler {
 
     @ExceptionHandler(ContaException.class)
     public ResponseEntity<ErroRespostaDto> tratar(ContaException ex) {
-        return ResponseEntity.status(ex.status()).body(new ErroRespostaDto(ex.codigo(), ex.getMessage()));
+        ResponseEntity.BodyBuilder resposta = ResponseEntity.status(ex.status());
+        if (ex instanceof MuitasTentativasException muitas) {
+            resposta.header(HttpHeaders.RETRY_AFTER, String.valueOf(muitas.segundosDeEspera()));
+        }
+        return resposta.body(new ErroRespostaDto(ex.codigo(), ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
