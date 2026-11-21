@@ -30,7 +30,7 @@ import java.util.List;
 @RequestMapping("/roteiros-salvos")
 public class RoteiroSalvoController {
 
-    private static final String COLUNAS = """
+    static final String COLUNAS = """
             id, origem_nome, origem_latitude, origem_longitude,
             destino_nome, destino_latitude, destino_longitude, total_pontos, place_ids, criado_em
             """;
@@ -96,7 +96,7 @@ public class RoteiroSalvoController {
         return ResponseEntity.noContent().build();
     }
 
-    private static RoteiroSalvoResposta paraResposta(ResultSet rs, int linha) throws SQLException {
+    static RoteiroSalvoResposta paraResposta(ResultSet rs, int linha) throws SQLException {
         LocalResposta origem = new LocalResposta(rs.getString("origem_nome"),
                 rs.getObject("origem_latitude", Double.class), rs.getObject("origem_longitude", Double.class));
         LocalResposta destino = new LocalResposta(rs.getString("destino_nome"),

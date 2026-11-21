@@ -22,8 +22,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -213,5 +215,82 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/sair").header("Authorization", "Bearer token-de-teste"))
                 .andExpect(status().isNoContent());
         verify(contaService).sair("Bearer token-de-teste");
+    }
+
+    // ---------- Direitos do titular (LGPD) ----------
+
+    private static final Usuario ANA = new Usuario(7, "Ana Lima", "ana@exemplo.com");
+
+    @Test
+    void corrigirONomeExigeLoginEValidaOTamanho() throws Exception {
+        when(contaService.exigirUsuario("Bearer t")).thenReturn(ANA);
+        when(contaService.atualizarNome(ANA, "Ana Souza")).thenReturn(new UsuarioResposta("Ana Souza", "ana@exemplo.com"));
+
+        mockMvc.perform(put("/auth/eu").header("Authorization", "Bearer t").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Ana Souza\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nome").value("Ana Souza"));
+
+        mockMvc.perform(put("/auth/eu").header("Authorization", "Bearer t").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"" + "a".repeat(121) + "\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("O nome pode ter até 120 caracteres."));
+    }
+
+    @Test
+    void meusDadosVemComoAnexoSemCache() throws Exception {
+        when(contaService.exigirUsuario("Bearer t")).thenReturn(ANA);
+        when(contaService.exportar(ANA)).thenReturn(new ContaDtos.MeusDados(java.time.Instant.parse("2026-11-21T12:00:00Z"),
+                new ContaDtos.DadosDaConta("Ana Lima", "ana@exemplo.com", java.time.Instant.parse("2026-11-01T12:00:00Z")),
+                java.util.List.of(), java.util.List.of(), java.util.List.of()));
+
+        mockMvc.perform(get("/auth/meus-dados").header("Authorization", "Bearer t"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Cache-Control", "no-store"))
+                .andExpect(header().string("Content-Disposition", containsString("meus-dados-kyr.json")))
+                .andExpect(jsonPath("$.conta.email").value("ana@exemplo.com"));
+    }
+
+    @Test
+    void meusDadosSemLoginDevolve401() throws Exception {
+        when(contaService.exigirUsuario(null)).thenThrow(ContaException.naoAutenticado());
+
+        mockMvc.perform(get("/auth/meus-dados")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void excluirContaExigeSenhaEDevolve204() throws Exception {
+        when(contaService.exigirUsuario("Bearer t")).thenReturn(ANA);
+
+        mockMvc.perform(delete("/auth/conta").header("Authorization", "Bearer t").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"senha\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("Informe a sua senha para confirmar."));
+
+        mockMvc.perform(delete("/auth/conta").header("Authorization", "Bearer t").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"senha\":\"senha-certa-123\"}"))
+                .andExpect(status().isNoContent());
+        verify(contaService).excluirConta(ANA, "senha-certa-123");
+    }
+
+    @Test
+    void excluirContaComSenhaErradaEntraNoLimiteDoLogin() throws Exception {
+        when(contaService.exigirUsuario("Bearer t")).thenReturn(ANA);
+        org.mockito.Mockito.doThrow(new ContaException(HttpStatus.FORBIDDEN, "senha_incorreta", "Senha incorreta."))
+                .when(contaService).excluirConta(any(), any());
+
+        for (int i = 0; i < 5; i++) {
+            mockMvc.perform(delete("/auth/conta").header("Authorization", "Bearer t").contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"senha\":\"errada-123\"}"))
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.codigo").value("senha_incorreta"));
+        }
+        mockMvc.perform(delete("/auth/conta").header("Authorization", "Bearer t").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"senha\":\"errada-123\"}"))
+                .andExpect(status().isTooManyRequests());
+        // O login da mesma conta também fica bloqueado: a rota não serve para contornar o limite.
+        entrar("{\"email\":\"ana@exemplo.com\",\"senha\":\"qualquer-123\"}", "203.0.113.1")
+                .andExpect(status().isTooManyRequests());
+        verify(contaService, times(5)).excluirConta(any(), any());
     }
 }
