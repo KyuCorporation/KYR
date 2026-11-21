@@ -1,0 +1,537 @@
+{
+  "rotulo": "so-mistral",
+  "rodadas": 3,
+  "chamadas": [
+    {
+      "rodada": 1,
+      "lote": 1,
+      "status": 200,
+      "ms": 10546,
+      "enviados": 10,
+      "modelo": "mistral",
+      "curadoPorIa": true,
+      "curados": 9,
+      "nomesPreservados": 10,
+      "trilhaOk": 8,
+      "tipoOk": 8,
+      "ambosOk": 8,
+      "descricoes": [
+        129,
+        89,
+        107,
+        93,
+        95,
+        71,
+        62,
+        66,
+        73
+      ],
+      "pontos": [
+        {
+          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Mais de 275 quilômetros de cachoeiras, de várias alturas e formas, formam este parque natural que abriga uma rica biodiversidade.",
+          "curado": true
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque aviário onde mais de 1.500 aves exóticas e nativas do Brasil podem ser observadas.",
+          "curado": true
+        },
+        {
+          "nome": "Dreamland Museu de Cera",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Museu de cera com mais de 100 figuras em tamanho real, incluindo personagens de filmes e histórias famosas.",
+          "curado": true
+        },
+        {
+          "nome": "Wonder Park Foz (Movie Cars)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque de diversões baseado no filme 'Cars', com atracções interativas e diversão para todos.",
+          "curado": true
+        },
+        {
+          "nome": "Shopping Catuaí Palladium",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque Aquático Cataratas",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque aquático com piscinas e atracções aquáticas, localizado próximo às cachoeiras do Iguaçu.",
+          "curado": true
+        },
+        {
+          "nome": "Rafain Churrascaria Show",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante com tradicional churrasco brasileiro e espetáculo de dança.",
+          "curado": true
+        },
+        {
+          "nome": "Cantina da Bea",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Local famoso por suas pizzas, burgers e outros pratos típicos.",
+          "curado": true
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Bar com comida e bebida, com ambiente de garagem e carros antigos.",
+          "curado": true
+        },
+        {
+          "nome": "Empório com Arte",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Loja de artesanatos e obras de arte, com itens exclusivos e tradicionais.",
+          "curado": true
+        }
+      ]
+    },
+    {
+      "rodada": 1,
+      "lote": 2,
+      "status": 200,
+      "ms": 7381,
+      "enviados": 8,
+      "modelo": "mistral",
+      "curadoPorIa": true,
+      "curados": 8,
+      "nomesPreservados": 8,
+      "trilhaOk": 4,
+      "tipoOk": 8,
+      "ambosOk": 4,
+      "descricoes": [
+        56,
+        48,
+        77,
+        62,
+        69,
+        62,
+        47,
+        50
+      ],
+      "pontos": [
+        {
+          "nome": "Bona Trattoria Gastronomia",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante italiano na área turística de Foz do Iguaçu.",
+          "curado": true
+        },
+        {
+          "nome": "Restaurante Tarobá (Bourbon Resort)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante brasileiro na área do Bourbon Hotel.",
+          "curado": true
+        },
+        {
+          "nome": "Três Fronteiras Artesanato",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Loja com artesanato regional na fronteira entre Brasil, Argentina e Paraguai.",
+          "curado": true
+        },
+        {
+          "nome": "Cataratas Souvenirs",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Loja de souvenirs e artesanato próxima às Cataratas do Iguaçu.",
+          "curado": true
+        },
+        {
+          "nome": "Supermercado Ítalo - Centro",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Supermercado especializado em produtos italianos no centro da cidade.",
+          "curado": true
+        },
+        {
+          "nome": "ODA Vinhoteca Duty Free",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Vinhoteca de produtos em liquor no aeroporto de Foz do Iguaçu.",
+          "curado": true
+        },
+        {
+          "nome": "Aquamania Foz",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque aquático localizado no centro da cidade.",
+          "curado": true
+        },
+        {
+          "nome": "Adrena Kart Foz",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque de kart na área turística de Foz do Iguaçu.",
+          "curado": true
+        }
+      ]
+    },
+    {
+      "rodada": 2,
+      "lote": 1,
+      "status": 200,
+      "ms": 10604,
+      "enviados": 10,
+      "modelo": "mistral",
+      "curadoPorIa": true,
+      "curados": 9,
+      "nomesPreservados": 10,
+      "trilhaOk": 8,
+      "tipoOk": 8,
+      "ambosOk": 8,
+      "descricoes": [
+        97,
+        101,
+        94,
+        88,
+        85,
+        89,
+        92,
+        79,
+        89
+      ],
+      "pontos": [
+        {
+          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque nacional abriga as famosas Cataratas do Iguaçu, a maior cadeia de quedas de água do mundo.",
+          "curado": true
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque de aves oferece interação direta com espécies nativas, incluindo garças, jabiru-mirim e tapir.",
+          "curado": true
+        },
+        {
+          "nome": "Dreamland Museu de Cera",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Museu de cera conta a história do estado de Paraná, com cenas de vida real em figuras de cera.",
+          "curado": true
+        },
+        {
+          "nome": "Wonder Park Foz (Movie Cars)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque de diversões temático inspirado no filme Cars, com atrações para todas as idades.",
+          "curado": true
+        },
+        {
+          "nome": "Shopping Catuaí Palladium",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque Aquático Cataratas",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque aquático oferece diversão e relaxamento, com piscinas, toalhas, e escapadeira.",
+          "curado": true
+        },
+        {
+          "nome": "Rafain Churrascaria Show",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante com apresentação de música e dança, servindo variedades de carnes e vegetais.",
+          "curado": true
+        },
+        {
+          "nome": "Cantina da Bea",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante regional oferece comida típica paranaense, como pipoca, salsichas, e carne seca.",
+          "curado": true
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Bar inspirado em carros oferece comida e bebidas, como hambúrgueres e cervejas.",
+          "curado": true
+        },
+        {
+          "nome": "Empório com Arte",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Loja de artesanato oferece produtos regionais, como artesanatos, artes plásticas e joias.",
+          "curado": true
+        }
+      ]
+    },
+    {
+      "rodada": 2,
+      "lote": 2,
+      "status": 200,
+      "ms": 7730,
+      "enviados": 8,
+      "modelo": "mistral",
+      "curadoPorIa": true,
+      "curados": 4,
+      "nomesPreservados": 8,
+      "trilhaOk": 2,
+      "tipoOk": 4,
+      "ambosOk": 2,
+      "descricoes": [
+        57,
+        59,
+        49,
+        75
+      ],
+      "pontos": [
+        {
+          "nome": "Bona Trattoria Gastronomia",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Trattoria italiana famosa por sua gastronomia tradicional",
+          "curado": true
+        },
+        {
+          "nome": "Restaurante Tarobá (Bourbon Resort)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante de comida regional localizado no Bourbon Resort",
+          "curado": true
+        },
+        {
+          "nome": "Três Fronteiras Artesanato",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Cataratas Souvenirs",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Supermercado Ítalo - Centro",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Supermercado italiano com produtos diversificados",
+          "curado": true
+        },
+        {
+          "nome": "ODA Vinhoteca Duty Free",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Loja de bebidas alcóolicas e produtos relacionados, localizada no aeroporto",
+          "curado": true
+        },
+        {
+          "nome": "Aquamania Foz",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Adrena Kart Foz",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        }
+      ]
+    },
+    {
+      "rodada": 3,
+      "lote": 1,
+      "status": 200,
+      "ms": 11586,
+      "enviados": 10,
+      "modelo": "mistral",
+      "curadoPorIa": true,
+      "curados": 9,
+      "nomesPreservados": 10,
+      "trilhaOk": 8,
+      "tipoOk": 8,
+      "ambosOk": 8,
+      "descricoes": [
+        121,
+        106,
+        123,
+        84,
+        112,
+        80,
+        109,
+        78,
+        129
+      ],
+      "pontos": [
+        {
+          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque nacional que abriga as famosas Cataratas do Iguaçu, com mais de 275 quilômetros quadrados de floresta subtropical.",
+          "curado": true
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque aviário que abriga mais de 1.300 espécies de aves, incluindo várias espécies ameaçadas de extinção.",
+          "curado": true
+        },
+        {
+          "nome": "Dreamland Museu de Cera",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Museu de cera com mais de 100 figuras de cera, incluindo personagens de filmes, personagens históricos e políticos famosos.",
+          "curado": true
+        },
+        {
+          "nome": "Wonder Park Foz (Movie Cars)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque temático baseado no filme Cars, com diversões e atrações para toda a família.",
+          "curado": true
+        },
+        {
+          "nome": "Shopping Catuaí Palladium",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque Aquático Cataratas",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque aquático com várias piscinas, deslizantes, jacuzzi e áreas de lazer, localizado às margens do rio Iguaçu.",
+          "curado": true
+        },
+        {
+          "nome": "Rafain Churrascaria Show",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante com buffet de churrasco e espetáculo de dança folclórica brasileira.",
+          "curado": true
+        },
+        {
+          "nome": "Cantina da Bea",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante de estilo regional que oferece comida típica do sul do Brasil, como churrasco e feijão com arroz.",
+          "curado": true
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Bar com tema de carros que oferece comida típica da região e diversas bebidas.",
+          "curado": true
+        },
+        {
+          "nome": "Empório com Arte",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Loja de artesanato que oferece diversos objetos e peças de arte feitas à mão, como pinturas, esculturas e artesanato tradicional.",
+          "curado": true
+        }
+      ]
+    },
+    {
+      "rodada": 3,
+      "lote": 2,
+      "status": 200,
+      "ms": 7388,
+      "enviados": 8,
+      "modelo": "mistral",
+      "curadoPorIa": true,
+      "curados": 6,
+      "nomesPreservados": 8,
+      "trilhaOk": 4,
+      "tipoOk": 6,
+      "ambosOk": 4,
+      "descricoes": [
+        56,
+        52,
+        54,
+        68,
+        71,
+        70
+      ],
+      "pontos": [
+        {
+          "nome": "Bona Trattoria Gastronomia",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante italiano famoso por sua cozinha tradicional.",
+          "curado": true
+        },
+        {
+          "nome": "Restaurante Tarobá (Bourbon Resort)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante regional da região, com comidas típicas.",
+          "curado": true
+        },
+        {
+          "nome": "Três Fronteiras Artesanato",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Cataratas Souvenirs",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Supermercado Ítalo - Centro",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Supermercado com produtos ítalos e produtos da região.",
+          "curado": true
+        },
+        {
+          "nome": "ODA Vinhoteca Duty Free",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Vinhoteca com uma grande variedade de vinhos em um ambiente moderno.",
+          "curado": true
+        },
+        {
+          "nome": "Aquamania Foz",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque aquático com diversas atrações aquáticas para todos os públicos.",
+          "curado": true
+        },
+        {
+          "nome": "Adrena Kart Foz",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Pista de karting com diversos desafios para entusiastas da velocidade.",
+          "curado": true
+        }
+      ]
+    }
+  ]
+}

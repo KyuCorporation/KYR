@@ -1,0 +1,131 @@
+{
+  "geradoEm": "2026-11-20T04:32:08.780Z",
+  "resultados": [
+    {
+      "pagina": "/",
+      "notas": {
+        "performance": 98,
+        "accessibility": 95,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "fcpMs": 920.0260000000001,
+      "lcpMs": 2435.0454999999997,
+      "tbtMs": 17.5,
+      "cls": 0.0001263722214586257,
+      "bytes": 315412
+    },
+    {
+      "pagina": "/inicio",
+      "notas": {
+        "performance": 90,
+        "accessibility": 96,
+        "best-practices": 96,
+        "seo": 100
+      },
+      "fcpMs": 1211.325,
+      "lcpMs": 3635.375000000001,
+      "tbtMs": 35,
+      "cls": 0.0001220236872167513,
+      "bytes": 578733
+    },
+    {
+      "pagina": "/criar-roteiro",
+      "notas": {
+        "performance": 98,
+        "accessibility": 95,
+        "best-practices": 96,
+        "seo": 100
+      },
+      "fcpMs": 1209.927,
+      "lcpMs": 2194.618,
+      "tbtMs": 104.5,
+      "cls": 0.00001341649130743951,
+      "bytes": 504274
+    },
+    {
+      "pagina": "/explorar",
+      "notas": {
+        "performance": 86,
+        "accessibility": 96,
+        "best-practices": 96,
+        "seo": 100
+      },
+      "fcpMs": 1211.2155,
+      "lcpMs": 4132.477000000001,
+      "tbtMs": 66,
+      "cls": 0,
+      "bytes": 655111
+    },
+    {
+      "pagina": "/roteiros",
+      "notas": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "fcpMs": 1207.785,
+      "lcpMs": 1955.19,
+      "tbtMs": 38,
+      "cls": 0,
+      "bytes": 305746
+    },
+    {
+      "pagina": "/favoritos",
+      "notas": {
+        "performance": 98,
+        "accessibility": 95,
+        "best-practices": 96,
+        "seo": 100
+      },
+      "fcpMs": 1208.934,
+      "lcpMs": 2347.956,
+      "tbtMs": 42,
+      "cls": 0,
+      "bytes": 306456
+    },
+    {
+      "pagina": "/entrar",
+      "notas": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "fcpMs": 1206.348,
+      "lcpMs": 2212.232,
+      "tbtMs": 58,
+      "cls": 0,
+      "bytes": 270529
+    },
+    {
+      "pagina": "/cadastro",
+      "notas": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "fcpMs": 1209.3239999999998,
+      "lcpMs": 2210.216,
+      "tbtMs": 54,
+      "cls": 0,
+      "bytes": 270607
+    },
+    {
+      "pagina": "/ajuda",
+      "notas": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "fcpMs": 1206.99,
+      "lcpMs": 1804.66,
+      "tbtMs": 41,
+      "cls": 0.01245153597109675,
+      "bytes": 307123
+    }
+  ]
+}
