@@ -115,8 +115,11 @@ export default function GoogleMapRoute({
         const totalMeters = legs.reduce((acc, leg) => acc + (leg.distance?.value ?? 0), 0);
         const totalSeconds = legs.reduce((acc, leg) => acc + (leg.duration?.value ?? 0), 0);
 
+        // Mesmo formato do resultado do roteiro (core/routeMetrics): vírgula decimal, uma casa no máximo.
         const km = totalMeters / 1000;
-        const distanceText = km >= 1 ? `${km.toFixed(1)} km` : `${totalMeters} m`;
+        const distanceText = km >= 1
+          ? `${km.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km`
+          : `${totalMeters} m`;
 
         const totalMinutes = Math.round(totalSeconds / 60);
         const hours = Math.floor(totalMinutes / 60);
