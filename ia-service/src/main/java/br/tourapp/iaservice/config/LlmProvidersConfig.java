@@ -5,6 +5,7 @@ import br.tourapp.iaservice.curadoria.SpringAiLlmProvider;
 import com.google.genai.Client;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,18 +64,24 @@ public class LlmProvidersConfig {
 
     @Bean
     public List<LlmProvider> llmProviders(FallbackChainProperties props) {
+        return montarCadeia(props, System::getenv);
+    }
+
+    // As variáveis de ambiente chegam por uma função para que os testes montem a cadeia sem alterar
+    // o ambiente do processo. Em produção, é System::getenv.
+    List<LlmProvider> montarCadeia(FallbackChainProperties props, Function<String, String> ambiente) {
         List<LlmProvider> providers = new ArrayList<>();
 
-        adicionarSeConfigurado(providers, "ANTHROPIC_API_KEY",
+        adicionarSeConfigurado(providers, ambiente, "ANTHROPIC_API_KEY",
                 apiKey -> anthropicProvider(apiKey, props));
-        adicionarSeConfigurado(providers, "GEMINI_API_KEY",
+        adicionarSeConfigurado(providers, ambiente, "GEMINI_API_KEY",
                 apiKey -> geminiProvider(apiKey, props));
-        adicionarSeConfigurado(providers, "OPENAI_API_KEY",
+        adicionarSeConfigurado(providers, ambiente, "OPENAI_API_KEY",
                 apiKey -> openAiProvider(apiKey, props));
 
         // Mistral local entra por último, como reserva: em CPU ele leva dezenas de segundos e pode
         // estourar o timeout, então só é tentado quando os provedores em nuvem falham ou não têm chave
-        adicionarOllamaSeHabilitado(providers, props);
+        adicionarOllamaSeHabilitado(providers, ambiente, props);
 
         if (providers.isEmpty()) {
             log.warn("Nenhuma chave de LLM configurada na cadeia de fallback.");
@@ -83,9 +90,9 @@ public class LlmProvidersConfig {
         return List.copyOf(providers);
     }
 
-    private void adicionarSeConfigurado(
-            List<LlmProvider> providers, String envVar, Function<String, LlmProvider> fabrica) {
-        String valor = System.getenv(envVar);
+    private void adicionarSeConfigurado(List<LlmProvider> providers, Function<String, String> ambiente,
+            String envVar, Function<String, LlmProvider> fabrica) {
+        String valor = ambiente.apply(envVar);
         if (valor != null && !valor.isBlank()) {
             providers.add(fabrica.apply(valor));
             log.info("Provedor configurado a partir de {}: entra na cadeia de fallback.", envVar);
@@ -96,19 +103,20 @@ public class LlmProvidersConfig {
 
     // Gate separado do padrão adicionarSeConfigurado porque o Ollama não usa API key: é opt-in via flag,
     // já que só faz sentido em máquinas com o daemon `ollama serve` rodando localmente.
-    private void adicionarOllamaSeHabilitado(List<LlmProvider> providers, FallbackChainProperties props) {
-        String habilitado = System.getenv("OLLAMA_ENABLED");
+    private void adicionarOllamaSeHabilitado(
+            List<LlmProvider> providers, Function<String, String> ambiente, FallbackChainProperties props) {
+        String habilitado = ambiente.apply("OLLAMA_ENABLED");
         if (habilitado != null && habilitado.equalsIgnoreCase("true")) {
-            providers.add(ollamaProvider(props));
+            providers.add(ollamaProvider(ambiente, props));
             log.info("Mistral local (Ollama) habilitado via OLLAMA_ENABLED: entra na cadeia de fallback.");
         } else {
             log.warn("OLLAMA_ENABLED não definida como 'true'. Mistral local fica de fora da cadeia de fallback.");
         }
     }
 
-    private LlmProvider ollamaProvider(FallbackChainProperties props) {
-        String baseUrl = System.getenv().getOrDefault("OLLAMA_BASE_URL", "http://localhost:11434");
-        String modelo = System.getenv().getOrDefault("OLLAMA_MODEL", "mistral");
+    private LlmProvider ollamaProvider(Function<String, String> ambiente, FallbackChainProperties props) {
+        String baseUrl = Optional.ofNullable(ambiente.apply("OLLAMA_BASE_URL")).orElse("http://localhost:11434");
+        String modelo = Optional.ofNullable(ambiente.apply("OLLAMA_MODEL")).orElse("mistral");
 
         OllamaApi.Builder apiBuilder = OllamaApi.builder()
                 .baseUrl(baseUrl)

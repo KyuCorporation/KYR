@@ -1,17 +1,12 @@
 package br.tourapp.kyr.conta;
 
+import br.tourapp.kyr.PostgresDeTeste;
 import br.tourapp.kyr.conta.ContaDtos.CadastroRequest;
 import br.tourapp.kyr.conta.ContaDtos.MeusDados;
 import br.tourapp.kyr.conta.ContaDtos.Usuario;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,23 +14,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 // Direitos do titular contra um Postgres de verdade, com a migration real (exclusão em cascata).
 // Precisa de Docker; sem ele, os testes são pulados em vez de falhar.
 @Testcontainers(disabledWithoutDocker = true)
-class ContaServicePostgresTest {
+class ContaServicePostgresTest extends PostgresDeTeste {
 
-    @Container
-    private static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:15-alpine");
-
-    private static JdbcClient jdbc;
     private ContaService contas;
 
-    @BeforeAll
-    static void migrar() {
-        Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()).load().migrate();
-        jdbc = JdbcClient.create(new DriverManagerDataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()));
-    }
-
     @BeforeEach
-    void limpar() {
-        jdbc.sql("truncate usuario restart identity cascade").update();
+    void criarServico() {
         contas = new ContaService(jdbc);
     }
 
