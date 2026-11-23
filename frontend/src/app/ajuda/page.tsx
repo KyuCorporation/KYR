@@ -80,6 +80,16 @@ const PERGUNTAS: Array<{ pergunta: string; resposta: React.ReactNode }> = [
     pergunta: "De quem são as avaliações dos destinos?",
     resposta: <>São de pessoas com conta no Kyr. Não são avaliações do Google Maps.</>,
   },
+  {
+    pergunta: "Como vejo ou apago os meus dados?",
+    resposta: (
+      <>
+        Em <Link href="/conta">Minha conta</Link> você baixa tudo o que o Kyr guarda sobre a sua conta, corrige o seu
+        nome, apaga os dados deste dispositivo ou exclui a conta. O que é guardado, para quê e com quem é compartilhado
+        está na <Link href="/privacidade">política de privacidade</Link>.
+      </>
+    ),
+  },
 ];
 
 export default function AjudaPage() {
@@ -100,7 +110,8 @@ export default function AjudaPage() {
           ))}
         </div>
         <p className={styles.creditos}>
-          Mapas, trajetos e busca de lugares: Google Maps. Projeto de conclusão de curso (ADS, IFPE Campus Palmares).
+          Mapas, trajetos e busca de lugares: Google Maps. Projeto de conclusão de curso (ADS, IFPE Campus Palmares).{" "}
+          <Link href="/privacidade">Política de privacidade</Link>.
         </p>
       </main>
     </div>

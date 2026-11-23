@@ -99,6 +99,13 @@ export default function FormularioDeConta({ modo }: { modo: "entrar" | "cadastro
 
           {erro && <p className={styles.erro} role="alert">{erro}</p>}
 
+          {cadastro && (
+            <p className={styles.privacidade}>
+              Guardamos seu nome, e-mail, roteiros salvos e avaliações para prestar o serviço. Veja como na{" "}
+              <Link href="/privacidade">política de privacidade</Link>; você pode baixar ou apagar seus dados quando quiser.
+            </p>
+          )}
+
           <button type="submit" disabled={enviando}>
             {enviando ? "Aguarde…" : cadastro ? "Criar conta" : "Entrar"}
           </button>

@@ -112,6 +112,18 @@
   font-size: 14px;
 }
 
+.privacidade {
+  margin: 0;
+  color: #56636c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.privacidade a {
+  color: #b4480a;
+  font-weight: 700;
+}
+
 .troca {
   margin: 16px 0 0;
   color: #56636c;

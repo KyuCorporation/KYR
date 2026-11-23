@@ -64,4 +64,15 @@ describe("FormularioDeConta", () => {
     expect(push).not.toHaveBeenCalled();
     expect((screen.getByRole("button", { name: "Entrar" }) as HTMLButtonElement).disabled).toBe(false);
   });
+
+  it("no cadastro, informa quais dados são guardados e leva à política de privacidade", () => {
+    const { unmount } = render(<FormularioDeConta modo="cadastro" />);
+
+    expect(screen.getByText(/Guardamos seu nome, e-mail, roteiros salvos e avaliações/)).toBeTruthy();
+    expect(screen.getByRole("link", { name: "política de privacidade" }).getAttribute("href")).toBe("/privacidade");
+    unmount();
+
+    render(<FormularioDeConta modo="entrar" />);
+    expect(screen.queryByRole("link", { name: "política de privacidade" })).toBeNull();
+  });
 });
