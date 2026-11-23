@@ -17,6 +17,11 @@ interface OpcoesDeChamada {
   body?: unknown;
   /** Envia o token do cookie em Authorization. Sem cookie, responde 401 sem chamar o backend. */
   autenticado?: boolean;
+  /**
+   * Requisição do navegador cujo X-Forwarded-For é repassado, para o backend limitar as tentativas
+   * de login e cadastro por cliente. O backend usa o último endereço da lista.
+   */
+  repassarIpDe?: Request;
 }
 
 export interface RespostaDoBackend {
@@ -27,6 +32,8 @@ export interface RespostaDoBackend {
 export async function chamarBackend(caminho: string, opcoes: OpcoesDeChamada = {}): Promise<RespostaDoBackend> {
   const headers: Record<string, string> = { Accept: "application/json" };
   if (opcoes.body !== undefined) headers["Content-Type"] = "application/json";
+  const encaminhado = opcoes.repassarIpDe?.headers.get("x-forwarded-for");
+  if (encaminhado) headers["X-Forwarded-For"] = encaminhado;
 
   if (opcoes.autenticado) {
     const token = (await cookies()).get(COOKIE_DA_SESSAO)?.value;

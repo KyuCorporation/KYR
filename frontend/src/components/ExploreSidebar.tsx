@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { lerSessao, sair, type Sessao } from "@/core/sessao";
 import styles from "./ExploreSidebar.module.css";
 
-type Props = { active: "explorar" | "favoritos" | "inicio" | "historico" | "ajuda" };
+type Props = { active: "explorar" | "favoritos" | "inicio" | "historico" | "ajuda" | "conta" | "privacidade" };
 
 const NAV_ITEMS = [
   { href: "/inicio", label: "Início", icon: House, key: "inicio" },
@@ -107,6 +107,7 @@ export default function ExploreSidebar({ active }: Props) {
             <>
               <strong>Olá, {sessao.nome.split(" ")[0]}</strong>
               <span>Seus roteiros salvos ficam na sua conta.</span>
+              <Link className={styles.primario} href="/conta">Minha conta</Link>
               <button type="button" className={styles.secundario} onClick={encerrarSessao}>Sair</button>
             </>
           ) : (
@@ -122,7 +123,7 @@ export default function ExploreSidebar({ active }: Props) {
       ) : (
         <Link
           className={styles.contaRecolhida}
-          href={sessao ? "/roteiros" : "/entrar"}
+          href={sessao ? "/conta" : "/entrar"}
           aria-label={sessao ? `Conta de ${sessao.nome}` : "Entrar"}
           title={sessao ? sessao.nome : "Entrar"}
         >

@@ -17,6 +17,9 @@ ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 # É a chave pública, restrita por domínio; nunca a chave do backend.
 ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+# Contato mostrado na política de privacidade (/privacidade), que é gerada no build.
+ARG NEXT_PUBLIC_CONTATO_PRIVACIDADE
+ENV NEXT_PUBLIC_CONTATO_PRIVACIDADE=${NEXT_PUBLIC_CONTATO_PRIVACIDADE}
 RUN npm run build
 
 # Etapa 3: Runner (Produção)

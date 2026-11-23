@@ -12,7 +12,9 @@ vi.mock("next/headers", () => ({
 }));
 
 import { POST as cadastro } from "@/app/api/auth/cadastro/route";
-import { GET as eu } from "@/app/api/auth/eu/route";
+import { DELETE as excluirConta } from "@/app/api/auth/conta/route";
+import { GET as eu, PUT as corrigirNome } from "@/app/api/auth/eu/route";
+import { GET as meusDados } from "@/app/api/auth/meus-dados/route";
 import { POST as login } from "@/app/api/auth/login/route";
 import { POST as sairDaConta } from "@/app/api/auth/sair/route";
 import { GET as listarAvaliacoes, PUT as avaliar } from "@/app/api/destinos/[slug]/avaliacoes/route";
@@ -28,10 +30,10 @@ function json(status: number, corpo: unknown): Response {
   return new Response(JSON.stringify(corpo), { status, headers: { "content-type": "application/json" } });
 }
 
-function requisicao(corpo?: unknown, bruto?: string): Request {
+function requisicao(corpo?: unknown, bruto?: string, cabecalhos: Record<string, string> = {}): Request {
   return new Request("http://localhost/api/x", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...cabecalhos },
     body: bruto ?? (corpo === undefined ? undefined : JSON.stringify(corpo)),
   });
 }
@@ -118,6 +120,29 @@ describe("/api/auth", () => {
     expect(cookies.get(COOKIE_DA_SESSAO)?.value).toBe("token-novo");
   });
 
+  it("login e cadastro repassam o X-Forwarded-For para o limite de tentativas do backend", async () => {
+    fetch.mockResolvedValue(json(401, { codigo: "credenciais_invalidas" }));
+    const ip = { "x-forwarded-for": "10.0.0.1, 203.0.113.7" };
+
+    await login(requisicao({ email: USUARIO.email, senha: "x" }, undefined, ip));
+    await cadastro(requisicao({ ...USUARIO, senha: "segredo-123" }, undefined, ip));
+    await login(requisicao({ email: USUARIO.email, senha: "x" }));
+
+    expect(chamada(0).init.headers["X-Forwarded-For"]).toBe("10.0.0.1, 203.0.113.7");
+    expect(chamada(1).init.headers["X-Forwarded-For"]).toBe("10.0.0.1, 203.0.113.7");
+    expect(chamada(2).init.headers["X-Forwarded-For"]).toBeUndefined();
+  });
+
+  it("login bloqueado repassa o 429 com a mensagem de espera e não cria cookie", async () => {
+    fetch.mockResolvedValue(json(429, { codigo: "muitas_tentativas", mensagem: "Muitas tentativas. Tente de novo em 15 minutos." }));
+
+    const resposta = await login(requisicao({ email: USUARIO.email, senha: "x" }));
+
+    expect(resposta.status).toBe(429);
+    expect(await resposta.json()).toEqual({ codigo: "muitas_tentativas", mensagem: "Muitas tentativas. Tente de novo em 15 minutos." });
+    expect(cookies.has(COOKIE_DA_SESSAO)).toBe(false);
+  });
+
   it("eu apaga o cookie quando o backend diz que a sessão venceu", async () => {
     cookies.set(COOKIE_DA_SESSAO, { value: "vencido" });
     fetch.mockResolvedValue(json(401, { codigo: "nao_autenticado" }));
@@ -147,6 +172,66 @@ describe("/api/auth", () => {
     expect(resposta.status).toBe(204);
     expect(chamada().url).toBe(`${BACKEND}/auth/sair`);
     expect(cookies.has(COOKIE_DA_SESSAO)).toBe(false);
+  });
+});
+
+describe("direitos do titular (LGPD)", () => {
+  function requisicaoDelete(corpo: unknown): Request {
+    return new Request("http://localhost/api/auth/conta", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(corpo),
+    });
+  }
+
+  it("corrige o nome com a sessão do cookie", async () => {
+    cookies.set(COOKIE_DA_SESSAO, { value: "token" });
+    fetch.mockResolvedValue(json(200, { nome: "Ana Souza", email: USUARIO.email }));
+
+    const resposta = await corrigirNome(new Request("http://localhost", { method: "PUT", body: JSON.stringify({ nome: "Ana Souza" }) }));
+
+    expect(await resposta.json()).toEqual({ nome: "Ana Souza", email: USUARIO.email });
+    expect(chamada().url).toBe(`${BACKEND}/auth/eu`);
+    expect(chamada().init.method).toBe("PUT");
+    expect(chamada().init.headers.Authorization).toBe("Bearer token");
+  });
+
+  it("meus dados exige login e responde sem cache", async () => {
+    expect((await meusDados()).status).toBe(401);
+    expect(fetch).not.toHaveBeenCalled();
+
+    cookies.set(COOKIE_DA_SESSAO, { value: "token" });
+    fetch.mockResolvedValue(json(200, { conta: { email: USUARIO.email } }));
+    const resposta = await meusDados();
+
+    expect(resposta.status).toBe(200);
+    expect(resposta.headers.get("cache-control")).toBe("no-store");
+    expect(chamada().url).toBe(`${BACKEND}/auth/meus-dados`);
+  });
+
+  it("excluir a conta apaga o cookie só quando o backend confirma", async () => {
+    cookies.set(COOKIE_DA_SESSAO, { value: "token" });
+    fetch
+      .mockResolvedValueOnce(json(403, { codigo: "senha_incorreta", mensagem: "Senha incorreta." }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+
+    const negada = await excluirConta(requisicaoDelete({ senha: "errada" }));
+    expect(negada.status).toBe(403);
+    expect(cookies.has(COOKIE_DA_SESSAO)).toBe(true);
+
+    const aceita = await excluirConta(requisicaoDelete({ senha: "certa-123" }));
+    expect(aceita.status).toBe(204);
+    expect(cookies.has(COOKIE_DA_SESSAO)).toBe(false);
+    expect(chamada(1).url).toBe(`${BACKEND}/auth/conta`);
+    expect(chamada(1).init.method).toBe("DELETE");
+    expect(JSON.parse(chamada(1).init.body as string)).toEqual({ senha: "certa-123" });
+  });
+
+  it("excluir a conta recusa corpo inválido e falta de login sem chamar o backend", async () => {
+    const invalido = await excluirConta(new Request("http://localhost", { method: "DELETE", body: "senha=x" }));
+    expect(invalido.status).toBe(400);
+    expect((await excluirConta(requisicaoDelete({ senha: "x" }))).status).toBe(401);
+    expect(fetch).not.toHaveBeenCalled();
   });
 });
 

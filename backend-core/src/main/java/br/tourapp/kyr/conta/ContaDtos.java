@@ -68,4 +68,25 @@ public final class ContaDtos {
 
     public record AvaliacoesResposta(Double media, int total, List<AvaliacaoResposta> avaliacoes) {
     }
+
+    // ---------- Direitos do titular (LGPD, art. 18) ----------
+
+    public record AtualizarNomeRequest(
+            @NotBlank(message = "Informe o seu nome.") @Size(max = 120, message = "O nome pode ter até 120 caracteres.") String nome) {
+    }
+
+    public record ExcluirContaRequest(@NotBlank(message = "Informe a sua senha para confirmar.") String senha) {
+    }
+
+    public record DadosDaConta(String nome, String email, Instant criadaEm) {
+    }
+
+    public record AvaliacaoExportada(String destino, int nota, String comentario, Instant criadaEm) {
+    }
+
+    // Tudo o que o servidor guarda sobre a pessoa, para o acesso e a portabilidade dos dados.
+    // A senha não aparece (só existe o hash) e as sessões aparecem só pela data de validade.
+    public record MeusDados(Instant geradoEm, DadosDaConta conta, List<RoteiroSalvoResposta> roteirosSalvos,
+                            List<AvaliacaoExportada> avaliacoes, List<Instant> sessoesAtivasValidasAte) {
+    }
 }

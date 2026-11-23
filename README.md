@@ -145,8 +145,10 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 | Método | Rota | Descrição |
 |---|---|---|
 | `POST` | `/roteiros` | Recebe origem e destino quaisquer (`nome`, `latitude`, `longitude`) e, opcionalmente, até 8 `paradas` e o `transporte` (`DRIVING`, `WALKING`, `BICYCLING` ou `TRANSIT`); busca POIs no Google Places ao longo da rota, envia os mais bem avaliados (até 10 por padrão) à curadoria do `ia-service` e ordena o resultado via Google Directions. Detalhes abaixo. |
-| `POST` | `/auth/cadastro`, `/auth/login`, `/auth/sair` | Conta e sessão. Cadastro e login devolvem um token (`Authorization: Bearer`), válido por 30 dias. |
-| `GET` | `/auth/eu` | Usuário dono da sessão. |
+| `POST` | `/auth/cadastro`, `/auth/login`, `/auth/sair` | Conta e sessão. Cadastro e login devolvem um token (`Authorization: Bearer`), válido por 30 dias. Login: 5 senhas erradas por e-mail e 30 por IP a cada 15 min; cadastro: 10 por IP por hora. Acima disso, `429` com `Retry-After`. |
+| `GET` `PUT` | `/auth/eu` | Usuário dono da sessão; `PUT` corrige o nome. |
+| `GET` | `/auth/meus-dados` | Exporta, em JSON, tudo o que o servidor guarda sobre a conta (LGPD: acesso e portabilidade). Exige login. |
+| `DELETE` | `/auth/conta` | Exclui a conta, com sessões, roteiros salvos e avaliações. Exige login e a senha no corpo (`{"senha": "..."}`); a conferência entra no limite de tentativas do login. |
 | `GET` `POST` | `/roteiros-salvos` | Lista e salva roteiros na conta (origem, destino e IDs dos lugares). Exige login. |
 | `DELETE` | `/roteiros-salvos/{id}` | Remove um roteiro salvo. Exige login. |
 | `GET` `PUT` | `/destinos/{slug}/avaliacoes` | Avaliações dos destinos do catálogo do Kyr. Ler é público; avaliar exige login. |

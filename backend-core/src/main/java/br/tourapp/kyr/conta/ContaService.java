@@ -1,10 +1,15 @@
 package br.tourapp.kyr.conta;
 
+import br.tourapp.kyr.conta.ContaDtos.AvaliacaoExportada;
 import br.tourapp.kyr.conta.ContaDtos.CadastroRequest;
+import br.tourapp.kyr.conta.ContaDtos.DadosDaConta;
 import br.tourapp.kyr.conta.ContaDtos.LoginRequest;
+import br.tourapp.kyr.conta.ContaDtos.MeusDados;
+import br.tourapp.kyr.conta.ContaDtos.RoteiroSalvoResposta;
 import br.tourapp.kyr.conta.ContaDtos.SessaoResposta;
 import br.tourapp.kyr.conta.ContaDtos.Usuario;
 import br.tourapp.kyr.conta.ContaDtos.UsuarioResposta;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -20,6 +25,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -32,11 +38,20 @@ public class ContaService {
     private static final String PREFIXO_BEARER = "Bearer ";
 
     private final JdbcClient jdbc;
-    private final PasswordEncoder senhas = new BCryptPasswordEncoder();
+    private final PasswordEncoder senhas;
     private final SecureRandom aleatorio = new SecureRandom();
+    // Conferido quando o e-mail não existe, para o login levar o mesmo tempo com e sem conta.
+    private final String hashFicticio;
 
+    @Autowired
     public ContaService(JdbcClient jdbc) {
+        this(jdbc, new BCryptPasswordEncoder());
+    }
+
+    ContaService(JdbcClient jdbc, PasswordEncoder senhas) {
         this.jdbc = jdbc;
+        this.senhas = senhas;
+        this.hashFicticio = senhas.encode("senha-ficticia-para-tempo-constante");
     }
 
     public SessaoResposta cadastrar(CadastroRequest pedido) {
@@ -65,8 +80,11 @@ public class ContaService {
                         new Usuario(rs.getLong("id"), rs.getString("nome"), rs.getString("email")), rs.getString("senha_hash")))
                 .optional();
 
-        // Mesma mensagem para e-mail inexistente e senha errada, para não revelar quem tem conta.
-        if (encontrado.isEmpty() || !senhas.matches(pedido.senha(), encontrado.get().senhaHash())) {
+        // Mesma mensagem e mesmo trabalho (uma conferência BCrypt) para e-mail inexistente e senha errada,
+        // para não revelar quem tem conta nem pelo texto nem pelo tempo de resposta.
+        String hash = encontrado.map(UsuarioComSenha::senhaHash).orElse(hashFicticio);
+        boolean senhaConfere = senhas.matches(pedido.senha(), hash);
+        if (encontrado.isEmpty() || !senhaConfere) {
             throw new ContaException(HttpStatus.UNAUTHORIZED, "credenciais_invalidas", "E-mail ou senha incorretos.");
         }
         return abrirSessao(encontrado.get().usuario());
@@ -89,6 +107,59 @@ public class ContaService {
                 .query((rs, n) -> new Usuario(rs.getLong("id"), rs.getString("nome"), rs.getString("email")))
                 .optional()
                 .orElseThrow(ContaException::naoAutenticado);
+    }
+
+    // ---------- Direitos do titular (LGPD, art. 18) ----------
+
+    /** Correção: troca o nome exibido na conta e, pelo primeiro nome, nas avaliações. */
+    public UsuarioResposta atualizarNome(Usuario usuario, String nome) {
+        String limpo = nome.trim();
+        jdbc.sql("update usuario set nome = :nome where id = :id")
+                .param("nome", limpo)
+                .param("id", usuario.id())
+                .update();
+        return new UsuarioResposta(limpo, usuario.email());
+    }
+
+    /** Acesso e portabilidade: tudo o que o servidor guarda sobre a pessoa. */
+    public MeusDados exportar(Usuario usuario) {
+        DadosDaConta conta = jdbc.sql("select nome, email, criado_em from usuario where id = :id")
+                .param("id", usuario.id())
+                .query((rs, n) -> new DadosDaConta(rs.getString("nome"), rs.getString("email"),
+                        rs.getTimestamp("criado_em").toInstant()))
+                .single();
+        List<RoteiroSalvoResposta> roteiros = jdbc
+                .sql("select " + RoteiroSalvoController.COLUNAS + " from roteiro_salvo where usuario_id = :id order by criado_em desc")
+                .param("id", usuario.id())
+                .query(RoteiroSalvoController::paraResposta)
+                .list();
+        List<AvaliacaoExportada> avaliacoes = jdbc
+                .sql("select destino_slug, nota, comentario, criado_em from avaliacao_destino where usuario_id = :id order by criado_em desc")
+                .param("id", usuario.id())
+                .query((rs, n) -> new AvaliacaoExportada(rs.getString("destino_slug"), rs.getInt("nota"),
+                        rs.getString("comentario"), rs.getTimestamp("criado_em").toInstant()))
+                .list();
+        List<Instant> sessoes = jdbc
+                .sql("select expira_em from sessao where usuario_id = :id and expira_em > now() order by expira_em")
+                .param("id", usuario.id())
+                .query((rs, n) -> rs.getTimestamp("expira_em").toInstant())
+                .list();
+        return new MeusDados(Instant.now(), conta, roteiros, avaliacoes, sessoes);
+    }
+
+    /**
+     * Eliminação: confere a senha e apaga a conta. O banco apaga em cascata as sessões, os roteiros
+     * salvos e as avaliações (V1__contas_roteiros_avaliacoes_curadoria.sql, "on delete cascade").
+     */
+    public void excluirConta(Usuario usuario, String senha) {
+        String hash = jdbc.sql("select senha_hash from usuario where id = :id")
+                .param("id", usuario.id())
+                .query(String.class)
+                .single();
+        if (!senhas.matches(senha, hash)) {
+            throw new ContaException(HttpStatus.FORBIDDEN, "senha_incorreta", "Senha incorreta.");
+        }
+        jdbc.sql("delete from usuario where id = :id").param("id", usuario.id()).update();
     }
 
     private SessaoResposta abrirSessao(Usuario usuario) {

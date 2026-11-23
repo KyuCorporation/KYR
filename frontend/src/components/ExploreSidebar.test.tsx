@@ -24,6 +24,7 @@ describe("ExploreSidebar", () => {
     render(<ExploreSidebar active="inicio" />);
 
     expect(await screen.findByText("Olá, Ana")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Minha conta" }).getAttribute("href")).toBe("/conta");
     fireEvent.click(screen.getByRole("button", { name: "Sair" }));
 
     expect(screen.getByText("Salve suas rotas")).toBeTruthy();
@@ -31,11 +32,11 @@ describe("ExploreSidebar", () => {
     expect(fetch).toHaveBeenCalledWith("/api/auth/sair", expect.objectContaining({ method: "POST" }));
   });
 
-  it("recolhido, o atalho da conta leva para os roteiros de quem está logado", async () => {
+  it("recolhido, o atalho da conta leva para Minha conta de quem está logado", async () => {
     window.localStorage.setItem("kyr:sessao", JSON.stringify({ nome: "Ana Viajante", email: "ana@exemplo.com" }));
     render(<ExploreSidebar active="historico" />);
 
     const conta = await screen.findByRole("link", { name: "Conta de Ana Viajante" });
-    expect(conta.getAttribute("href")).toBe("/roteiros");
+    expect(conta.getAttribute("href")).toBe("/conta");
   });
 });

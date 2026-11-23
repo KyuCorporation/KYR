@@ -1,0 +1,155 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  color: #263d44;
+  background: #fff;
+}
+
+.main {
+  flex: 1 1 0;
+  max-width: 760px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 45px clamp(22px, 5vw, 72px) 34px;
+  font-size: 14px;
+}
+
+.header h1 {
+  margin: 0;
+  color: #1f2d3a;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.header p {
+  margin: 6px 0 24px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.main a {
+  color: #b4480a;
+  font-weight: 700;
+}
+
+.bloco {
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  border: 1px solid #dce1e2;
+  border-radius: 6px;
+}
+
+.bloco h2 {
+  margin: 0 0 10px;
+  color: #1f2d3a;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.bloco p {
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.apoio {
+  color: #56636c;
+}
+
+.linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.linha label,
+.exclusao label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #1f2d3a;
+  font-weight: 700;
+}
+
+.linha input,
+.exclusao input[type="password"] {
+  min-width: min(280px, 100%);
+  padding: 9px 11px;
+  color: #1f2d3a;
+  border: 1px solid #c9d0d3;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 400;
+}
+
+.main button {
+  padding: 9px 15px;
+  color: #fff;
+  background: #c2410c;
+  border: 1px solid #c2410c;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.main button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.main button.secundario {
+  color: #1f2d3a;
+  background: #fff;
+  border-color: #c9d0d3;
+}
+
+.main button.perigo {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.confirmacao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.exclusao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.exclusao .ciente {
+  flex-direction: row;
+  align-items: center;
+  font-weight: 400;
+}
+
+.zonaDePerigo {
+  border-color: #f1c4c4;
+}
+
+.ok,
+.erro {
+  margin: 12px 0 0 !important;
+  font-weight: 700;
+}
+
+.ok {
+  color: #166534;
+}
+
+.erro {
+  color: #b91c1c;
+}
+
+@media (max-width: 700px) {
+  .main {
+    padding: 25px 16px 86px;
+  }
+}
