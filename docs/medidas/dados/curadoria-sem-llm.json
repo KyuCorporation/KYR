@@ -1,0 +1,486 @@
+{
+  "rotulo": "sem-llm",
+  "rodadas": 3,
+  "chamadas": [
+    {
+      "rodada": 1,
+      "lote": 1,
+      "status": 200,
+      "ms": 234,
+      "enviados": 10,
+      "modelo": "nenhum",
+      "curadoPorIa": false,
+      "curados": 0,
+      "nomesPreservados": 10,
+      "trilhaOk": 0,
+      "tipoOk": 0,
+      "ambosOk": 0,
+      "descricoes": [],
+      "pontos": [
+        {
+          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Dreamland Museu de Cera",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Wonder Park Foz (Movie Cars)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Shopping Catuaí Palladium",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque Aquático Cataratas",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Rafain Churrascaria Show",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Cantina da Bea",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Empório com Arte",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        }
+      ]
+    },
+    {
+      "rodada": 1,
+      "lote": 2,
+      "status": 200,
+      "ms": 571,
+      "enviados": 8,
+      "modelo": "nenhum",
+      "curadoPorIa": false,
+      "curados": 0,
+      "nomesPreservados": 8,
+      "trilhaOk": 0,
+      "tipoOk": 0,
+      "ambosOk": 0,
+      "descricoes": [],
+      "pontos": [
+        {
+          "nome": "Bona Trattoria Gastronomia",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Restaurante Tarobá (Bourbon Resort)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Três Fronteiras Artesanato",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Cataratas Souvenirs",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Supermercado Ítalo - Centro",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "ODA Vinhoteca Duty Free",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Aquamania Foz",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Adrena Kart Foz",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        }
+      ]
+    },
+    {
+      "rodada": 2,
+      "lote": 1,
+      "status": 200,
+      "ms": 196,
+      "enviados": 10,
+      "modelo": "nenhum",
+      "curadoPorIa": false,
+      "curados": 0,
+      "nomesPreservados": 10,
+      "trilhaOk": 0,
+      "tipoOk": 0,
+      "ambosOk": 0,
+      "descricoes": [],
+      "pontos": [
+        {
+          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Dreamland Museu de Cera",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Wonder Park Foz (Movie Cars)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Shopping Catuaí Palladium",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque Aquático Cataratas",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Rafain Churrascaria Show",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Cantina da Bea",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Empório com Arte",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        }
+      ]
+    },
+    {
+      "rodada": 2,
+      "lote": 2,
+      "status": 200,
+      "ms": 572,
+      "enviados": 8,
+      "modelo": "nenhum",
+      "curadoPorIa": false,
+      "curados": 0,
+      "nomesPreservados": 8,
+      "trilhaOk": 0,
+      "tipoOk": 0,
+      "ambosOk": 0,
+      "descricoes": [],
+      "pontos": [
+        {
+          "nome": "Bona Trattoria Gastronomia",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Restaurante Tarobá (Bourbon Resort)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Três Fronteiras Artesanato",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Cataratas Souvenirs",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Supermercado Ítalo - Centro",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "ODA Vinhoteca Duty Free",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Aquamania Foz",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Adrena Kart Foz",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        }
+      ]
+    },
+    {
+      "rodada": 3,
+      "lote": 1,
+      "status": 200,
+      "ms": 194,
+      "enviados": 10,
+      "modelo": "nenhum",
+      "curadoPorIa": false,
+      "curados": 0,
+      "nomesPreservados": 10,
+      "trilhaOk": 0,
+      "tipoOk": 0,
+      "ambosOk": 0,
+      "descricoes": [],
+      "pontos": [
+        {
+          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Dreamland Museu de Cera",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Wonder Park Foz (Movie Cars)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Shopping Catuaí Palladium",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Parque Aquático Cataratas",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Rafain Churrascaria Show",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Cantina da Bea",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Empório com Arte",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        }
+      ]
+    },
+    {
+      "rodada": 3,
+      "lote": 2,
+      "status": 200,
+      "ms": 186,
+      "enviados": 8,
+      "modelo": "nenhum",
+      "curadoPorIa": false,
+      "curados": 0,
+      "nomesPreservados": 8,
+      "trilhaOk": 0,
+      "tipoOk": 0,
+      "ambosOk": 0,
+      "descricoes": [],
+      "pontos": [
+        {
+          "nome": "Bona Trattoria Gastronomia",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Restaurante Tarobá (Bourbon Resort)",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Três Fronteiras Artesanato",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Cataratas Souvenirs",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Supermercado Ítalo - Centro",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "ODA Vinhoteca Duty Free",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Aquamania Foz",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        },
+        {
+          "nome": "Adrena Kart Foz",
+          "trilha": null,
+          "tipo": null,
+          "descricao": null,
+          "curado": false
+        }
+      ]
+    }
+  ]
+}
