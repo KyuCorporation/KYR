@@ -5,6 +5,7 @@ import br.tourapp.kyr.conta.ContaDtos.LoginRequest;
 import br.tourapp.kyr.conta.ContaDtos.SessaoResposta;
 import br.tourapp.kyr.conta.ContaDtos.Usuario;
 import br.tourapp.kyr.conta.ContaDtos.UsuarioResposta;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -32,11 +33,20 @@ public class ContaService {
     private static final String PREFIXO_BEARER = "Bearer ";
 
     private final JdbcClient jdbc;
-    private final PasswordEncoder senhas = new BCryptPasswordEncoder();
+    private final PasswordEncoder senhas;
     private final SecureRandom aleatorio = new SecureRandom();
+    // Conferido quando o e-mail não existe, para o login levar o mesmo tempo com e sem conta.
+    private final String hashFicticio;
 
+    @Autowired
     public ContaService(JdbcClient jdbc) {
+        this(jdbc, new BCryptPasswordEncoder());
+    }
+
+    ContaService(JdbcClient jdbc, PasswordEncoder senhas) {
         this.jdbc = jdbc;
+        this.senhas = senhas;
+        this.hashFicticio = senhas.encode("senha-ficticia-para-tempo-constante");
     }
 
     public SessaoResposta cadastrar(CadastroRequest pedido) {
@@ -65,8 +75,11 @@ public class ContaService {
                         new Usuario(rs.getLong("id"), rs.getString("nome"), rs.getString("email")), rs.getString("senha_hash")))
                 .optional();
 
-        // Mesma mensagem para e-mail inexistente e senha errada, para não revelar quem tem conta.
-        if (encontrado.isEmpty() || !senhas.matches(pedido.senha(), encontrado.get().senhaHash())) {
+        // Mesma mensagem e mesmo trabalho (uma conferência BCrypt) para e-mail inexistente e senha errada,
+        // para não revelar quem tem conta nem pelo texto nem pelo tempo de resposta.
+        String hash = encontrado.map(UsuarioComSenha::senhaHash).orElse(hashFicticio);
+        boolean senhaConfere = senhas.matches(pedido.senha(), hash);
+        if (encontrado.isEmpty() || !senhaConfere) {
             throw new ContaException(HttpStatus.UNAUTHORIZED, "credenciais_invalidas", "E-mail ou senha incorretos.");
         }
         return abrirSessao(encontrado.get().usuario());

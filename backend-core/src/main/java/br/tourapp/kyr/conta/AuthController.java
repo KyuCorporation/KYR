@@ -5,6 +5,8 @@ import br.tourapp.kyr.conta.ContaDtos.LoginRequest;
 import br.tourapp.kyr.conta.ContaDtos.SessaoResposta;
 import br.tourapp.kyr.conta.ContaDtos.Usuario;
 import br.tourapp.kyr.conta.ContaDtos.UsuarioResposta;
+import br.tourapp.kyr.conta.LimiteDeTentativas.Regra;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,19 +23,39 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final ContaService contaService;
+    private final LimiteDeTentativas limites;
 
-    public AuthController(ContaService contaService) {
+    public AuthController(ContaService contaService, LimiteDeTentativas limites) {
         this.contaService = contaService;
+        this.limites = limites;
     }
 
+    // Toda tentativa de cadastro conta, inclusive com e-mail repetido: isso também limita quem tenta
+    // descobrir, pelo cadastro, quais e-mails já têm conta.
     @PostMapping("/cadastro")
-    public ResponseEntity<SessaoResposta> cadastrar(@Valid @RequestBody CadastroRequest pedido) {
+    public ResponseEntity<SessaoResposta> cadastrar(@Valid @RequestBody CadastroRequest pedido, HttpServletRequest requisicao) {
+        limites.consumir(Regra.CADASTRO_POR_IP, IpDoCliente.de(requisicao));
         return ResponseEntity.status(HttpStatus.CREATED).body(contaService.cadastrar(pedido));
     }
 
+    // A tentativa é contada antes de conferir a senha e devolvida se o login der certo. Assim só as
+    // falhas ficam contando, e requisições simultâneas não escapam do limite.
     @PostMapping("/login")
-    public SessaoResposta entrar(@Valid @RequestBody LoginRequest pedido) {
-        return contaService.entrar(pedido);
+    public SessaoResposta entrar(@Valid @RequestBody LoginRequest pedido, HttpServletRequest requisicao) {
+        String ip = IpDoCliente.de(requisicao);
+        String email = ContaService.normalizarEmail(pedido.email());
+        limites.consumir(Regra.LOGIN_POR_IP, ip);
+        try {
+            limites.consumir(Regra.LOGIN_POR_EMAIL, email);
+        } catch (MuitasTentativasException e) {
+            limites.devolver(Regra.LOGIN_POR_IP, ip);
+            throw e;
+        }
+
+        SessaoResposta sessao = contaService.entrar(pedido);
+        limites.esquecer(Regra.LOGIN_POR_EMAIL, email);
+        limites.devolver(Regra.LOGIN_POR_IP, ip);
+        return sessao;
     }
 
     @PostMapping("/sair")
