@@ -36,16 +36,16 @@ Detalhe do frontend: 2.772 linhas em `.tsx`, 1.387 em `.ts` e 3.109 em `.css` (1
 
 ## 2. Testes automatizados
 
-Os testes Java rodaram com `mvnw clean verify` numa cópia limpa do commit, sem os arquivos não versionados da pasta local. O frontend rodou com `vitest run`. Nenhum teste usa rede.
+Medido de novo em **23/11/2026** na `main` (commit `4a7ad11`, depois dos PRs #66 a #70). Os testes Java rodaram com `mvnw clean verify` numa cópia limpa do commit, sem os arquivos não versionados da pasta local. O frontend rodou com `vitest run`.
 
-| Módulo | Classes / arquivos de teste | Testes | Passaram | Falharam | Pulados | Tempo dos testes | Tempo total do `verify` |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| backend-core (JUnit 5) | 11 | 54 | 54 | 0 | 0 | 4,3 s | 14 s |
-| ia-service (JUnit 5) | 5 | 16 | 15 | 0 | 1 | 3,7 s | 11 s |
-| frontend (Vitest) | 22 | 125 | 125 | 0 | 0 | 12,6 s | – |
-| **Total** | **38** | **195** | **194** | **0** | **1** | | |
+Nenhum teste chama serviço externo: Google Maps, ia-service e provedores de LLM são simulados. Os testes de acesso a dados do backend-core usam um PostgreSQL 15 em contêiner (Testcontainers), com as migrações reais do Flyway; sem Docker, eles são pulados.
 
-A linha do frontend foi medida de novo em **21/11/2026**, no commit `9f5bbaa` (branch `test/frontend-cobertura`), depois da inclusão de 99 testes. Na medição de 20/11 eram 4 arquivos e 26 testes. As linhas de teste da seção 1 também foram recontadas nesse commit.
+| Módulo | Classes / arquivos de teste | Testes | Passaram | Falharam | Pulados | Tempo total |
+|---|---:|---:|---:|---:|---:|---:|
+| backend-core (JUnit 5) | 20 | 108 | 108 | 0 | 0 | 25 s (`verify`) |
+| ia-service (JUnit 5) | 6 | 22 | 21 | 0 | 1 | 9 s (`verify`) |
+| frontend (Vitest) | 26 | 169 | 169 | 0 | 0 | 13 s |
+| **Total** | **52** | **299** | **298** | **0** | **1** | |
 
 O teste pulado é o `CuradoriaServiceIntegrationTest`, que chama um LLM de verdade e só roda com `RUN_LLM_INTEGRATION_TESTS=1`. O lint do frontend (`eslint .`) terminou sem erros nem avisos.
 
@@ -55,27 +55,27 @@ A cobertura foi medida com JaCoCo 0.8.14 no Java e `@vitest/coverage-v8` no fron
 
 | Módulo | Linhas cobertas | Desvios (branches) cobertos |
 |---|---:|---:|
-| backend-core | 59,6% (de 681 linhas executáveis) | 55,9% |
-| ia-service | 66,8% (de 298) | 69,0% |
-| frontend | 68,0% das instruções (era 11,3% em 20/11) | 86,8% (era 57,6%) |
+| backend-core | 95,3% (de 811 linhas executáveis) | 77,3% |
+| ia-service | 91,0% (de 299) | 76,7% |
+| frontend | 81,4% das instruções | 87,6% |
 
 Onde a cobertura está concentrada:
 
 | Parte | Linhas cobertas |
 |---|---:|
+| backend-core, `service` (montagem do roteiro, cache e ordenação) | 100% |
+| backend-core, `conta` (login, limite de tentativas, roteiros salvos, avaliações, LGPD) | 96,8% |
 | backend-core, `poi.client` (clientes do Google Places e Directions) | 88,3% |
 | backend-core, `poi.service` (busca de lugares ao longo da rota) | 84,7% |
-| backend-core, `service` (montagem do roteiro, cache e ordenação) | 72,1% |
-| backend-core, `conta` (login, roteiros salvos, avaliações) | 15,5% |
+| ia-service, `config` (montagem dos provedores) | 93,5% |
 | ia-service, `curadoria` (cadeia de LLMs, prompt e leitura da resposta) | 90,9% |
-| ia-service, `config` (montagem dos provedores) | 34,4% |
-| frontend, `src/core` (chamada à API, sessão, roteiros salvos) | 97,9% (era 50,2%) |
-| frontend, rotas de API em `src/app/api` (repasse ao backend e cookie da sessão) | 94,0% (era 0%) |
+| frontend, `src/core` (chamada à API, sessão, roteiros salvos) | 97,7% |
 | frontend, `src/hooks` (Google Maps e autocomplete) | 96,9% |
-| frontend, telas em `src/app` | 68,1% (era 0%) |
-| frontend, `src/components` | 57,1% (era 15,9%) |
+| frontend, `src/components` (inclui os dois mapas) | 95,7% |
+| frontend, rotas de API em `src/app/api` (repasse ao backend e cookie da sessão) | 95,1% |
+| frontend, telas em `src/app` | 77,4% |
 
-A regra de negócio (roteiro, curadoria, clientes do Google) tem boa cobertura. No frontend, o que falta são os dois mapas (`RoteiroMap` e `GoogleMapRoute`), que dependem do SDK do Google Maps no navegador, e as páginas sem lógica (layout, home, ajuda). No backend-core, a parte de contas quase não tem testes.
+O que ainda não tem teste no frontend são as páginas sem lógica (layout, início, ajuda) e a tela de demonstração `/roteiro`, que só responde em desenvolvimento.
 
 ## 3. Frontend: build, tamanho e Lighthouse
 
@@ -214,7 +214,7 @@ Estes são pontos para o texto do TCC ou para trabalhos futuros. Nenhum deles fo
 1. **O Mistral local às vezes devolve o JSON sem a chave `pontos`.** Ele manda o objeto do lugar direto. O leitor da resposta recusa esse formato, e aquele lote fica sem curadoria. É a causa das linhas "nenhum" nos cenários com o Mistral, conforme o log do ia-service: `campo "pontos" ausente ou não é uma lista`. Aceitar esse formato no `LlmResponseParser` aumentaria a taxa de curadoria do modelo local.
 2. **A resposta não diz quando a curadoria veio do cache.** No roteiro repetido, `fonteIA` continua `gemini-3.5-flash-lite`, que é o modelo que curou originalmente. Só o banco mostra que a IA não foi chamada. Um campo como `metadados.curadosDoCache` deixaria isso visível.
 3. **Muitas sugestões ficam dentro do próprio aeroporto.** Saindo do aeroporto, 75% das sugestões são de alimentação, algumas na área de embarque. Exemplo: *Living HNK - Embarque Foz do Iguaçu*, que quem acabou de desembarcar não consegue acessar.
-4. **O frontend tinha pouca cobertura de testes nas telas** (0% em `src/app` em 20/11). Resolvido em 21/11 com os testes da branch `test/frontend-cobertura` (seção 2). Os mapas continuam sem testes.
+4. **O frontend tinha pouca cobertura de testes nas telas** (0% em `src/app` em 20/11). Resolvido nos PRs #66 e #69, que também cobriram os mapas e o backend (seção 2).
 5. **Reabrir um roteiro salvo perde as paradas e pode trazer o destino como sugestão** (seção 6). As sugestões também mudam, porque o roteiro é gerado de novo.
 
 ## O que não foi medido
