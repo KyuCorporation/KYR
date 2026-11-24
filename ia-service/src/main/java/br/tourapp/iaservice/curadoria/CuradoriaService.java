@@ -36,6 +36,9 @@ public class CuradoriaService {
 
     private static final Logger log = LoggerFactory.getLogger(CuradoriaService.class);
 
+    // Abaixo disso não vale começar uma chamada: nenhum provedor responde a tempo.
+    static final long TEMPO_MINIMO_POR_TENTATIVA_MS = 500;
+
     private static final String TRILHA_TURISMO = "turismo";
     private static final String TRILHA_COMPRAS = "compras";
     private static final String TIPO_ALIMENTACAO = "alimentacao";
@@ -71,10 +74,18 @@ public class CuradoriaService {
         }
 
         String prompt = PromptBuilder.montarPrompt(pontos, objectMapper, props.getMaxDescricaoChars());
+        long prazoFinal = System.nanoTime() + props.getOrcamentoTotal().toNanos();
 
         for (LlmProvider provider : providers) {
+            long restanteMs = TimeUnit.NANOSECONDS.toMillis(prazoFinal - System.nanoTime());
+            if (restanteMs < TEMPO_MINIMO_POR_TENTATIVA_MS) {
+                log.warn("Tempo total da cadeia ({}s) esgotado antes do provedor '{}'.",
+                        props.getOrcamentoTotal().toSeconds(), provider.nome());
+                break;
+            }
+            long timeoutMs = Math.min(provider.timeout().toMillis(), restanteMs);
             try {
-                String respostaBruta = chamarComTimeout(provider, prompt);
+                String respostaBruta = chamarComTimeout(provider, prompt, timeoutMs);
                 Map<String, Object> respostaJson = LlmResponseParser.extrairJson(respostaBruta, objectMapper);
                 List<Map<String, Object>> pontosCuradosLlm = extrairListaDePontos(respostaJson);
 
@@ -84,8 +95,8 @@ public class CuradoriaService {
                 log.info("Curadoria concluída via provedor '{}' (modelo {})", provider.nome(), provider.modelo());
                 return resultado;
             } catch (TimeoutException e) {
-                log.warn("Provedor '{}' excedeu o timeout de {}s — tentando o próximo da cadeia.",
-                        provider.nome(), provider.timeout().toSeconds());
+                log.warn("Provedor '{}' excedeu o timeout de {} ms — tentando o próximo da cadeia.",
+                        provider.nome(), timeoutMs);
             } catch (Exception e) {
                 log.warn("Provedor '{}' falhou ({}: {}) — tentando o próximo da cadeia.",
                         provider.nome(), e.getClass().getSimpleName(), e.getMessage());
@@ -96,10 +107,12 @@ public class CuradoriaService {
         return fallbackCompleto(pontos);
     }
 
-    private String chamarComTimeout(LlmProvider provider, String prompt) throws TimeoutException {
+    // Cancelar o futuro interrompe a espera, mas a chamada HTTP já enviada ao provedor pode seguir até o fim
+    // (e ser cobrada). Por isso os timeouts e o orçamento total são a principal proteção de custo e de tempo.
+    private String chamarComTimeout(LlmProvider provider, String prompt, long timeoutMs) throws TimeoutException {
         Future<String> futuro = executor.submit(() -> provider.chamar(prompt));
         try {
-            return futuro.get(provider.timeout().toMillis(), TimeUnit.MILLISECONDS);
+            return futuro.get(timeoutMs, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             futuro.cancel(true);
             throw e;

@@ -3,6 +3,7 @@ package br.tourapp.iaservice.curadoria;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import br.tourapp.iaservice.config.FallbackChainProperties;
@@ -116,6 +117,26 @@ class LlmFallbackChainTest {
         CuradoriaService service = new CuradoriaService(List.of(claude), objectMapper, props);
 
         service.curarPontos(PONTOS_EXEMPLO);
+    }
+
+    @Test
+    void respeitaOTempoTotalDaCadeiaMesmoComProvedoresDeTimeoutMaior() {
+        FallbackChainProperties orcamentoCurto = new FallbackChainProperties();
+        orcamentoCurto.setOrcamentoTotalSeconds(1);
+        // O primeiro provedor aceitaria 5 s, mas o orçamento corta em 1 s; o segundo nem chega a ser chamado.
+        LlmProvider lento = providerLento("ollama-mistral", Duration.ofSeconds(5), Duration.ofSeconds(3));
+        ChatModel naoChamado = mock(ChatModel.class);
+        LlmProvider gemini = new SpringAiLlmProvider("gemini", "gemini-2.5-flash", Duration.ofSeconds(8), naoChamado);
+
+        CuradoriaService service = new CuradoriaService(List.of(lento, gemini), objectMapper, orcamentoCurto);
+
+        long inicio = System.nanoTime();
+        RoteiroResponseDTO resultado = service.curarPontos(PONTOS_EXEMPLO);
+        long duracaoMs = Duration.ofNanos(System.nanoTime() - inicio).toMillis();
+
+        assertThat(resultado.curadoPorIa()).isFalse();
+        assertThat(duracaoMs).isLessThan(2_000);
+        verifyNoInteractions(naoChamado);
     }
 
     private static String respostaCompleta() {

@@ -23,7 +23,9 @@ public final class PromptBuilder {
 
         return """
                 Você é o serviço de curadoria de roteiros turísticos do protótipo KYU. \
-                Você recebe pontos de interesse (POIs) brutos, obtidos via Google Maps, no trajeto entre o aeroporto de Foz do Iguaçu e o local do evento. \
+                Você recebe pontos de interesse (POIs) brutos, obtidos via Google Maps, ao longo do trajeto que um turista \
+                escolheu entre uma origem e um destino. Use só o nome, a categoria e as coordenadas de cada POI; \
+                não presuma a cidade nem o motivo da viagem. \
 
                 Para cada POI da lista abaixo, classifique em:
                 - "trilha": exatamente "turismo" ou "compras"
