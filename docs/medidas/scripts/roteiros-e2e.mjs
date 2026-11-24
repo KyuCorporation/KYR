@@ -64,8 +64,12 @@ for (const c of cenarios) {
     totalPontos: m.totalPontos, sugeridos: sugeridos.length, paradas: pontos.length - sugeridos.length,
     curados: sugeridos.filter((p) => p.curado).length, fonteIA: m.fonteIA, curadoPorIa: m.curadoPorIa,
     fonteRota: m.fonteRota, transporte: m.transporte,
-    distanciaKm: trechos.length ? trechos.reduce((a, p) => a + p.distanciaMetros, 0) / 1000 : null,
-    duracaoMin: trechos.length ? trechos.reduce((a, p) => a + (p.duracaoSegundos ?? 0), 0) / 60 : null,
+    // Total do percurso, da origem ao destino (inclui o trecho do último ponto até o destino).
+    distanciaKm: m.distanciaTotalMetros != null ? m.distanciaTotalMetros / 1000 : null,
+    duracaoMin: m.duracaoTotalSegundos != null ? m.duracaoTotalSegundos / 60 : null,
+    // Soma só dos trechos de cada ponto (sem o trecho final), comparável às medições anteriores.
+    distanciaTrechosKm: trechos.length ? trechos.reduce((a, p) => a + p.distanciaMetros, 0) / 1000 : null,
+    duracaoTrechosMin: trechos.length ? trechos.reduce((a, p) => a + (p.duracaoSegundos ?? 0), 0) / 60 : null,
     trilhas: contar(sugeridos, "trilha"), tipos: contar(sugeridos, "tipo"),
     lugares: sugeridos.map((p) => ({ nome: p.nome, trilha: p.trilha, tipo: p.tipo, curado: p.curado, descricao: p.descricao })),
     erro: r.status >= 400 ? r.json : undefined,
@@ -77,7 +81,7 @@ for (const c of cenarios) {
 const validacao = [];
 for (const c of invalidos) {
   const r = await chamar(c.corpo);
-  validacao.push({ cenario: c.nome, status: r.status, ms: r.ms, mensagem: r.json?.message ?? r.json?.erro ?? r.json?.detail ?? null });
+  validacao.push({ cenario: c.nome, status: r.status, ms: r.ms, mensagem: r.json?.mensagem ?? r.json?.message ?? r.json?.detail ?? null });
 }
 
 function contar(lista, campo) {
@@ -88,11 +92,11 @@ mkdirSync("docs/medidas/dados", { recursive: true });
 writeFileSync(`docs/medidas/dados/roteiros-${rotulo}.json`, JSON.stringify({ geradoEm: new Date().toISOString(), resultados, validacao }, null, 2));
 
 const n = (v, d = 1) => (v == null ? "–" : Number(v).toFixed(d));
-console.log("| Cenário | Status | Tempo no cliente (ms) | Tempo no servidor (ms) | Lugares sugeridos | Curados pela IA | Quem curou | Ordem da rota | Distância (km) | Duração (min) |");
-console.log("|---|---:|---:|---:|---:|---:|---|---|---:|---:|");
+console.log("| Cenário | Status | Tempo no cliente (ms) | Tempo no servidor (ms) | Lugares sugeridos | Curados pela IA | Quem curou | Ordem da rota | Distância total (km) | Duração total (min) | Distância até o último ponto (km) |");
+console.log("|---|---:|---:|---:|---:|---:|---|---|---:|---:|---:|");
 for (const r of resultados) {
-  console.log(`| ${r.cenario} | ${r.status} | ${r.msCliente} | ${r.msServidor ?? "–"} | ${r.sugeridos} | ${r.curados} | ${r.fonteIA ?? "–"} | ${r.fonteRota ?? "–"} | ${n(r.distanciaKm)} | ${n(r.duracaoMin, 0)} |`);
+  console.log(`| ${r.cenario} | ${r.status} | ${r.msCliente} | ${r.msServidor ?? "–"} | ${r.sugeridos} | ${r.curados} | ${r.fonteIA ?? "–"} | ${r.fonteRota ?? "–"} | ${n(r.distanciaKm)} | ${n(r.duracaoMin, 0)} | ${n(r.distanciaTrechosKm)} |`);
 }
-console.log("\n| Requisição inválida | Status | Tempo (ms) |");
-console.log("|---|---:|---:|");
-for (const v of validacao) console.log(`| ${v.cenario} | ${v.status} | ${v.ms} |`);
+console.log("\n| Requisição inválida | Status | Tempo (ms) | Mensagem |");
+console.log("|---|---:|---:|---|");
+for (const v of validacao) console.log(`| ${v.cenario} | ${v.status} | ${v.ms} | ${v.mensagem ?? "–"} |`);

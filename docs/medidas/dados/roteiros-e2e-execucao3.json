@@ -1,0 +1,615 @@
+{
+  "geradoEm": "2026-11-24T00:05:49.152Z",
+  "resultados": [
+    {
+      "cenario": "Carro, sem paradas (cache vazio)",
+      "status": 200,
+      "msCliente": 19710,
+      "msServidor": 19512,
+      "totalPontos": 10,
+      "sugeridos": 10,
+      "paradas": 0,
+      "curados": 10,
+      "fonteIA": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "fonteRota": "google-directions-api",
+      "transporte": "DRIVING",
+      "distanciaKm": 22.39,
+      "duracaoMin": 33.266666666666666,
+      "distanciaTrechosKm": 20.654,
+      "duracaoTrechosMin": 29.216666666666665,
+      "trilhas": {
+        "turismo": 10
+      },
+      "tipos": {
+        "alimentacao": 9,
+        "lazer": 1
+      },
+      "lugares": [
+        {
+          "nome": "Sucão - Aeroporto Foz Do Iguaçu (área pública, antes do embarque)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Lanchonete na área pública do aeroporto, excelente para lanches rápidos e sucos naturais."
+        },
+        {
+          "nome": "Living HNK - Embarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante localizado na área de embarque, ideal para refeições rápidas e descanso antes de voos."
+        },
+        {
+          "nome": "Casa do Pão de Queijo Praça Foz",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Café tradicional conhecido pelo pão de queijo quentinho e opções rápidas de cafeteria."
+        },
+        {
+          "nome": "Pecorino Caffè Aeroporto Foz do Iguaçu: Pizza, Croissant, Salgados, Sobremesas",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Cafeteria prática que serve salgados, croissants e sobremesas para quem está circulando pelo aeroporto."
+        },
+        {
+          "nome": "Forneria Ouro Preto - Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Pizzaria que oferece diversas opções de pizzas artesanais para os passageiros em trânsito."
+        },
+        {
+          "nome": "Living HNK - Desembarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Opção gastronômica situada na área de desembarque, conveniente para refeições logo na chegada."
+        },
+        {
+          "nome": "Giraffas Foz Do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Rede de fast-food com pratos rápidos, sanduíches e refeições variadas para visitantes com pressa."
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Bar temático com ambiente automobilístico, oferecendo bebidas e petiscos para momentos de descontração."
+        },
+        {
+          "nome": "Grand Carimã Resort & Convention Center",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Resort com ampla estrutura de hospedagem, lazer e eventos, adequado para estadias de descanso."
+        },
+        {
+          "nome": "Cervejaria Locks Bier - Disk Chopp",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Brewpub que oferece chopes artesanais variados, sendo uma boa opção para apreciar a produção local."
+        }
+      ]
+    },
+    {
+      "cenario": "Carro, sem paradas (repetição: cache da curadoria)",
+      "status": 200,
+      "msCliente": 4265,
+      "msServidor": 4258,
+      "totalPontos": 10,
+      "sugeridos": 10,
+      "paradas": 0,
+      "curados": 10,
+      "fonteIA": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "fonteRota": "google-directions-api",
+      "transporte": "DRIVING",
+      "distanciaKm": 22.39,
+      "duracaoMin": 33.266666666666666,
+      "distanciaTrechosKm": 20.654,
+      "duracaoTrechosMin": 29.216666666666665,
+      "trilhas": {
+        "turismo": 10
+      },
+      "tipos": {
+        "alimentacao": 9,
+        "lazer": 1
+      },
+      "lugares": [
+        {
+          "nome": "Sucão - Aeroporto Foz Do Iguaçu (área pública, antes do embarque)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Lanchonete na área pública do aeroporto, excelente para lanches rápidos e sucos naturais."
+        },
+        {
+          "nome": "Living HNK - Embarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante localizado na área de embarque, ideal para refeições rápidas e descanso antes de voos."
+        },
+        {
+          "nome": "Casa do Pão de Queijo Praça Foz",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Café tradicional conhecido pelo pão de queijo quentinho e opções rápidas de cafeteria."
+        },
+        {
+          "nome": "Pecorino Caffè Aeroporto Foz do Iguaçu: Pizza, Croissant, Salgados, Sobremesas",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Cafeteria prática que serve salgados, croissants e sobremesas para quem está circulando pelo aeroporto."
+        },
+        {
+          "nome": "Forneria Ouro Preto - Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Pizzaria que oferece diversas opções de pizzas artesanais para os passageiros em trânsito."
+        },
+        {
+          "nome": "Living HNK - Desembarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Opção gastronômica situada na área de desembarque, conveniente para refeições logo na chegada."
+        },
+        {
+          "nome": "Giraffas Foz Do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Rede de fast-food com pratos rápidos, sanduíches e refeições variadas para visitantes com pressa."
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Bar temático com ambiente automobilístico, oferecendo bebidas e petiscos para momentos de descontração."
+        },
+        {
+          "nome": "Grand Carimã Resort & Convention Center",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Resort com ampla estrutura de hospedagem, lazer e eventos, adequado para estadias de descanso."
+        },
+        {
+          "nome": "Cervejaria Locks Bier - Disk Chopp",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Brewpub que oferece chopes artesanais variados, sendo uma boa opção para apreciar a produção local."
+        }
+      ]
+    },
+    {
+      "cenario": "A pé, sem paradas",
+      "status": 200,
+      "msCliente": 4566,
+      "msServidor": 4558,
+      "totalPontos": 10,
+      "sugeridos": 10,
+      "paradas": 0,
+      "curados": 10,
+      "fonteIA": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "fonteRota": "google-directions-api",
+      "transporte": "WALKING",
+      "distanciaKm": 11.26,
+      "duracaoMin": 150.81666666666666,
+      "distanciaTrechosKm": 10.066,
+      "duracaoTrechosMin": 134.38333333333333,
+      "trilhas": {
+        "turismo": 9,
+        "compras": 1
+      },
+      "tipos": {
+        "alimentacao": 7,
+        "lazer": 3
+      },
+      "lugares": [
+        {
+          "nome": "Sucão - Aeroporto Foz Do Iguaçu (área pública, antes do embarque)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Lanchonete na área pública do aeroporto, excelente para lanches rápidos e sucos naturais."
+        },
+        {
+          "nome": "Living HNK - Desembarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Opção gastronômica situada na área de desembarque, conveniente para refeições logo na chegada."
+        },
+        {
+          "nome": "Forneria Ouro Preto - Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Pizzaria que oferece diversas opções de pizzas artesanais para os passageiros em trânsito."
+        },
+        {
+          "nome": "Pecorino Caffè Aeroporto Foz do Iguaçu: Pizza, Croissant, Salgados, Sobremesas",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Cafeteria prática que serve salgados, croissants e sobremesas para quem está circulando pelo aeroporto."
+        },
+        {
+          "nome": "Giraffas Foz Do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Rede de fast-food com pratos rápidos, sanduíches e refeições variadas para visitantes com pressa."
+        },
+        {
+          "nome": "Living HNK - Embarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante localizado na área de embarque, ideal para refeições rápidas e descanso antes de voos."
+        },
+        {
+          "nome": "Museu Foz Cars",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Espaço museológico dedicado à exposição de veículos clássicos e históricos. Atração interessante para entusiastas do automotivismo."
+        },
+        {
+          "nome": "Ptero Food - Lanchonete e Restaurante",
+          "trilha": "compras",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Estabelecimento voltado para refeições e lanches rápidos. Oferece opções variadas para turistas em trânsito pela região."
+        },
+        {
+          "nome": "Dreams Ice Bar",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Bar temático construído inteiramente com gelo, mantido a temperaturas abaixo de zero. Proporciona uma experiência diferenciada de entretenimento."
+        },
+        {
+          "nome": "Grand Carimã Resort & Convention Center",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Resort com ampla estrutura de hospedagem, lazer e eventos, adequado para estadias de descanso."
+        }
+      ]
+    },
+    {
+      "cenario": "Bicicleta, sem paradas",
+      "status": 200,
+      "msCliente": 3866,
+      "msServidor": 3860,
+      "totalPontos": 10,
+      "sugeridos": 10,
+      "paradas": 0,
+      "curados": 10,
+      "fonteIA": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "fonteRota": "google-directions-api",
+      "transporte": "BICYCLING",
+      "distanciaKm": 17.139,
+      "duracaoMin": 75.41666666666667,
+      "distanciaTrechosKm": 15.902,
+      "duracaoTrechosMin": 62.916666666666664,
+      "trilhas": {
+        "turismo": 10
+      },
+      "tipos": {
+        "alimentacao": 8,
+        "lazer": 2
+      },
+      "lugares": [
+        {
+          "nome": "Sucão - Aeroporto Foz Do Iguaçu (área pública, antes do embarque)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Lanchonete na área pública do aeroporto, excelente para lanches rápidos e sucos naturais."
+        },
+        {
+          "nome": "Living HNK - Desembarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Opção gastronômica situada na área de desembarque, conveniente para refeições logo na chegada."
+        },
+        {
+          "nome": "Forneria Ouro Preto - Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Pizzaria que oferece diversas opções de pizzas artesanais para os passageiros em trânsito."
+        },
+        {
+          "nome": "Pecorino Caffè Aeroporto Foz do Iguaçu: Pizza, Croissant, Salgados, Sobremesas",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Cafeteria prática que serve salgados, croissants e sobremesas para quem está circulando pelo aeroporto."
+        },
+        {
+          "nome": "Casa do Pão de Queijo Praça Foz",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Café tradicional conhecido pelo pão de queijo quentinho e opções rápidas de cafeteria."
+        },
+        {
+          "nome": "Living HNK - Embarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante localizado na área de embarque, ideal para refeições rápidas e descanso antes de voos."
+        },
+        {
+          "nome": "Giraffas Foz Do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Rede de fast-food com pratos rápidos, sanduíches e refeições variadas para visitantes com pressa."
+        },
+        {
+          "nome": "Teo Buffet & Eventos",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante especializado em churrasco e buffet variado, ideal para refeições completas durante o trajeto."
+        },
+        {
+          "nome": "Acquamania Foz",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Parque aquático com diversas atrações e piscinas, oferecendo opções de lazer e diversão para visitantes na região."
+        },
+        {
+          "nome": "Grand Carimã Resort & Convention Center",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Resort com ampla estrutura de hospedagem, lazer e eventos, adequado para estadias de descanso."
+        }
+      ]
+    },
+    {
+      "cenario": "Transporte público, sem paradas",
+      "status": 200,
+      "msCliente": 2260,
+      "msServidor": 2254,
+      "totalPontos": 10,
+      "sugeridos": 10,
+      "paradas": 0,
+      "curados": 10,
+      "fonteIA": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "fonteRota": "fallback-sem-otimizacao",
+      "transporte": "TRANSIT",
+      "distanciaKm": null,
+      "duracaoMin": null,
+      "distanciaTrechosKm": null,
+      "duracaoTrechosMin": null,
+      "trilhas": {
+        "turismo": 10
+      },
+      "tipos": {
+        "alimentacao": 9,
+        "lazer": 1
+      },
+      "lugares": [
+        {
+          "nome": "Living HNK - Embarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante localizado na área de embarque, ideal para refeições rápidas e descanso antes de voos."
+        },
+        {
+          "nome": "Forneria Ouro Preto - Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Pizzaria que oferece diversas opções de pizzas artesanais para os passageiros em trânsito."
+        },
+        {
+          "nome": "Giraffas Foz Do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Rede de fast-food com pratos rápidos, sanduíches e refeições variadas para visitantes com pressa."
+        },
+        {
+          "nome": "Living HNK - Desembarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Opção gastronômica situada na área de desembarque, conveniente para refeições logo na chegada."
+        },
+        {
+          "nome": "Pecorino Caffè Aeroporto Foz do Iguaçu: Pizza, Croissant, Salgados, Sobremesas",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Cafeteria prática que serve salgados, croissants e sobremesas para quem está circulando pelo aeroporto."
+        },
+        {
+          "nome": "Grand Carimã Resort & Convention Center",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Resort com ampla estrutura de hospedagem, lazer e eventos, adequado para estadias de descanso."
+        },
+        {
+          "nome": "Sucão - Aeroporto Foz Do Iguaçu (área pública, antes do embarque)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Lanchonete na área pública do aeroporto, excelente para lanches rápidos e sucos naturais."
+        },
+        {
+          "nome": "Casa do Pão de Queijo Praça Foz",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Café tradicional conhecido pelo pão de queijo quentinho e opções rápidas de cafeteria."
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Bar temático com ambiente automobilístico, oferecendo bebidas e petiscos para momentos de descontração."
+        },
+        {
+          "nome": "Cervejaria Locks Bier - Disk Chopp",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Brewpub que oferece chopes artesanais variados, sendo uma boa opção para apreciar a produção local."
+        }
+      ]
+    },
+    {
+      "cenario": "Carro, 2 paradas (Parque das Aves e Marco)",
+      "status": 200,
+      "msCliente": 7224,
+      "msServidor": 7217,
+      "totalPontos": 12,
+      "sugeridos": 10,
+      "paradas": 2,
+      "curados": 10,
+      "fonteIA": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "fonteRota": "google-directions-api",
+      "transporte": "DRIVING",
+      "distanciaKm": 35.099,
+      "duracaoMin": 68.63333333333334,
+      "distanciaTrechosKm": 33.806,
+      "duracaoTrechosMin": 65.46666666666667,
+      "trilhas": {
+        "turismo": 8,
+        "compras": 2
+      },
+      "tipos": {
+        "alimentacao": 5,
+        "lazer": 5
+      },
+      "lugares": [
+        {
+          "nome": "Living HNK - Embarque Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante localizado na área de embarque, ideal para refeições rápidas e descanso antes de voos."
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Parque de conservação imersivo que abriga centenas de aves da Mata Atlântica, sendo uma parada imperdível para turistas."
+        },
+        {
+          "nome": "AquaFoz - Aquário de Foz",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Espaço dedicado à exibição da vida aquática e biodiversidade local, proporcionando uma experiência educativa e visual."
+        },
+        {
+          "nome": "Visitor Center Station",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Centro de atendimento ao visitante que oferece suporte, informações e infraestrutura para explorar atrações da região."
+        },
+        {
+          "nome": "KFC - FRANGO FRITO",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Rede internacional de fast-food especializada em frango frito, oferecendo opção rápida de refeição para viajantes."
+        },
+        {
+          "nome": "Paris 6 Bistrô Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante francês de rede conhecido por seu cardápio variado e funcionamento prolongado, ideal para refeições completas durante o roteiro."
+        },
+        {
+          "nome": "Yup Star: Roda Gigante de Foz do Iguaçu",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Atração panorâmica que oferece vistas elevadas da região de fronteira, ideal para passeios descontraídos."
+        },
+        {
+          "nome": "Coruja Beer - Conveniencia e Tabacaria",
+          "trilha": "compras",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Estabelecimento voltado para a venda de bebidas e conveniências rápidas, útil para suprimentos imediatos no trajeto."
+        },
+        {
+          "nome": "Catuaí Palladium",
+          "trilha": "compras",
+          "tipo": "lazer",
+          "curado": true,
+          "descricao": "Shopping center de grande porte com diversas opções de lojas, serviços e praça de alimentação para visitantes."
+        },
+        {
+          "nome": "Restaurante Outback Steakhouse",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "curado": true,
+          "descricao": "Restaurante temático de culinária americana especializado em cortes de carne, situado em área de grande circulação."
+        }
+      ]
+    }
+  ],
+  "validacao": [
+    {
+      "cenario": "Sem origem",
+      "status": 400,
+      "ms": 11,
+      "mensagem": "origem é obrigatória"
+    },
+    {
+      "cenario": "Latitude ausente no destino",
+      "status": 400,
+      "ms": 4,
+      "mensagem": "latitude é obrigatória"
+    },
+    {
+      "cenario": "9 paradas (limite é 8)",
+      "status": 400,
+      "ms": 6,
+      "mensagem": "um roteiro tem no máximo 8 paradas"
+    },
+    {
+      "cenario": "Transporte desconhecido",
+      "status": 400,
+      "ms": 5,
+      "mensagem": "O corpo da requisição tem um formato inválido."
+    }
+  ]
+}

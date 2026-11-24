@@ -1,75 +1,75 @@
 {
-  "geradoEm": "2026-11-20T04:32:08.780Z",
+  "geradoEm": "2026-11-23T22:32:58.389Z",
   "resultados": [
     {
       "pagina": "/",
       "notas": {
-        "performance": 98,
+        "performance": 96,
         "accessibility": 95,
         "best-practices": 100,
         "seo": 100
       },
-      "fcpMs": 920.0260000000001,
-      "lcpMs": 2435.0454999999997,
-      "tbtMs": 17.5,
+      "fcpMs": 1223.19135,
+      "lcpMs": 2751.9218,
+      "tbtMs": 86,
       "cls": 0.0001263722214586257,
-      "bytes": 315412
+      "bytes": 288373
     },
     {
       "pagina": "/inicio",
       "notas": {
-        "performance": 90,
+        "performance": 83,
         "accessibility": 96,
         "best-practices": 96,
         "seo": 100
       },
-      "fcpMs": 1211.325,
-      "lcpMs": 3635.375000000001,
-      "tbtMs": 35,
+      "fcpMs": 1216.5174,
+      "lcpMs": 4546.799299999997,
+      "tbtMs": 112,
       "cls": 0.0001220236872167513,
-      "bytes": 578733
+      "bytes": 580248
     },
     {
       "pagina": "/criar-roteiro",
       "notas": {
         "performance": 98,
         "accessibility": 95,
-        "best-practices": 96,
+        "best-practices": 100,
         "seo": 100
       },
-      "fcpMs": 1209.927,
-      "lcpMs": 2194.618,
-      "tbtMs": 104.5,
+      "fcpMs": 1211.7567,
+      "lcpMs": 2222.3378,
+      "tbtMs": 62.5,
       "cls": 0.00001341649130743951,
-      "bytes": 504274
+      "bytes": 346519
     },
     {
       "pagina": "/explorar",
       "notas": {
-        "performance": 86,
+        "performance": 94,
         "accessibility": 96,
         "best-practices": 96,
         "seo": 100
       },
-      "fcpMs": 1211.2155,
-      "lcpMs": 4132.477000000001,
-      "tbtMs": 66,
+      "fcpMs": 1214.5155,
+      "lcpMs": 2985.0155,
+      "tbtMs": 27.5,
       "cls": 0,
-      "bytes": 655111
+      "bytes": 647788
     },
     {
       "pagina": "/roteiros",
       "notas": {
-        "performance": 99,
+        "performance": 93,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "fcpMs": 1207.785,
-      "lcpMs": 1955.19,
-      "tbtMs": 38,
+      "fcpMs": 1661.6947499999999,
+      "lcpMs": 3173.3895000000007,
+      "tbtMs": 48,
       "cls": 0,
-      "bytes": 305746
+      "bytes": 302409
     },
     {
       "pagina": "/favoritos",
@@ -79,11 +79,11 @@
         "best-practices": 96,
         "seo": 100
       },
-      "fcpMs": 1208.934,
-      "lcpMs": 2347.956,
-      "tbtMs": 42,
+      "fcpMs": 1211.8038000000001,
+      "lcpMs": 2351.8692,
+      "tbtMs": 44,
       "cls": 0,
-      "bytes": 306456
+      "bytes": 307969
     },
     {
       "pagina": "/entrar",
@@ -93,39 +93,39 @@
         "best-practices": 100,
         "seo": 100
       },
-      "fcpMs": 1206.348,
-      "lcpMs": 2212.232,
-      "tbtMs": 58,
+      "fcpMs": 1213.21035,
+      "lcpMs": 2210.8069,
+      "tbtMs": 52,
       "cls": 0,
-      "bytes": 270529
+      "bytes": 272643
     },
     {
       "pagina": "/cadastro",
       "notas": {
-        "performance": 98,
+        "performance": 96,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "fcpMs": 1209.3239999999998,
-      "lcpMs": 2210.216,
-      "tbtMs": 54,
-      "cls": 0,
-      "bytes": 270607
+      "fcpMs": 1662.44535,
+      "lcpMs": 2724.8907000000004,
+      "tbtMs": 48,
+      "cls": 0.0002311301045323846,
+      "bytes": 282589
     },
     {
       "pagina": "/ajuda",
       "notas": {
-        "performance": 99,
+        "performance": 95,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "fcpMs": 1206.99,
-      "lcpMs": 1804.66,
-      "tbtMs": 41,
-      "cls": 0.01245153597109675,
-      "bytes": 307123
+      "fcpMs": 1663.6839,
+      "lcpMs": 2881.9290999999994,
+      "tbtMs": 54,
+      "cls": 0,
+      "bytes": 313736
     }
   ]
 }
