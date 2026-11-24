@@ -6,96 +6,96 @@
       "rodada": 1,
       "lote": 1,
       "status": 200,
-      "ms": 3391,
+      "ms": 3272,
       "enviados": 10,
       "modelo": "gemini-3.5-flash-lite",
       "curadoPorIa": true,
       "curados": 10,
       "nomesPreservados": 10,
       "trilhaOk": 10,
-      "tipoOk": 9,
-      "ambosOk": 9,
+      "tipoOk": 10,
+      "ambosOk": 10,
       "descricoes": [
-        168,
-        168,
-        163,
-        145,
-        166,
-        139,
-        167,
-        155,
-        151,
-        142
+        148,
+        141,
+        130,
+        142,
+        121,
+        117,
+        114,
+        112,
+        115,
+        115
       ],
       "pontos": [
         {
           "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Abriga um dos conjuntos de quedas d'água mais impressionantes do mundo. É o principal cartão-postal da região e oferece passarelas com vistas panorâmicas inesquecíveis.",
+          "descricao": "Conjunto de impressionantes quedas d'água cercado por rica biodiversidade na Mata Atlântica. É um dos principais cartões-postais naturais da região.",
           "curado": true
         },
         {
           "nome": "Parque das Aves",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Santuário de conservação focado na Mata Atlântica e em aves resgatadas. Os visitantes podem caminhar por viveiros imersivos e ter contato próximo com diversas espécies.",
+          "descricao": "Instituição dedicada à conservação de aves da Mata Atlântica que permite contato próximo com diversas espécies em grandes viveiros imersivos.",
           "curado": true
         },
         {
           "nome": "Dreamland Museu de Cera",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Atração temática que reúne dezenas de estátuas de cera em tamanho real de celebridades e personagens. É uma opção divertida de entretenimento para todas as idades.",
+          "descricao": "Atração que reúne dezenas de estátuas de cera em tamanho real representando celebridades, personagens e personalidades históricas.",
           "curado": true
         },
         {
           "nome": "Wonder Park Foz (Movie Cars)",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Parque temático que exibe veículos famosos de filmes e séries clássicas em cenários imersivos. Excelente parada para fãs de cinema e cultura pop.",
+          "descricao": "Parque temático que expõe carros clássicos que marcaram época em filmes e séries de sucesso, ideal para entusiastas do cinema e automobilismo.",
           "curado": true
         },
         {
           "nome": "Shopping Catuaí Palladium",
           "trilha": "compras",
           "tipo": "lazer",
-          "descricao": "Moderno centro de compras com ampla variedade de lojas, praça de alimentação e serviços. É uma ótima opção para compras e conveniência durante a passagem pela cidade.",
+          "descricao": "Centro de compras completo com ampla variedade de lojas, praça de alimentação e opções de entretenimento para visitantes.",
           "curado": true
         },
         {
           "nome": "Parque Aquático Cataratas",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Espaço de lazer com piscinas e tobogãs voltado para diversão em família. Ideal para relaxar e se refrescar nos dias mais quentes na região.",
+          "descricao": "Complexo de lazer com piscinas, toboáguas e áreas de descanso, ideal para se refrescar e aproveitar o dia em família.",
           "curado": true
         },
         {
           "nome": "Rafain Churrascaria Show",
           "trilha": "turismo",
           "tipo": "alimentacao",
-          "descricao": "Tradicional churrascaria que oferece rodízio completo acompanhado de um show latino-americano de dança e música. Combina gastronomia farta com entretenimento cultural.",
+          "descricao": "Tradicional churrascaria que oferece rodízio de carnes nobres acompanhado por um show de danças latino-americanas.",
           "curado": true
         },
         {
           "nome": "Cantina da Bea",
           "trilha": "turismo",
           "tipo": "alimentacao",
-          "descricao": "Restaurante aconchegante com foco na culinária afetiva e caseira. Proporciona uma refeição acolhedora para quem deseja boa comida em um ambiente intimista.",
+          "descricao": "Restaurante de culinária aconchegante, conhecido por pratos caseiros e atendimento acolhedor para os visitantes.",
           "curado": true
         },
         {
           "nome": "V8 Garagem Bar",
           "trilha": "turismo",
           "tipo": "alimentacao",
-          "descricao": "Bar temático inspirado no universo automobilístico clássico e no rock and roll. Oferece petiscos, bebidas e um ambiente descontraído para o happy hour.",
+          "descricao": "Bar temático com decoração voltada ao universo automotivo, servindo petiscos e bebidas em um ambiente descontraído.",
           "curado": true
         },
         {
           "nome": "Empório com Arte",
           "trilha": "compras",
-          "tipo": "lazer",
-          "descricao": "Espaço que une artesanato local, peças de decoração e café. É uma excelente parada para encontrar lembranças autênticas e presentes da região.",
+          "tipo": "alimentacao",
+          "descricao": "Espaço que combina cafeteria, empório de produtos regionais e exposição de artesanato local, ótimo para lembranças.",
           "curado": true
         }
       ]
@@ -104,7 +104,7 @@
       "rodada": 1,
       "lote": 2,
       "status": 200,
-      "ms": 2061,
+      "ms": 2512,
       "enviados": 8,
       "modelo": "gemini-3.5-flash-lite",
       "curadoPorIa": true,
@@ -114,70 +114,70 @@
       "tipoOk": 7,
       "ambosOk": 7,
       "descricoes": [
-        170,
-        158,
-        139,
-        132,
-        119,
-        127,
-        129,
-        134
+        125,
+        99,
+        106,
+        112,
+        101,
+        113,
+        110,
+        122
       ],
       "pontos": [
         {
           "nome": "Bona Trattoria Gastronomia",
           "trilha": "turismo",
           "tipo": "alimentacao",
-          "descricao": "Restaurante especializado em culinária italiana, oferecendo pratos tradicionais em um ambiente acolhedor. É uma ótima opção para refeições de qualidade durante o trajeto.",
+          "descricao": "Restaurante especializado em culinária italiana, oferecendo opções tradicionais para refeições de qualidade durante a viagem.",
           "curado": true
         },
         {
           "nome": "Restaurante Tarobá (Bourbon Resort)",
           "trilha": "turismo",
           "tipo": "alimentacao",
-          "descricao": "Localizado dentro de um resort renomado, o restaurante oferece pratos variados e sofisticados. Ideal para quem busca uma experiência gastronômica confortável.",
+          "descricao": "Espaço gastronômico situado em resort, ideal para visitantes que buscam conforto e pratos variados.",
           "curado": true
         },
         {
           "nome": "Três Fronteiras Artesanato",
           "trilha": "compras",
           "tipo": "lazer",
-          "descricao": "Espaço dedicado à venda de artesanato regional e lembranças típicas da tríplice fronteira. Excelente parada para adquirir souvenirs locais.",
+          "descricao": "Loja voltada à venda de produtos regionais e lembranças locais, ideal para adquirir recordações da viagem.",
           "curado": true
         },
         {
           "nome": "Cataratas Souvenirs",
           "trilha": "compras",
           "tipo": "lazer",
-          "descricao": "Loja de presentes e recordações temáticas sobre as famosas cataratas da região. Oferece diversas opções de lembranças para turistas.",
+          "descricao": "Comércio especializado em lembranças e artigos típicos para turistas que desejam guardar recordações do destino.",
           "curado": true
         },
         {
           "nome": "Supermercado Ítalo - Centro",
           "trilha": "compras",
           "tipo": "alimentacao",
-          "descricao": "Supermercado completo localizado no centro da cidade, útil para compras rápidas de mantimentos e itens de conveniência.",
+          "descricao": "Estabelecimento comercial completo para suprir necessidades rápidas de mantimentos e itens de viagem.",
           "curado": true
         },
         {
           "nome": "ODA Vinhoteca Duty Free",
           "trilha": "compras",
           "tipo": "lazer",
-          "descricao": "Loja especializada em vinhos e bebidas importadas de alta qualidade. Destaca-se pela ampla variedade de rótulos internacionais.",
+          "descricao": "Loja especializada em vinhos e bebidas importadas, oferecendo variedade para apreciadores e turistas em trânsito.",
           "curado": true
         },
         {
           "nome": "Aquamania Foz",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Parque aquático com diversas piscinas e atrações de lazer para todas as idades. Uma alternativa divertida para relaxar na cidade.",
+          "descricao": "Parque aquático com atrações e piscinas, sendo uma opção de entretenimento para visitantes de todas as idades.",
           "curado": true
         },
         {
           "nome": "Adrena Kart Foz",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Pista de kart que oferece momentos de diversão e velocidade para visitantes. Ideal para quem busca entretenimento dinâmico no trajeto.",
+          "descricao": "Pista de kart voltada ao lazer e à diversão, proporcionando atividade recreativa para turistas em busca de entretenimento.",
           "curado": true
         }
       ]
@@ -186,7 +186,7 @@
       "rodada": 2,
       "lote": 1,
       "status": 200,
-      "ms": 2604,
+      "ms": 3753,
       "enviados": 10,
       "modelo": "gemini-3.5-flash-lite",
       "curadoPorIa": true,
@@ -196,348 +196,348 @@
       "tipoOk": 9,
       "ambosOk": 9,
       "descricoes": [
-        147,
-        132,
-        150,
-        153,
-        159,
-        147,
-        154,
         139,
-        135,
-        134
-      ],
-      "pontos": [
-        {
-          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Abriga um dos conjuntos de quedas d'água mais impressionantes do mundo. É o principal cartão-postal da região e parada obrigatória para visitantes.",
-          "curado": true
-        },
-        {
-          "nome": "Parque das Aves",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Imersão na Mata Atlântica com centenas de aves de espécies variadas. O local é ideal para contato direto com a fauna e flora locais.",
-          "curado": true
-        },
-        {
-          "nome": "Dreamland Museu de Cera",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Atração temática que reúne estátuas de cera de celebridades e personagens famosos. Oferece um passeio divertido e familiar no caminho para os parques.",
-          "curado": true
-        },
-        {
-          "nome": "Wonder Park Foz (Movie Cars)",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Complexo de entretenimento que exibe carros clássicos famosos do cinema. É uma parada interativa e temática para entusiastas de cultura pop e automóveis.",
-          "curado": true
-        },
-        {
-          "nome": "Shopping Catuaí Palladium",
-          "trilha": "compras",
-          "tipo": "lazer",
-          "descricao": "Principal centro de compras da cidade, reunindo diversas lojas, praça de alimentação e serviços. Excelente opção para conveniência e compras durante o trajeto.",
-          "curado": true
-        },
-        {
-          "nome": "Parque Aquático Cataratas",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Espaço de lazer com piscinas e atrações aquáticas para descanso e diversão. Uma alternativa refrescante para relaxar entre os passeios pela cidade.",
-          "curado": true
-        },
-        {
-          "nome": "Rafain Churrascaria Show",
-          "trilha": "turismo",
-          "tipo": "alimentacao",
-          "descricao": "Tradicional churrascaria que oferece jantar com espetáculo de danças latino-americanas. Uma experiência gastronômica e cultural marcante em Foz do Iguaçu.",
-          "curado": true
-        },
-        {
-          "nome": "Cantina da Bea",
-          "trilha": "turismo",
-          "tipo": "alimentacao",
-          "descricao": "Restaurante acolhedor com foco em pratos reconfortantes e atendimento familiar. Boa alternativa para refeições saborosas na rota turística.",
-          "curado": true
-        },
-        {
-          "nome": "V8 Garagem Bar",
-          "trilha": "turismo",
-          "tipo": "alimentacao",
-          "descricao": "Bar temático com decoração voltada ao universo automotivo clássico. Ideal para apreciar petiscos e bebidas em um ambiente descontraído.",
-          "curado": true
-        },
-        {
-          "nome": "Empório com Arte",
-          "trilha": "compras",
-          "tipo": "lazer",
-          "descricao": "Espaço que combina gastronomia leve, café e venda de artesanato local. Excelente parada para encontrar lembranças da região e relaxar.",
-          "curado": true
-        }
-      ]
-    },
-    {
-      "rodada": 2,
-      "lote": 2,
-      "status": 200,
-      "ms": 2351,
-      "enviados": 8,
-      "modelo": "gemini-3.5-flash-lite",
-      "curadoPorIa": true,
-      "curados": 8,
-      "nomesPreservados": 8,
-      "trilhaOk": 8,
-      "tipoOk": 7,
-      "ambosOk": 7,
-      "descricoes": [
-        158,
-        157,
-        146,
-        157,
-        142,
-        148,
-        136,
-        142
-      ],
-      "pontos": [
-        {
-          "nome": "Bona Trattoria Gastronomia",
-          "trilha": "turismo",
-          "tipo": "alimentacao",
-          "descricao": "Restaurante especializado em culinária italiana. Oferece pratos tradicionais em um ambiente acolhedor, ideal para uma refeição de qualidade durante o trajeto.",
-          "curado": true
-        },
-        {
-          "nome": "Restaurante Tarobá (Bourbon Resort)",
-          "trilha": "turismo",
-          "tipo": "alimentacao",
-          "descricao": "Localizado dentro de um resort renomado, o restaurante serve pratos variados e buffet completo. É uma ótima opção para quem busca conforto e boa gastronomia.",
-          "curado": true
-        },
-        {
-          "nome": "Três Fronteiras Artesanato",
-          "trilha": "compras",
-          "tipo": "lazer",
-          "descricao": "Espaço dedicado à venda de produtos artesanais regionais e lembranças de Foz do Iguaçu. Ideal para adquirir souvenirs e itens decorativos típicos.",
-          "curado": true
-        },
-        {
-          "nome": "Cataratas Souvenirs",
-          "trilha": "compras",
-          "tipo": "lazer",
-          "descricao": "Loja de lembranças localizada estrategicamente para turistas. Oferece uma ampla variedade de artigos e presentes que remetem aos pontos turísticos da região.",
-          "curado": true
-        },
-        {
-          "nome": "Supermercado Ítalo - Centro",
-          "trilha": "compras",
-          "tipo": "alimentacao",
-          "descricao": "Supermercado completo no centro da cidade. Útil para adquirir produtos do dia a dia, lanches rápidos e itens de conveniência durante a viagem.",
-          "curado": true
-        },
-        {
-          "nome": "ODA Vinhoteca Duty Free",
-          "trilha": "compras",
-          "tipo": "lazer",
-          "descricao": "Especializada em vinhos e bebidas importadas de alta qualidade. Destino popular para visitantes que buscam rótulos exclusivos e preços competitivos.",
-          "curado": true
-        },
-        {
-          "nome": "Aquamania Foz",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Parque aquático com diversas piscinas e tobogãs para todas as idades. Uma opção divertida de lazer e descanso para quem visita a cidade.",
-          "curado": true
-        },
-        {
-          "nome": "Adrena Kart Foz",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Pista de kart outdoor que oferece entretenimento e velocidade para os visitantes. Excelente para quem busca uma atividade recreativa dinâmica.",
-          "curado": true
-        }
-      ]
-    },
-    {
-      "rodada": 3,
-      "lote": 1,
-      "status": 200,
-      "ms": 2146,
-      "enviados": 10,
-      "modelo": "gemini-3.5-flash-lite",
-      "curadoPorIa": true,
-      "curados": 10,
-      "nomesPreservados": 10,
-      "trilhaOk": 10,
-      "tipoOk": 9,
-      "ambosOk": 9,
-      "descricoes": [
-        114,
-        115,
-        102,
-        96,
-        104,
-        91,
-        89,
-        100,
-        102,
-        104
-      ],
-      "pontos": [
-        {
-          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Abriga um dos conjuntos de quedas d'água mais impressionantes do mundo, sendo o principal cartão-postal da cidade.",
-          "curado": true
-        },
-        {
-          "nome": "Parque das Aves",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Refúgio que abriga centenas de aves da Mata Atlântica em viveiros imersivos, localizado ao lado do Parque Nacional.",
-          "curado": true
-        },
-        {
-          "nome": "Dreamland Museu de Cera",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Atração que reúne dezenas de estátuas de cera em tamanho real de personalidades e personagens famosos.",
-          "curado": true
-        },
-        {
-          "nome": "Wonder Park Foz (Movie Cars)",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Parque temático que expõe carros clássicos que marcaram história em filmes famosos de Hollywood.",
-          "curado": true
-        },
-        {
-          "nome": "Shopping Catuaí Palladium",
-          "trilha": "compras",
-          "tipo": "lazer",
-          "descricao": "Moderno centro de compras com ampla variedade de lojas, praça de alimentação e opções de entretenimento.",
-          "curado": true
-        },
-        {
-          "nome": "Parque Aquático Cataratas",
-          "trilha": "turismo",
-          "tipo": "lazer",
-          "descricao": "Espaço de lazer com piscinas e tobogãs, ideal para famílias que buscam diversão e descanso.",
-          "curado": true
-        },
-        {
-          "nome": "Rafain Churrascaria Show",
-          "trilha": "turismo",
-          "tipo": "alimentacao",
-          "descricao": "Tradicional churrascaria que oferece jantar com show de danças típicas latino-americanas.",
-          "curado": true
-        },
-        {
-          "nome": "Cantina da Bea",
-          "trilha": "turismo",
-          "tipo": "alimentacao",
-          "descricao": "Restaurante aconchegante que serve pratos clássicos da culinária italiana com atendimento acolhedor.",
-          "curado": true
-        },
-        {
-          "nome": "V8 Garagem Bar",
-          "trilha": "turismo",
-          "tipo": "alimentacao",
-          "descricao": "Bar temático automotivo que oferece petiscos e bebidas em um ambiente descontraído para os visitantes.",
-          "curado": true
-        },
-        {
-          "nome": "Empório com Arte",
-          "trilha": "compras",
-          "tipo": "lazer",
-          "descricao": "Espaço que combina cafeteria, antiguidades e artesanato regional, ideal para adquirir lembranças locais.",
-          "curado": true
-        }
-      ]
-    },
-    {
-      "rodada": 3,
-      "lote": 2,
-      "status": 200,
-      "ms": 1971,
-      "enviados": 8,
-      "modelo": "gemini-3.5-flash-lite",
-      "curadoPorIa": true,
-      "curados": 8,
-      "nomesPreservados": 8,
-      "trilhaOk": 8,
-      "tipoOk": 7,
-      "ambosOk": 7,
-      "descricoes": [
-        158,
-        163,
-        162,
-        154,
-        149,
         145,
+        143,
+        130,
+        131,
+        113,
         146,
-        153
+        136,
+        141,
+        139
+      ],
+      "pontos": [
+        {
+          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Conjunto de impressionantes quedas d'água cercado por rica biodiversidade na Mata Atlântica. É um dos principais cartões-postais da região.",
+          "curado": true
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Instituição dedicada à conservação de aves da Mata Atlântica que abriga viveiros imersivos. Oferece contato próximo com diversas espécies locais.",
+          "curado": true
+        },
+        {
+          "nome": "Dreamland Museu de Cera",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Atração que reúne dezenas de estátuas de cera em tamanho real de celebridades e personagens. É uma opção de entretenimento para toda a família.",
+          "curado": true
+        },
+        {
+          "nome": "Wonder Park Foz (Movie Cars)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque temático que exibe carros clássicos famosos do cinema e da cultura pop. Conta com cenários interativos e exibições visuais.",
+          "curado": true
+        },
+        {
+          "nome": "Shopping Catuaí Palladium",
+          "trilha": "compras",
+          "tipo": "lazer",
+          "descricao": "Centro de compras com ampla variedade de lojas, praça de alimentação e opções de lazer. Atende visitantes em busca de conveniência.",
+          "curado": true
+        },
+        {
+          "nome": "Parque Aquático Cataratas",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Complexo de lazer com piscinas e tobogãs voltado para diversão aquática. Boa opção para dias de calor e descanso.",
+          "curado": true
+        },
+        {
+          "nome": "Rafain Churrascaria Show",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Tradicional churrascaria que combina rodízio de carnes com jantar espetáculo de danças latino-americanas. Uma experiência gastronômica e cultural.",
+          "curado": true
+        },
+        {
+          "nome": "Cantina da Bea",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante de culinária caseira e aconchegante, ideal para refeições tranquilas. Oferece pratos tradicionais apreciados por visitantes.",
+          "curado": true
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Bar temático com decoração voltada para o automobilismo clássico e rock and roll. Serve bebidas variadas e petiscos em ambiente descontraído.",
+          "curado": true
+        },
+        {
+          "nome": "Empório com Arte",
+          "trilha": "compras",
+          "tipo": "lazer",
+          "descricao": "Espaço que combina cafeteria, galeria de arte e venda de produtos artesanais e souvenires locais. Ideal para adquirir lembranças da viagem.",
+          "curado": true
+        }
+      ]
+    },
+    {
+      "rodada": 2,
+      "lote": 2,
+      "status": 200,
+      "ms": 2703,
+      "enviados": 8,
+      "modelo": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "curados": 8,
+      "nomesPreservados": 8,
+      "trilhaOk": 8,
+      "tipoOk": 7,
+      "ambosOk": 7,
+      "descricoes": [
+        101,
+        93,
+        93,
+        84,
+        98,
+        98,
+        92,
+        98
       ],
       "pontos": [
         {
           "nome": "Bona Trattoria Gastronomia",
           "trilha": "turismo",
           "tipo": "alimentacao",
-          "descricao": "Restaurante especializado em culinária italiana, oferecendo pratos tradicionais e massas artesanais. É uma excelente opção de parada para refeições na cidade.",
+          "descricao": "Estabelecimento gastronômico que oferece opções de refeições para visitantes em trânsito pela região.",
           "curado": true
         },
         {
           "nome": "Restaurante Tarobá (Bourbon Resort)",
           "trilha": "turismo",
           "tipo": "alimentacao",
-          "descricao": "Localizado dentro de um resort renomado, oferece buffet variado e pratos à la carte em ambiente sofisticado. Ideal para visitantes que buscam conforto e qualidade.",
+          "descricao": "Restaurante localizado em resort, oferecendo refeições estruturadas para turistas e hóspedes.",
           "curado": true
         },
         {
           "nome": "Três Fronteiras Artesanato",
           "trilha": "compras",
           "tipo": "lazer",
-          "descricao": "Espaço comercial voltado à venda de produtos regionais e lembranças típicas da tríplice fronteira. É ideal para adquirir artesanato local e recordações da viagem.",
+          "descricao": "Loja de artesanato regional, ideal para adquirir lembranças e produtos típicos da localidade.",
           "curado": true
         },
         {
           "nome": "Cataratas Souvenirs",
           "trilha": "compras",
           "tipo": "lazer",
-          "descricao": "Loja de lembranças e presentes inspirados nas belezas naturais da região de Foz do Iguaçu. Oferece diversas opções de souvenirs para turistas em trânsito.",
+          "descricao": "Comércio voltado à venda de lembranças e suvenires para turistas que visitam a área.",
           "curado": true
         },
         {
           "nome": "Supermercado Ítalo - Centro",
           "trilha": "compras",
           "tipo": "alimentacao",
-          "descricao": "Supermercado completo localizado no centro da cidade, ideal para adquirir itens de conveniência, lanches rápidos e produtos locais durante o trajeto.",
+          "descricao": "Supermercado central útil para suprimentos rápidos, mantimentos e itens de conveniência na viagem.",
           "curado": true
         },
         {
           "nome": "ODA Vinhoteca Duty Free",
           "trilha": "compras",
           "tipo": "lazer",
-          "descricao": "Especializada em vinhos e bebidas importadas de alta qualidade. É uma parada muito procurada por turistas interessados em rótulos internacionais.",
+          "descricao": "Loja especializada em vinhos e bebidas, oferecendo opções importadas para turistas e apreciadores.",
           "curado": true
         },
         {
           "nome": "Aquamania Foz",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Parque aquático com piscinas e tobogãs, oferecendo opções de lazer para toda a família. É uma alternativa de entretenimento ao ar livre na cidade.",
+          "descricao": "Parque aquático com atrações de lazer, piscinas e tobogãs para entretenimento de visitantes.",
           "curado": true
         },
         {
           "nome": "Adrena Kart Foz",
           "trilha": "turismo",
           "tipo": "lazer",
-          "descricao": "Pista de kart outdoor que oferece diversão e velocidade para entusiastas do automobilismo. Ótima opção para quem busca entretenimento dinâmico na região.",
+          "descricao": "Pista de kart voltada ao lazer e à diversão, oferecendo atividades para entusiastas de velocidade.",
+          "curado": true
+        }
+      ]
+    },
+    {
+      "rodada": 3,
+      "lote": 1,
+      "status": 200,
+      "ms": 3255,
+      "enviados": 10,
+      "modelo": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "curados": 10,
+      "nomesPreservados": 10,
+      "trilhaOk": 10,
+      "tipoOk": 10,
+      "ambosOk": 10,
+      "descricoes": [
+        131,
+        117,
+        114,
+        111,
+        118,
+        102,
+        120,
+        110,
+        115,
+        102
+      ],
+      "pontos": [
+        {
+          "nome": "Cataratas do Iguaçu (Parque Nacional do Iguaçu)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Um dos complexos de quedas d'água mais impressionantes do mundo, oferecendo passarelas panorâmicas e contato direto com a natureza.",
+          "curado": true
+        },
+        {
+          "nome": "Parque das Aves",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Instituição dedicada à conservação de aves da Mata Atlântica, permitindo imersão em viveiros com dezenas de espécies.",
+          "curado": true
+        },
+        {
+          "nome": "Dreamland Museu de Cera",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Atração que reúne dezenas de estátuas de cera em tamanho real de personalidades da cultura pop, cinema e política.",
+          "curado": true
+        },
+        {
+          "nome": "Wonder Park Foz (Movie Cars)",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque temático que expõe carros clássicos que marcaram história em filmes famosos de Hollywood e séries de TV.",
+          "curado": true
+        },
+        {
+          "nome": "Shopping Catuaí Palladium",
+          "trilha": "compras",
+          "tipo": "lazer",
+          "descricao": "Centro de compras moderno com ampla variedade de lojas, praça de alimentação diversificada e opções de entretenimento.",
+          "curado": true
+        },
+        {
+          "nome": "Parque Aquático Cataratas",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Complexo de lazer com piscinas, tobogãs e áreas recreativas para descanso e diversão em dias de calor.",
+          "curado": true
+        },
+        {
+          "nome": "Rafain Churrascaria Show",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Tradicional churrascaria que oferece rodízio completo acompanhado por um espetáculo de danças típicas latino-americanas.",
+          "curado": true
+        },
+        {
+          "nome": "Cantina da Bea",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante acolhedor especializado em pratos tradicionais e massas caseiras, ideal para refeições em família.",
+          "curado": true
+        },
+        {
+          "nome": "V8 Garagem Bar",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Bar temático com decoração voltada ao automobilismo clássico, servindo petiscos e bebidas em ambiente descontraído.",
+          "curado": true
+        },
+        {
+          "nome": "Empório com Arte",
+          "trilha": "compras",
+          "tipo": "alimentacao",
+          "descricao": "Espaço que combina gastronomia local com exposição de artesanato e produtos regionais para visitantes.",
+          "curado": true
+        }
+      ]
+    },
+    {
+      "rodada": 3,
+      "lote": 2,
+      "status": 200,
+      "ms": 2167,
+      "enviados": 8,
+      "modelo": "gemini-3.5-flash-lite",
+      "curadoPorIa": true,
+      "curados": 8,
+      "nomesPreservados": 8,
+      "trilhaOk": 8,
+      "tipoOk": 7,
+      "ambosOk": 7,
+      "descricoes": [
+        158,
+        133,
+        131,
+        130,
+        135,
+        138,
+        137,
+        135
+      ],
+      "pontos": [
+        {
+          "nome": "Bona Trattoria Gastronomia",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Restaurante especializado em culinária italiana, oferecendo pratos tradicionais e massas artesanais. É uma opção para refeições acolhedoras durante o trajeto.",
+          "curado": true
+        },
+        {
+          "nome": "Restaurante Tarobá (Bourbon Resort)",
+          "trilha": "turismo",
+          "tipo": "alimentacao",
+          "descricao": "Espaço gastronômico localizado em resort, ideal para viajantes que buscam refeições completas e sofisticadas em ambiente confortável.",
+          "curado": true
+        },
+        {
+          "nome": "Três Fronteiras Artesanato",
+          "trilha": "compras",
+          "tipo": "lazer",
+          "descricao": "Estabelecimentos voltados à venda de produtos regionais e lembranças locais. Ótimo ponto para adquirir artesanato típico da região.",
+          "curado": true
+        },
+        {
+          "nome": "Cataratas Souvenirs",
+          "trilha": "compras",
+          "tipo": "lazer",
+          "descricao": "Loja especializada em lembranças e artigos com temáticas locais. Oferece diversas opções de recordações para turistas em passagem.",
+          "curado": true
+        },
+        {
+          "nome": "Supermercado Ítalo - Centro",
+          "trilha": "compras",
+          "tipo": "alimentacao",
+          "descricao": "Estabelecimento comercial completo para abastecimento de mantimentos, lanches rápidos e itens de conveniência essenciais para a viagem.",
+          "curado": true
+        },
+        {
+          "nome": "ODA Vinhoteca Duty Free",
+          "trilha": "compras",
+          "tipo": "lazer",
+          "descricao": "Loja especializada em vinhos e bebidas importadas. Destaca-se pela ampla variedade de rótulos internacionais para visitantes interessados.",
+          "curado": true
+        },
+        {
+          "nome": "Aquamania Foz",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Parque aquático com atrações e piscinas para momentos de lazer e descanso. Excelente opção recreativa para visitantes de todas as idades.",
+          "curado": true
+        },
+        {
+          "nome": "Adrena Kart Foz",
+          "trilha": "turismo",
+          "tipo": "lazer",
+          "descricao": "Pista de kart voltada para entusiastas de velocidade e entretenimento. Oferece uma atividade dinâmica e divertida ao longo do percurso.",
           "curado": true
         }
       ]

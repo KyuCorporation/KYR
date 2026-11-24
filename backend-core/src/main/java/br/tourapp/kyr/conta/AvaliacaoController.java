@@ -5,6 +5,8 @@ import br.tourapp.kyr.conta.ContaDtos.AvaliacaoResposta;
 import br.tourapp.kyr.conta.ContaDtos.AvaliacoesResposta;
 import br.tourapp.kyr.conta.ContaDtos.Usuario;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -16,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 // Avaliações dos destinos do catálogo do KYR, escritas por quem tem conta. Não são avaliações do Google.
 // Ler é público; escrever exige login. Cada pessoa tem uma avaliação por destino (enviar de novo substitui).
@@ -29,10 +34,22 @@ public class AvaliacaoController {
 
     private final ContaService contaService;
     private final JdbcClient jdbc;
+    // Slugs do catálogo do frontend (frontend/src/core/destinos.ts). Vazio aceita qualquer slug bem formado.
+    private final Set<String> destinosDoCatalogo;
 
     public AvaliacaoController(ContaService contaService, JdbcClient jdbc) {
+        this(contaService, jdbc, "");
+    }
+
+    @Autowired
+    public AvaliacaoController(ContaService contaService, JdbcClient jdbc,
+                               @Value("${avaliacoes.destinos:}") String destinosDoCatalogo) {
         this.contaService = contaService;
         this.jdbc = jdbc;
+        this.destinosDoCatalogo = Arrays.stream(destinosDoCatalogo.split(","))
+                .map(String::strip)
+                .filter(slug -> !slug.isEmpty())
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     @GetMapping
@@ -79,7 +96,8 @@ public class AvaliacaoController {
     }
 
     private void validarSlug(String slug) {
-        if (!SLUG.matcher(slug).matches()) {
+        boolean foraDoCatalogo = !destinosDoCatalogo.isEmpty() && !destinosDoCatalogo.contains(slug);
+        if (!SLUG.matcher(slug).matches() || foraDoCatalogo) {
             throw new ContaException(HttpStatus.NOT_FOUND, "destino_nao_encontrado", "Destino não encontrado.");
         }
     }

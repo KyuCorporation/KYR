@@ -80,7 +80,7 @@ public class RoteiroService {
 
         List<PoiCandidato> selecionados = selecionarMaisBemAvaliados(poisNaRota.candidatos());
         if (selecionados.isEmpty() && paradas.isEmpty()) {
-            return montarResposta(List.of(), inicio, FONTE_IA_SEM_CURADORIA, false, FONTE_ROTA_FALLBACK, transporte);
+            return montarResposta(List.of(), inicio, FONTE_IA_SEM_CURADORIA, false, new Ordenacao(List.of(), FONTE_ROTA_FALLBACK), transporte);
         }
 
         Curadoria curadoria = selecionados.isEmpty()
@@ -92,7 +92,7 @@ public class RoteiroService {
         pontos.addAll(curadoria.pontos());
         Ordenacao ordenacao = ordenar(request, pontos, transporte);
 
-        return montarResposta(ordenacao.pontos(), inicio, curadoria.fonteIA(), curadoria.curadoPorIa(), ordenacao.fonteRota(),
+        return montarResposta(ordenacao.pontos(), inicio, curadoria.fonteIA(), curadoria.curadoPorIa(), ordenacao,
                 transporte);
     }
 
@@ -282,7 +282,10 @@ public class RoteiroService {
                     : directionsService.calcularRotaOtimizada(request.origem(), request.destino(), waypoints,
                             transporte.modoDirections());
 
-            return new Ordenacao(aplicarOrdem(pontos, rota.ordemOtimizada(), rota.trechos()), FONTE_ROTA_GOOGLE);
+            List<TrechoRotaDTO> trechos = rota.trechos();
+            return new Ordenacao(aplicarOrdem(pontos, rota.ordemOtimizada(), trechos), FONTE_ROTA_GOOGLE,
+                    trechos.stream().mapToLong(TrechoRotaDTO::distanciaMetros).sum(),
+                    trechos.stream().mapToLong(TrechoRotaDTO::tempoSegundos).sum());
         } catch (RuntimeException e) {
             // Directions indisponível ou resposta inesperada: mantém a ordem da seleção, sem distância nem duração.
             log.warn("Falha ao ordenar o roteiro na Directions API, usando a ordem original: {}", e.getMessage());
@@ -307,10 +310,10 @@ public class RoteiroService {
     }
 
     private RoteiroResponseDTO montarResposta(List<POIDTO> pontos, long inicio, String fonteIA, boolean curadoPorIa,
-                                              String fonteRota, Transporte transporte) {
+                                              Ordenacao ordenacao, Transporte transporte) {
         long tempoResposta = System.currentTimeMillis() - inicio;
-        return new RoteiroResponseDTO(pontos, new MetadadosDTO(pontos.size(), tempoResposta, fonteIA, curadoPorIa, fonteRota,
-                transporte.name()));
+        return new RoteiroResponseDTO(pontos, new MetadadosDTO(pontos.size(), tempoResposta, fonteIA, curadoPorIa,
+                ordenacao.fonteRota(), transporte.name(), ordenacao.distanciaTotalMetros(), ordenacao.duracaoTotalSegundos()));
     }
 
     private Coordenada paraCoordenada(PontoDTO ponto) {
@@ -320,6 +323,9 @@ public class RoteiroService {
     private record Curadoria(List<POIDTO> pontos, boolean curadoPorIa, String fonteIA) {
     }
 
-    private record Ordenacao(List<POIDTO> pontos, String fonteRota) {
+    private record Ordenacao(List<POIDTO> pontos, String fonteRota, Long distanciaTotalMetros, Long duracaoTotalSegundos) {
+        Ordenacao(List<POIDTO> pontos, String fonteRota) {
+            this(pontos, fonteRota, null, null);
+        }
     }
 }

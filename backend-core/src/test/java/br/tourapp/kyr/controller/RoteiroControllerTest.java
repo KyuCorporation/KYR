@@ -1,10 +1,12 @@
 package br.tourapp.kyr.controller;
 
+import br.tourapp.kyr.conta.MuitasTentativasException;
 import br.tourapp.kyr.dto.MetadadosDTO;
 import br.tourapp.kyr.dto.POIDTO;
 import br.tourapp.kyr.dto.PontoDTO;
 import br.tourapp.kyr.dto.RoteiroResponseDTO;
 import br.tourapp.kyr.poi.exception.GoogleMapsIntegrationException;
+import br.tourapp.kyr.service.LimiteDeRoteiros;
 import br.tourapp.kyr.service.RoteiroService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +16,19 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,6 +48,9 @@ class RoteiroControllerTest {
 
     @MockitoBean
     private RoteiroService roteiroService;
+
+    @MockitoBean
+    private LimiteDeRoteiros limiteDeRoteiros;
 
     @Test
     void deveManterOsCamposAntigosEAcrescentarOsNovos() throws Exception {
@@ -99,7 +107,8 @@ class RoteiroControllerTest {
                           "transporte": "FOGUETE"
                         }
                         """))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("dados_invalidos"));
         verifyNoInteractions(roteiroService);
     }
 
@@ -109,7 +118,9 @@ class RoteiroControllerTest {
         String paradas = String.join(",", Collections.nCopies(9, parada));
         mockMvc.perform(post("/roteiros").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"origem\": " + parada + ", \"destino\": " + parada + ", \"paradas\": [" + paradas + "]}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("dados_invalidos"))
+                .andExpect(jsonPath("$.mensagem").value("um roteiro tem no máximo 8 paradas"));
         verifyNoInteractions(roteiroService);
     }
 
@@ -150,5 +161,31 @@ class RoteiroControllerTest {
                 .andExpect(jsonPath("$.codigo").value("erro_integracao_google_maps"))
                 .andExpect(jsonPath("$.mensagem").value("Falha de comunicação com a Places API (Forbidden)"))
                 .andExpect(content().string(not(containsString("key="))));
+    }
+
+    @Test
+    void deveRetornar400ComCoordenadaForaDoIntervalo() throws Exception {
+        mockMvc.perform(post("/roteiros").contentType(MediaType.APPLICATION_JSON).content("""
+                        {
+                          "origem": {"nome": "Palmares", "latitude": -98.6, "longitude": -35.5892},
+                          "destino": {"nome": "Recife", "latitude": -8.0476, "longitude": -34.8770}
+                        }
+                        """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("latitude inválida"));
+        verifyNoInteractions(roteiroService, limiteDeRoteiros);
+    }
+
+    @Test
+    void deveRetornar429QuandoOLimiteDeRoteirosFoiAtingido() throws Exception {
+        doThrow(new MuitasTentativasException(Duration.ofMinutes(30), "Muitos roteiros pedidos em pouco tempo."))
+                .when(limiteDeRoteiros).consumir(any());
+
+        mockMvc.perform(post("/roteiros").contentType(MediaType.APPLICATION_JSON).content(CORPO_VALIDO))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string("Retry-After", "1800"))
+                .andExpect(jsonPath("$.codigo").value("muitas_tentativas"))
+                .andExpect(jsonPath("$.mensagem").value("Muitos roteiros pedidos em pouco tempo. Tente de novo em 30 minutos."));
+        verifyNoInteractions(roteiroService);
     }
 }

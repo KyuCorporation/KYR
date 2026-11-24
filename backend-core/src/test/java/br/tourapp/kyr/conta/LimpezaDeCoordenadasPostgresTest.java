@@ -45,18 +45,20 @@ class LimpezaDeCoordenadasPostgresTest extends PostgresDeTeste {
     }
 
     @Test
-    void apagaAsCoordenadasDosRoteirosComMaisDe30DiasEMantemOsNomes() {
+    void apagaCoordenadasENomesDosRoteirosComMaisDe30Dias() {
         long antigo = roteiroCriadoHa(31);
         long recente = roteiroCriadoHa(29);
 
         new LimpezaDeCoordenadas(jdbc).apagarCoordenadasVencidas();
 
+        // O nome da origem e do destino costuma vir das sugestões do Google: some junto com as coordenadas.
         Map<String, Object> vencido = roteiro(antigo);
         assertThat(vencido).containsEntry("origem_latitude", null).containsEntry("origem_longitude", null)
                 .containsEntry("destino_latitude", null).containsEntry("destino_longitude", null)
-                .containsEntry("origem_nome", "Aeroporto").containsEntry("destino_nome", "Centro");
+                .containsEntry("origem_nome", "").containsEntry("destino_nome", "");
         assertThat(roteiro(recente).get("origem_latitude")).isNotNull();
         assertThat(roteiro(recente).get("destino_longitude")).isNotNull();
+        assertThat(roteiro(recente)).containsEntry("origem_nome", "Aeroporto").containsEntry("destino_nome", "Centro");
     }
 
     @Test

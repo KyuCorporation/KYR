@@ -13,7 +13,7 @@ import type {
 export interface RoteiroParams {
   origem: LocalRoteiro;
   destino: LocalRoteiro;
-  /** Paradas escolhidas, na ordem informada. */
+  /** Paradas escolhidas. A ordem final de visita é otimizada junto com os lugares sugeridos. */
   paradas?: LocalRoteiro[];
   transporte?: Transporte;
 }
@@ -68,6 +68,8 @@ export function normalizarRoteiroResponse(
     curadoPorIa: rawMetadata.curadoPorIa === true,
     fonteRota: stringValue(rawMetadata.fonteRota) as FonteRota | "",
     transporte: TRANSPORTES.includes(rawMetadata.transporte as Transporte) ? (rawMetadata.transporte as Transporte) : "DRIVING",
+    distanciaTotalMetros: finiteNumber(rawMetadata.distanciaTotalMetros),
+    duracaoTotalSegundos: finiteNumber(rawMetadata.duracaoTotalSegundos),
   };
 
   return { origem, destino, metadados, pontos };

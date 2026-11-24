@@ -29,17 +29,19 @@ public class AuthController {
 
     private final ContaService contaService;
     private final LimiteDeTentativas limites;
+    private final IpDoCliente ipDoCliente;
 
-    public AuthController(ContaService contaService, LimiteDeTentativas limites) {
+    public AuthController(ContaService contaService, LimiteDeTentativas limites, IpDoCliente ipDoCliente) {
         this.contaService = contaService;
         this.limites = limites;
+        this.ipDoCliente = ipDoCliente;
     }
 
     // Toda tentativa de cadastro conta, inclusive com e-mail repetido: isso também limita quem tenta
     // descobrir, pelo cadastro, quais e-mails já têm conta.
     @PostMapping("/cadastro")
     public ResponseEntity<SessaoResposta> cadastrar(@Valid @RequestBody CadastroRequest pedido, HttpServletRequest requisicao) {
-        limites.consumir(Regra.CADASTRO_POR_IP, IpDoCliente.de(requisicao));
+        limites.consumir(Regra.CADASTRO_POR_IP, ipDoCliente.de(requisicao));
         return ResponseEntity.status(HttpStatus.CREATED).body(contaService.cadastrar(pedido));
     }
 
@@ -47,7 +49,7 @@ public class AuthController {
     // falhas ficam contando, e requisições simultâneas não escapam do limite.
     @PostMapping("/login")
     public SessaoResposta entrar(@Valid @RequestBody LoginRequest pedido, HttpServletRequest requisicao) {
-        String ip = IpDoCliente.de(requisicao);
+        String ip = ipDoCliente.de(requisicao);
         String email = ContaService.normalizarEmail(pedido.email());
         limites.consumir(Regra.LOGIN_POR_IP, ip);
         try {

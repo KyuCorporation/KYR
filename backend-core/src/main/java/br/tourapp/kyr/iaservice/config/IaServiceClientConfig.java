@@ -13,6 +13,7 @@ import java.time.Duration;
 public class IaServiceClientConfig {
 
     private static final Duration TIMEOUT_MAXIMO_DE_CONEXAO = Duration.ofSeconds(5);
+    static final String CABECALHO_TOKEN = "X-Kyr-Token";
 
     @Bean
     RestClient iaServiceRestClient(IaServiceProperties properties) {
@@ -25,9 +26,12 @@ public class IaServiceClientConfig {
         requestFactory.setConnectTimeout(timeoutDeConexao);
         requestFactory.setReadTimeout(timeoutDeLeitura);
 
-        return RestClient.builder()
+        RestClient.Builder builder = RestClient.builder()
                 .baseUrl(properties.baseUrl())
-                .requestFactory(requestFactory)
-                .build();
+                .requestFactory(requestFactory);
+        if (properties.token() != null && !properties.token().isBlank()) {
+            builder.defaultHeader(CABECALHO_TOKEN, properties.token().strip());
+        }
+        return builder.build();
     }
 }

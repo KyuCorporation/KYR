@@ -11,6 +11,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -31,8 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// Um proxy confiável na frente do backend: vale o último endereço do X-Forwarded-For (ver IpDoClienteTest).
 @WebMvcTest(AuthController.class)
-@Import(LimiteDeTentativas.class)
+@Import({LimiteDeTentativas.class, IpDoCliente.class})
+@TestPropertySource(properties = "kyr.seguranca.proxies-confiaveis=1")
 @AutoConfigureMockMvc(addFilters = false)
 class AuthControllerTest {
 

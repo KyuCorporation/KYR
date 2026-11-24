@@ -9,7 +9,8 @@ import java.util.List;
 public record RoteiroRequestDTO(
     @NotNull(message = "origem é obrigatória") @Valid PontoDTO origem,
     @NotNull(message = "destino é obrigatório") @Valid PontoDTO destino,
-    // Paradas escolhidas pela pessoa, na ordem informada. Opcional.
+    // Paradas escolhidas pela pessoa. Opcional. A busca de lugares segue a rota que passa por elas na ordem
+    // informada; a ordem final de visita é otimizada pela Directions junto com os lugares sugeridos.
     @Size(max = 8, message = "um roteiro tem no máximo 8 paradas") List<@NotNull(message = "parada inválida") @Valid PontoDTO> paradas,
     // Meio de transporte. Opcional; sem ele, vale DRIVING.
     Transporte transporte

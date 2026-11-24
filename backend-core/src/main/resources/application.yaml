@@ -24,6 +24,8 @@ google:
       raio-busca-metros: 500
       max-pontos-intermediarios: 8
       max-resultados-por-ponto: 10
+    # Prazo de leitura das chamadas ao Google (Directions e Places).
+    timeout-segundos: ${GOOGLE_MAPS_TIMEOUT_SECONDS:10}
     rota:
       origem:
         latitude: -25.60028
@@ -35,8 +37,26 @@ google:
 ia-service:
   base-url: ${IA_SERVICE_URL:http://localhost:8000}
   timeout-seconds: ${IA_SERVICE_TIMEOUT_SECONDS:40}
+  # Segredo compartilhado com o ia-service, enviado em X-Kyr-Token. Vazio, o cabeçalho não é enviado.
+  token: ${IA_SERVICE_TOKEN:}
 
 roteiro:
   max-pois-curadoria: ${ROTEIRO_MAX_POIS_CURADORIA:10}
   # Por quantos dias a curadoria de um lugar é reaproveitada antes de voltar para a IA.
   cache-curadoria-dias: ${ROTEIRO_CACHE_CURADORIA_DIAS:30}
+  # Limites de uso das rotas que consultam o Google (POST /roteiros e GET /api/v1/rotas/pois). 0 desliga.
+  limite-por-ip-por-hora: ${ROTEIRO_LIMITE_POR_IP_POR_HORA:10}
+  limite-por-dia: ${ROTEIRO_LIMITE_POR_DIA:30}
+
+kyr:
+  seguranca:
+    # Quantos proxies confiáveis ficam na frente do backend e acrescentam o IP ao X-Forwarded-For.
+    # 0 (padrão): vale o endereço da conexão e o X-Forwarded-For é ignorado.
+    proxies-confiaveis: ${KYR_PROXIES_CONFIAVEIS:0}
+    # Segredo compartilhado com o servidor do Next (KYR_PROXY_TOKEN). Com ele, o backend aceita o IP do
+    # navegador informado pelo Next em X-Kyr-Client-Ip.
+    token-do-frontend: ${KYR_PROXY_TOKEN:}
+
+# Destinos do catálogo do Kyr que podem receber avaliações (frontend/src/core/destinos.ts).
+avaliacoes:
+  destinos: cataratas-do-iguacu,parque-das-aves,marco-das-tres-fronteiras,itaipu-binacional,templo-budista-chen-tien

@@ -63,6 +63,8 @@ describe("tela Meus roteiros", () => {
 
     expect(await screen.findByText(/Salvo há mais de 30 dias/)).toBeTruthy();
     expect(screen.queryByRole("button", { name: /Abrir roteiro/ })).toBeNull();
+    // O nome vindo das sugestões do Google também foi apagado.
+    expect(screen.getByRole("heading", { level: 2 }).textContent).toContain("Origem apagada");
   });
 
   it("reabrir gera o roteiro de novo com a mesma origem e o mesmo destino", async () => {

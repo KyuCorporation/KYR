@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapPinLine } from "@phosphor-icons/react";
 import { ApiError, type ApiRequestStatus } from "@/core/api";
@@ -40,6 +40,12 @@ const TRAVEL_MODE_MAP: Record<TransportMode, TravelModeKey> = {
 
 const EMPTY_FIELD: LocationFieldValue = { text: "", place: null };
 
+// Mesmo limite do backend (POST /roteiros recusa mais de 8 paradas).
+const MAX_PARADAS = 8;
+
+// A chave fica estável quando uma parada do meio é removida, para cada campo manter o próprio estado.
+type ParadaCampo = LocationFieldValue & { chave: number };
+
 /** Retorna "1ª", "2ª", "3ª"... (concorda com "parada", que é feminino). */
 function ordinal(n: number) {
   return `${n}ª`;
@@ -62,7 +68,8 @@ export default function CriarRoteiroPage() {
 
   const [origem, setOrigem] = useState<LocationFieldValue>(EMPTY_FIELD);
   const [destino, setDestino] = useState<LocationFieldValue>(EMPTY_FIELD);
-  const [paradas, setParadas] = useState<LocationFieldValue[]>([]);
+  const [paradas, setParadas] = useState<ParadaCampo[]>([]);
+  const proximaChave = useRef(0);
   const [transporte, setTransporte] = useState<TransportMode>("car");
   const [tentouGerar, setTentouGerar] = useState(false);
   const [realRouteInfo, setRealRouteInfo] = useState<RouteInfo | null>(null);
@@ -79,7 +86,9 @@ export default function CriarRoteiroPage() {
         window.sessionStorage.removeItem("kyr:pending-destination");
         const candidate: unknown = JSON.parse(stored);
         if (!isPlace(candidate)) return;
-        setParadas((current) => [...current, { text: candidate.name, place: candidate }]);
+        setParadas((current) => current.length >= MAX_PARADAS
+          ? current
+          : [...current, { text: candidate.name, place: candidate, chave: proximaChave.current++ }]);
       } catch {
         window.sessionStorage.removeItem("kyr:pending-destination");
       }
@@ -92,11 +101,15 @@ export default function CriarRoteiroPage() {
   const temMapaReal = Boolean(apiKey);
 
   const handleAdicionarParada = () => {
-    setParadas((prev) => [...prev, EMPTY_FIELD]);
+    setParadas((prev) => (prev.length >= MAX_PARADAS ? prev : [...prev, { ...EMPTY_FIELD, chave: proximaChave.current++ }]));
   };
 
   const handleParadaChange = (index: number, value: LocationFieldValue) => {
-    setParadas((prev) => prev.map((p, i) => (i === index ? value : p)));
+    setParadas((prev) => prev.map((p, i) => (i === index ? { ...value, chave: p.chave } : p)));
+  };
+
+  const handleRemoverParada = (index: number) => {
+    setParadas((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Pontos enviados à Directions API (Maps real) como "latitude,longitude". Mandar só o nome
@@ -235,25 +248,35 @@ export default function CriarRoteiroPage() {
           />
 
           {paradas.map((parada, index) => (
-            <LocationField
-              key={index}
-              id={`parada-${index}`}
-              label={`${ordinal(index + 1)} Parada`}
-              placeholder={`Onde será sua ${ordinal(index + 1)} parada?`}
-              value={parada}
-              onChange={(value) => handleParadaChange(index, value)}
-              forceValidate={tentouGerar}
-              errorMessage="Informe um endereço válido para a parada"
-            />
+            <div key={parada.chave} className={styles.stopRow}>
+              <LocationField
+                id={`parada-${parada.chave}`}
+                label={`${ordinal(index + 1)} Parada`}
+                placeholder={`Onde será sua ${ordinal(index + 1)} parada?`}
+                value={parada}
+                onChange={(value) => handleParadaChange(index, value)}
+                forceValidate={tentouGerar}
+                errorMessage="Informe um endereço válido para a parada"
+              />
+              <button
+                type="button"
+                className={styles.removeStopButton}
+                onClick={() => handleRemoverParada(index)}
+                aria-label={`Remover a ${ordinal(index + 1)} parada`}
+              >
+                Remover
+              </button>
+            </div>
           ))}
 
           <button
             type="button"
             className={styles.addStopButton}
             onClick={handleAdicionarParada}
+            disabled={paradas.length >= MAX_PARADAS}
           >
             <PlusIcon />
-            Adicionar parada
+            {paradas.length >= MAX_PARADAS ? `Limite de ${MAX_PARADAS} paradas` : "Adicionar parada"}
           </button>
 
           <div className={styles.field}>
@@ -335,7 +358,8 @@ export default function CriarRoteiroPage() {
               <strong>Dica da Kyr :</strong>
               <br />
               Adicione até 8 paradas. Na próxima etapa, a Kyr sugere lugares
-              pelo caminho, passando por elas, no meio de transporte escolhido.
+              pelo caminho, passando por elas, no meio de transporte escolhido, e
+              organiza a ordem de visita para encurtar o trajeto.
             </p>
           </div>
 

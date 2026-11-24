@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -31,6 +31,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-local_password_123}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
       - IA_SERVICE_URL=http://ia-service:8000
+      - IA_SERVICE_TOKEN=${IA_SERVICE_TOKEN:-}
+      - KYR_PROXY_TOKEN=${KYR_PROXY_TOKEN:-}
     depends_on:
       database:
         condition: service_healthy
@@ -53,8 +55,9 @@ services:
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-3.5-flash-lite}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
-      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-8}
-      - OLLAMA_ENABLED=true
+      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-15}
+      - OLLAMA_ENABLED=${OLLAMA_ENABLED:-false}
+      - IA_SERVICE_TOKEN=${IA_SERVICE_TOKEN:-}
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -73,6 +76,7 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8080
       - INTERNAL_API_URL=http://backend-core:8080
+      - KYR_PROXY_TOKEN=${KYR_PROXY_TOKEN:-}
     depends_on:
       - backend-core
     volumes:

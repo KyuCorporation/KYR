@@ -29,6 +29,11 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
       - IA_SERVICE_URL=http://ia-service:8000
+      - IA_SERVICE_TOKEN=${IA_SERVICE_TOKEN}
+      - KYR_PROXY_TOKEN=${KYR_PROXY_TOKEN}
+      - KYR_PROXIES_CONFIAVEIS=${KYR_PROXIES_CONFIAVEIS:-0}
+      - ROTEIRO_LIMITE_POR_IP_POR_HORA=${ROTEIRO_LIMITE_POR_IP_POR_HORA:-10}
+      - ROTEIRO_LIMITE_POR_DIA=${ROTEIRO_LIMITE_POR_DIA:-30}
     depends_on:
       database:
         condition: service_healthy
@@ -39,8 +44,10 @@ services:
       dockerfile: Dockerfile.prod
     container_name: pwa_ia_service
     restart: always
-    ports:
-      - "8000:8000"
+    # Sem "ports": o ia-service só é alcançado pelo backend-core, pela rede interna do Compose.
+    # Publicar a porta deixaria qualquer um chamar os provedores de LLM pagos.
+    expose:
+      - "8000"
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-haiku-4-5-20251001}
@@ -48,7 +55,8 @@ services:
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-3.5-flash-lite}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
-      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-8}
+      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-15}
+      - IA_SERVICE_TOKEN=${IA_SERVICE_TOKEN}
 
   frontend:
     build:
@@ -65,6 +73,8 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - INTERNAL_API_URL=http://backend-core:8080
+      - KYR_PROXY_TOKEN=${KYR_PROXY_TOKEN}
+      - KYR_PROXIES_CONFIAVEIS=${KYR_PROXIES_CONFIAVEIS:-0}
     depends_on:
       - backend-core
 

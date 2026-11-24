@@ -52,12 +52,18 @@ export default function ResultadoRoteiroClient() {
   // Roteiros guardados antes do campo existir não têm curadoPorIa: só avisa quando vier false.
   // As paradas da pessoa nunca passam pela IA; o aviso só vale para os lugares sugeridos.
   const semCuradoria = roteiro.pontos.some((ponto) => !ponto.parada) && roteiro.metadados.curadoPorIa === false;
+  // Parte dos lugares pode vir do cache de curadoria e parte ficar sem resposta da IA.
+  const curadoriaParcial = !semCuradoria && roteiro.pontos.some((ponto) => !ponto.parada && !ponto.curado);
+  // O total da API inclui o trecho do último ponto até o destino. Roteiros guardados antes desse campo
+  // só têm os trechos de cada ponto, então a soma deles aparece com outro rótulo.
+  const { distanciaTotalMetros, duracaoTotalSegundos } = roteiro.metadados;
+  const temTotalDaRota = typeof distanciaTotalMetros === "number" && typeof duracaoTotalSegundos === "number";
   const distance = formatRouteTotal(
-    roteiro.pontos.map((ponto) => ponto.distanciaMetros),
+    temTotalDaRota ? [distanciaTotalMetros] : roteiro.pontos.map((ponto) => ponto.distanciaMetros),
     "distance",
   );
   const duration = formatRouteTotal(
-    roteiro.pontos.map((ponto) => ponto.duracaoSegundos),
+    temTotalDaRota ? [duracaoTotalSegundos] : roteiro.pontos.map((ponto) => ponto.duracaoSegundos),
     "duration",
   );
 
@@ -94,8 +100,8 @@ export default function ResultadoRoteiroClient() {
         <p className={styles.eyebrow}>Seu roteiro</p>
         <h1>{roteiro.origem.nome} <span>→</span> {roteiro.destino.nome}</h1>
         <div className={styles.metrics}>
-          <div><strong>{distance}</strong><span>Distância dos trechos</span></div>
-          <div><strong>{duration}</strong><span>Tempo dos trechos</span></div>
+          <div><strong>{distance}</strong><span>{temTotalDaRota ? "Distância total" : "Distância dos trechos"}</span></div>
+          <div><strong>{duration}</strong><span>{temTotalDaRota ? "Tempo total" : "Tempo dos trechos"}</span></div>
           <div><strong>{roteiro.metadados.totalPontos}</strong><span>Pontos no roteiro</span></div>
         </div>
       </section>
@@ -111,6 +117,13 @@ export default function ResultadoRoteiroClient() {
         <div className={styles.fallbackNotice} role="status">
           <WarningCircle size={20} aria-hidden="true" />
           <span>A curadoria por IA não está disponível agora. Os pontos aparecem sem descrição nem classificação.</span>
+        </div>
+      )}
+
+      {curadoriaParcial && (
+        <div className={styles.fallbackNotice} role="status">
+          <WarningCircle size={20} aria-hidden="true" />
+          <span>Alguns lugares aparecem sem descrição nem classificação: a curadoria por IA não respondeu para eles agora.</span>
         </div>
       )}
 

@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "kyu.llm")
 public class FallbackChainProperties {
-    private int timeoutSeconds = 8;
+    private int timeoutSeconds = 15;
 
     // 10 POIs com descrição passam de 1024 tokens; com o limite antigo o JSON vinha cortado e a curadoria falhava.
     private int maxTokens = 4096;
@@ -70,6 +70,22 @@ public class FallbackChainProperties {
 
     public void setOpenaiModel(String openaiModel) {
         this.openaiModel = openaiModel;
+    }
+
+    // Tempo máximo da cadeia inteira. Sem ele, três provedores em nuvem (8 s cada) e o Ollama (30 s) somavam
+    // 54 s, mais que os 40 s que o backend-core espera.
+    private int orcamentoTotalSeconds = 35;
+
+    public int getOrcamentoTotalSeconds() {
+        return orcamentoTotalSeconds;
+    }
+
+    public void setOrcamentoTotalSeconds(int orcamentoTotalSeconds) {
+        this.orcamentoTotalSeconds = orcamentoTotalSeconds;
+    }
+
+    public Duration getOrcamentoTotal() {
+        return Duration.ofSeconds(orcamentoTotalSeconds);
     }
 
     private int ollamaTimeoutSeconds = 30;

@@ -21,16 +21,15 @@ flowchart TD
     A["Frontend (PWA)<br/>Next.js 16"] -->|POST /roteiros| C["Backend Core<br/>Spring Boot 4.1"]
     C --> G["Google Maps<br/>Directions + Places"]
     C -->|POST /curar-roteiro| E["IA Service<br/>Spring Boot 3.5 + Spring AI"]
-    C -.->|sem persistência ainda| D[("PostgreSQL 15")]
+    C --> D[("PostgreSQL 15")]
     E --> F["LLMs: Claude → Gemini → OpenAI → Mistral local"]
 ```
 
-Linhas tracejadas indicam ligações previstas que ainda não estão implementadas (veja [Estado atual](#-estado-atual-do-mvp)).
 
 - **Frontend**: PWA em Next.js (App Router), Tailwind CSS v4 e Google Maps, pensado para uso mobile-first.
 - **Backend Core**: Spring Boot (Java 25). Responsável por orquestração, regras de negócio e contratos de API. Consulta Google Directions e Places e envia os POIs ao IA Service para curadoria.
 - **IA Service**: Spring Boot (Java 25) + Spring AI. Faz a curadoria dos POIs (classifica em `trilha` e `tipo` e gera a descrição) com uma cadeia de fallback entre provedores de LLM: Claude → Gemini → OpenAI → Mistral local (Ollama) → resposta sem curadoria. Cada provedor em nuvem entra na cadeia somente se sua chave de API estiver configurada; o Mistral local só entra com `OLLAMA_ENABLED=true` e é tentado por último.
-- **Database**: PostgreSQL 15, com Flyway previsto para migrações.
+- **Database**: PostgreSQL 15, com o esquema versionado por migrações Flyway (contas, sessões, roteiros salvos, avaliações e cache de curadoria).
 
 ## 📁 Estrutura do Repositório
 
@@ -44,7 +43,7 @@ Linhas tracejadas indicam ligações previstas que ainda não estão implementad
 ├── docker-compose.yaml        # Ambiente de desenvolvimento
 ├── docker-compose.prod.yaml   # Ambiente de produção
 ├── .env.example               # Modelo de variáveis de ambiente
-└── CONTEXT.md                 # Contexto técnico detalhado do repositório
+└── README.md
 ```
 
 Conteúdo de `docs/`:
@@ -56,6 +55,7 @@ Conteúdo de `docs/`:
 | `dataset-pois-foz.json` | Dataset curado de referência (18 POIs) |
 | `decodificacao-polyline-google.md` | Explicação do algoritmo de polyline do Google |
 | `assets/` | Imagens dos trajetos aeroporto → POI → hotel |
+| `medidas/` | Scripts e dados brutos das medições do projeto (testes, Lighthouse, curadoria e roteiros) |
 
 ### Convenção de pacotes Java
 
@@ -71,7 +71,7 @@ No `backend-core`, todas as classes (inclusive `poi.*`, `config.*`, `controller`
 ### Pré-requisitos
 - Docker e Docker Compose.
 - Node.js 20+ (desenvolvimento local do frontend).
-- JDK 25 (`backend-core`) e JDK 21 (`ia-service`). O Maven Wrapper (`mvnw`) já está incluído em cada módulo.
+- JDK 25 (`backend-core` e `ia-service`). O Maven Wrapper (`mvnw`) já está incluído em cada módulo.
 
 ### 1. Variáveis de ambiente
 Crie o arquivo `.env` na raiz a partir do modelo:
@@ -144,8 +144,8 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 
 | Método | Rota | Descrição |
 |---|---|---|
-| `POST` | `/roteiros` | Recebe origem e destino quaisquer (`nome`, `latitude`, `longitude`) e, opcionalmente, até 8 `paradas` e o `transporte` (`DRIVING`, `WALKING`, `BICYCLING` ou `TRANSIT`); busca POIs no Google Places ao longo da rota, envia os mais bem avaliados (até 10 por padrão) à curadoria do `ia-service` e ordena o resultado via Google Directions. Detalhes abaixo. |
-| `POST` | `/auth/cadastro`, `/auth/login`, `/auth/sair` | Conta e sessão. Cadastro e login devolvem um token (`Authorization: Bearer`), válido por 30 dias. Login: 5 senhas erradas por e-mail e 30 por IP a cada 15 min; cadastro: 10 por IP por hora. Acima disso, `429` com `Retry-After`. |
+| `POST` | `/roteiros` | Recebe origem e destino quaisquer (`nome`, `latitude`, `longitude`) e, opcionalmente, até 8 `paradas` e o `transporte` (`DRIVING`, `WALKING`, `BICYCLING` ou `TRANSIT`); busca POIs no Google Places ao longo da rota, envia os mais bem avaliados (até 10 por padrão) à curadoria do `ia-service` e ordena o resultado via Google Directions. Detalhes abaixo. Limite de uso: 10 roteiros por IP por hora e 30 por dia no total (configuráveis); acima disso, `429` com `Retry-After`. |
+| `POST` | `/auth/cadastro`, `/auth/login`, `/auth/sair` | Conta e sessão. Cadastro e login devolvem um token (`Authorization: Bearer`), válido por 30 dias. Login: 5 senhas erradas por e-mail e 30 por IP a cada 15 min; cadastro: 10 por IP por hora. Acima disso, `429` com `Retry-After`. O IP do navegador só é aceito do servidor do Next (com `KYR_PROXY_TOKEN`) ou dos proxies confiáveis (`KYR_PROXIES_CONFIAVEIS`). |
 | `GET` `PUT` | `/auth/eu` | Usuário dono da sessão; `PUT` corrige o nome. |
 | `GET` | `/auth/meus-dados` | Exporta, em JSON, tudo o que o servidor guarda sobre a conta (LGPD: acesso e portabilidade). Exige login. |
 | `DELETE` | `/auth/conta` | Exclui a conta, com sessões, roteiros salvos e avaliações. Exige login e a senha no corpo (`{"senha": "..."}`); a conferência entra no limite de tentativas do login. |
@@ -159,7 +159,7 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 
 | Método | Rota | Descrição |
 |---|---|---|
-| `POST` | `/curar-roteiro` | Recebe uma lista de POIs brutos (`nome`, `categoria`, `coordenadas`) e devolve cada um classificado em `trilha` (`turismo` \| `compras`) e `tipo` (`alimentacao` \| `lazer`), com descrição em português. A resposta usa `snake_case` (`curado_por_ia`, `modelo_utilizado`). |
+| `POST` | `/curar-roteiro` | Recebe uma lista de POIs brutos (`nome`, `categoria`, `coordenadas`) e devolve cada um classificado em `trilha` (`turismo` \| `compras`) e `tipo` (`alimentacao` \| `lazer`), com descrição em português. A resposta usa `snake_case` (`curado_por_ia`, `modelo_utilizado`). Até 50 pontos por pedido. Com `IA_SERVICE_TOKEN` definido, exige o mesmo valor no cabeçalho `X-Kyr-Token` (o `backend-core` envia). |
 | `GET` | `/actuator/health` | Health-check. |
 
 ### Resposta do `POST /roteiros`
@@ -167,7 +167,7 @@ No Windows, use `.\mvnw.cmd` no lugar de `./mvnw`.
 O contrato completo está em [`docs/openapi.yml`](./docs/openapi.yml).
 
 - `pontos[]`: `nome`, `trilha`, `tipo`, `endereco`, `latitude`, `longitude`, `fonte` (link do lugar no Google Maps), `descricao`, `curado`, `distanciaMetros` e `duracaoSegundos`.
-- `metadados`: `totalPontos`, `tempoRespostaMs`, `fonteIA` (modelo que curou, ou `sem-curadoria`), `curadoPorIa` e `fonteRota` (`google-directions-api` ou `fallback-sem-otimizacao`).
+- `metadados`: `totalPontos`, `tempoRespostaMs`, `fonteIA` (modelo que curou, ou `sem-curadoria`), `curadoPorIa`, `fonteRota` (`google-directions-api` ou `fallback-sem-otimizacao`), `transporte` e `distanciaTotalMetros`/`duracaoTotalSegundos` (soma de todos os trechos, inclusive o do último ponto ao destino; nulos sem ordenação).
 
 | Situação | Resposta |
 |---|---|
@@ -175,7 +175,8 @@ O contrato completo está em [`docs/openapi.yml`](./docs/openapi.yml).
 | `ia-service` fora do ar, com erro ou lento demais | `200` sem curadoria: `curado = false`, `trilha`/`tipo`/`descricao` nulos, `curadoPorIa = false`, `fonteIA = "sem-curadoria"` |
 | Directions API falhou | `200` na ordem da seleção, sem distância nem duração, `fonteRota = "fallback-sem-otimizacao"` |
 | Nenhum POI encontrado na rota | `200` com `pontos` vazio |
-| Corpo inválido | `400` |
+| Corpo inválido (campo ausente, coordenada fora do intervalo, mais de 8 paradas, transporte desconhecido) | `400` com `{ "codigo": "dados_invalidos", "mensagem": "..." }` |
+| Limite de roteiros atingido | `429` com `Retry-After` e `{ "codigo": "muitas_tentativas", "mensagem": "..." }` |
 | Google Places ou busca da rota falharam (inclusive sem `GOOGLE_MAPS_API_KEY`) | `502` com `{ "codigo": "erro_integracao_google_maps", "mensagem": "..." }` |
 
 O roteiro gerado não é gravado no banco.
@@ -201,8 +202,18 @@ O roteiro gerado não é gravado no banco.
 | `GEMINI_MODEL` | ia-service | Modelo do Gemini | `gemini-3.5-flash-lite` |
 | `OPENAI_API_KEY` | ia-service | Habilita o provedor OpenAI | — |
 | `OPENAI_MODEL` | ia-service | Modelo da OpenAI | `gpt-4o-mini` |
-| `LLM_TIMEOUT_SECONDS` | ia-service | Timeout (s) aplicado a cada provedor da cadeia | `8` |
+| `LLM_TIMEOUT_SECONDS` | ia-service | Timeout (s) aplicado a cada provedor comercial da cadeia | `15` |
 | `LLM_MAX_TOKENS` | ia-service | Limite de tokens da resposta de cada provedor | `4096` |
+| `LLM_ORCAMENTO_TOTAL_SECONDS` | ia-service | Tempo total (s) da cadeia de provedores; fica abaixo de `IA_SERVICE_TIMEOUT_SECONDS` | `35` |
+| `OLLAMA_ENABLED`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL` | ia-service | Mistral local pelo Ollama, por último na cadeia (só desenvolvimento) | `false`, `http://localhost:11434`, `mistral` |
+| `IA_SERVICE_TOKEN` | backend-core e ia-service | Segredo compartilhado (`X-Kyr-Token`). Obrigatório se o `ia-service` tiver endereço público | — |
+| `KYR_PROXY_TOKEN` | frontend e backend-core | Segredo com que o servidor do Next informa o IP do navegador ao backend (limites por IP) | — |
+| `KYR_PROXIES_CONFIAVEIS` | frontend e backend-core | Quantos proxies confiáveis acrescentam o IP ao `X-Forwarded-For` (1 atrás do balanceador da hospedagem; 0 ignora o cabeçalho) | `0` |
+| `ROTEIRO_LIMITE_POR_IP_POR_HORA` | backend-core | Roteiros por IP por hora (`0` desliga) | `10` |
+| `ROTEIRO_LIMITE_POR_DIA` | backend-core | Roteiros por dia no serviço inteiro, para proteger a cota do Google (`0` desliga) | `30` |
+| `GOOGLE_MAPS_TIMEOUT_SECONDS` | backend-core | Prazo de leitura das chamadas ao Google | `10` |
+
+Os limites de uso ficam na memória de cada instância do `backend-core` e zeram quando ela reinicia. Para um teto que não dependa disso, defina também cotas diárias por API no Google Cloud Console.
 
 ## 🧪 Testes e Integração Contínua
 
@@ -217,7 +228,7 @@ cd ia-service && ./mvnw clean verify
 cd frontend && npm run lint && npm run build
 ```
 
-- `backend-core`: o teste de contexto usa Testcontainers (requer Docker em execução). `RotaPoiServiceIT` só roda se `GOOGLE_MAPS_API_KEY` estiver definida.
+- `backend-core`: o teste de contexto usa Testcontainers (requer Docker em execução). Sem Docker, os testes que usam o banco são pulados.
 - `ia-service`: o teste de integração com LLM real só roda com `RUN_LLM_INTEGRATION_TESTS=1` e ao menos uma chave de LLM definida. Ele faz chamadas reais e pode gerar custo.
 - `frontend`: os testes rodam com `npm test` (Vitest).
 
@@ -227,10 +238,9 @@ Os workflows em `.github/workflows/` rodam em PRs para `main` e em push na `main
 
 - **Pronto**: curadoria com cadeia de fallback de LLMs no `ia-service`; `POST /roteiros` do `backend-core` integrado de ponta a ponta no backend (Places na rota informada → curadoria no `ia-service` → ordenação na Directions); frontend ligado ao `POST /roteiros` (criação do roteiro, lista de POIs curados e mapa).
 - **Pronto também**: contas com login, roteiros salvos na conta, avaliações de destinos e cache da curadoria da IA, com a primeira migração Flyway do PostgreSQL.
-- **Dados do Google**: só o ID do lugar (sem prazo) e coordenadas (por até 30 dias) são guardados; nomes, endereços e notas de lugares nunca são gravados.
+- **Dados do Google**: dos lugares sugeridos, só o ID é guardado (sem prazo); nomes, endereços e notas nunca são gravados. A origem e o destino de um roteiro salvo (nome e coordenadas, que costumam vir das sugestões do Google) são apagados em 30 dias.
 - **Pendente**: as paradas não ficam guardadas nos roteiros salvos; no transporte público o roteiro não é reordenado; não há recuperação de senha nem confirmação de e-mail.
 
-Para o detalhamento técnico (contratos, divergências, dívidas conhecidas e convenções), consulte o [`CONTEXT.md`](./CONTEXT.md).
 
 ## 🌐 Ambiente em Produção
 
@@ -238,5 +248,12 @@ Para o detalhamento técnico (contratos, divergências, dívidas conhecidas e co
 |---|---|
 | **Frontend** | https://kyr-frontend.onrender.com |
 | **Backend Core (Health-check)** | https://kyr-backend-hkq1.onrender.com/actuator/health |
+
+Configuração de segurança da implantação (em todos os serviços expostos à internet):
+
+- `IA_SERVICE_TOKEN` com o mesmo valor no `backend-core` e no `ia-service`.
+- `KYR_PROXY_TOKEN` com o mesmo valor no `frontend` e no `backend-core`.
+- `KYR_PROXIES_CONFIAVEIS` igual ao número de proxies que a hospedagem põe na frente de cada serviço (no Render, normalmente `1`; confira no painel).
+- Cotas diárias por API no Google Cloud Console, como teto final de gasto.
 
 > ⚠️ O free tier do Render hiberna os serviços após períodos de inatividade. A primeira requisição após um tempo parado pode levar até 50s para responder.

@@ -36,6 +36,7 @@ public class ContaService {
 
     static final Duration VALIDADE_DA_SESSAO = Duration.ofDays(30);
     private static final String PREFIXO_BEARER = "Bearer ";
+    static final int MAXIMO_DE_BYTES_DA_SENHA = 72;
 
     private final JdbcClient jdbc;
     private final PasswordEncoder senhas;
@@ -55,6 +56,12 @@ public class ContaService {
     }
 
     public SessaoResposta cadastrar(CadastroRequest pedido) {
+        // O BCrypt só aceita até 72 bytes. A validação do pedido conta caracteres, e letras com acento ocupam
+        // dois bytes em UTF-8: sem esta conferência, uma senha de 72 caracteres com acentos virava erro 500.
+        if (pedido.senha().getBytes(StandardCharsets.UTF_8).length > MAXIMO_DE_BYTES_DA_SENHA) {
+            throw new ContaException(HttpStatus.BAD_REQUEST, "dados_invalidos",
+                    "A senha ficou longa demais: letras com acento e símbolos contam em dobro. Use uma senha um pouco mais curta.");
+        }
         String email = normalizarEmail(pedido.email());
         String nome = pedido.nome().trim();
         long id;

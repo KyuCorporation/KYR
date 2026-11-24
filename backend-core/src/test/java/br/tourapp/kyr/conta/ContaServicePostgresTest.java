@@ -100,4 +100,22 @@ class ContaServicePostgresTest extends PostgresDeTeste {
         // O e-mail fica livre para um novo cadastro.
         assertThat(contas.cadastrar(new CadastroRequest("Ana", "ana@exemplo.com", "outra-senha-123")).token()).isNotBlank();
     }
+
+    @Test
+    void senhaComAcentosAcimaDe72BytesDevolve400EmVezDeErroInterno() {
+        // 40 caracteres passam na validação (até 72), mas ocupam 80 bytes em UTF-8, acima do limite do BCrypt.
+        String senhaComAcentos = "ç".repeat(40);
+
+        assertThatThrownBy(() -> contas.cadastrar(new CadastroRequest("Ana", "ana@exemplo.com", senhaComAcentos)))
+                .isInstanceOfSatisfying(ContaException.class, e -> {
+                    assertThat(e.status().value()).isEqualTo(400);
+                    assertThat(e.codigo()).isEqualTo("dados_invalidos");
+                });
+        assertThat(jdbc.sql("select count(*) from usuario").query(Integer.class).single()).isZero();
+
+        // No limite exato (72 bytes) o cadastro funciona e a senha confere no login.
+        String senhaNoLimite = "ç".repeat(36);
+        contas.cadastrar(new CadastroRequest("Ana", "ana@exemplo.com", senhaNoLimite));
+        assertThat(contas.entrar(new ContaDtos.LoginRequest("ana@exemplo.com", senhaNoLimite)).token()).isNotBlank();
+    }
 }

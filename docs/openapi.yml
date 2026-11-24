@@ -2,10 +2,12 @@ openapi: 3.0.3
 info:
   title: KYU - API de Roteirização Turística
   description: >
-    Contrato de API do backend-core, cobrindo o endpoint de geração de
-    roteiros turísticos combinando dados de geolocalização com curadoria
+    Contrato de API do backend-core (geração de roteiros, contas, roteiros salvos e
+    avaliações) e do contrato interno entre o backend-core e o ia-service
+    (POST /curar-roteiro). A geração de
+    roteiros combina dados de geolocalização com curadoria
     via IA.
-  version: 1.3.0
+  version: 1.4.0
 
 servers:
   - url: http://localhost:8080
@@ -36,6 +38,11 @@ paths:
         curadoria guardada.
 
         O roteiro gerado não é persistido por este endpoint (ver `/roteiros-salvos`).
+
+        Limite de uso (cada roteiro consulta APIs pagas do Google e um provedor de LLM): por
+        padrão, 10 roteiros por IP por hora e 30 por dia no serviço inteiro
+        (`ROTEIRO_LIMITE_POR_IP_POR_HORA` e `ROTEIRO_LIMITE_POR_DIA`). O `GET /api/v1/rotas/pois`
+        entra no mesmo limite.
       operationId: gerarRoteiro
       tags:
         - Roteiros
@@ -63,9 +70,18 @@ paths:
                 $ref: '#/components/schemas/RoteiroResponse'
         '400':
           description: >
-            Corpo inválido (origem ou destino ausentes, ou `nome`, `latitude` ou
-            `longitude` ausentes ou mal formatados). O corpo do erro é o padrão do
-            Spring Boot, não o `ErroResponse`.
+            Corpo inválido (`dados_invalidos`): origem ou destino ausentes; `nome`, `latitude`
+            ou `longitude` ausentes, mal formatados ou fora do intervalo; mais de 8 paradas;
+            ou meio de transporte desconhecido. Um pedido inválido não conta para o limite de uso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+              example:
+                codigo: "dados_invalidos"
+                mensagem: "um roteiro tem no máximo 8 paradas"
+        '429':
+          $ref: '#/components/responses/MuitasTentativas'
         '502':
           description: >
             Falha na integração com o Google Maps (Places ou busca da rota), inclusive
@@ -97,7 +113,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessaoResponse'
         '400':
-          description: Dados inválidos (nome vazio, e-mail inválido ou senha fora de 8 a 72 caracteres)
+          description: >
+            Dados inválidos (nome vazio, e-mail inválido, senha fora de 8 a 72 caracteres ou
+            com mais de 72 bytes em UTF-8, limite do bcrypt)
           content:
             application/json:
               schema:
@@ -108,6 +126,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErroResponse'
+        '429':
+          $ref: '#/components/responses/MuitasTentativas'
 
   /auth/login:
     post:
@@ -136,6 +156,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErroResponse'
+        '429':
+          $ref: '#/components/responses/MuitasTentativas'
 
   /auth/eu:
     get:
@@ -151,6 +173,114 @@ paths:
                 $ref: '#/components/schemas/Usuario'
         '401':
           $ref: '#/components/responses/NaoAutenticado'
+    put:
+      summary: Corrige o nome da conta (LGPD, art. 18, III)
+      tags: [Conta]
+      security: [{ sessao: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome]
+              properties:
+                nome: { type: string, maxLength: 120 }
+      responses:
+        '200':
+          description: Usuário com o nome corrigido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Nome vazio ou longo demais (`dados_invalidos`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /auth/meus-dados:
+    get:
+      summary: Exporta tudo o que o servidor guarda sobre a conta (LGPD, acesso e portabilidade)
+      description: >
+        Devolve um JSON com a conta (nome, e-mail, data de criação), os roteiros salvos, as
+        avaliações e a validade das sessões ativas, como anexo (`Content-Disposition`) e com
+        `Cache-Control: no-store`. A senha não aparece (só existe o hash).
+      tags: [Conta]
+      security: [{ sessao: [] }]
+      responses:
+        '200':
+          description: Dados da conta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  geradoEm: { type: string, format: date-time }
+                  conta:
+                    type: object
+                    properties:
+                      nome: { type: string }
+                      email: { type: string }
+                      criadaEm: { type: string, format: date-time }
+                  roteirosSalvos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RoteiroSalvo'
+                  avaliacoes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        destino: { type: string }
+                        nota: { type: integer }
+                        comentario: { type: string }
+                        criadaEm: { type: string, format: date-time }
+                  sessoesAtivasValidasAte:
+                    type: array
+                    items: { type: string, format: date-time }
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /auth/conta:
+    delete:
+      summary: Exclui a conta (LGPD, eliminação)
+      description: >
+        Exige a senha, além da sessão. Apaga em cascata as sessões, os roteiros salvos e as
+        avaliações. A conferência da senha entra no mesmo limite de tentativas do login.
+      tags: [Conta]
+      security: [{ sessao: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [senha]
+              properties:
+                senha: { type: string }
+      responses:
+        '204':
+          description: Conta excluída
+        '400':
+          description: Senha não informada (`dados_invalidos`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          description: Senha incorreta (`senha_incorreta`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+        '429':
+          $ref: '#/components/responses/MuitasTentativas'
 
   /auth/sair:
     post:
@@ -273,6 +403,75 @@ paths:
         '401':
           $ref: '#/components/responses/NaoAutenticado'
 
+  /curar-roteiro:
+    servers:
+      - url: http://localhost:8000
+        description: ia-service (chamado só pelo backend-core; em produção, sem porta pública)
+    post:
+      summary: Classifica e descreve POIs com a cadeia de provedores de LLM (ia-service)
+      description: >
+        Contrato interno entre o backend-core e o ia-service. Este serviço usa snake_case no JSON.
+        Para cada POI, devolve `trilha` (`turismo` ou `compras`), `tipo` (`alimentacao` ou `lazer`)
+        e uma descrição em português; o prompt pede até 300 caracteres, mas o limite não é imposto
+        pelo serviço. Os pontos voltam na mesma ordem do pedido. Se nenhum provedor responder no
+        tempo total da cadeia (`LLM_ORCAMENTO_TOTAL_SECONDS`, padrão 35 s), a resposta é 200 com
+        `curado_por_ia` falso e os pontos sem classificação.
+
+        Com `IA_SERVICE_TOKEN` definido, exige o mesmo valor no cabeçalho `X-Kyr-Token`.
+      operationId: curarRoteiro
+      tags: [IA]
+      parameters:
+        - in: header
+          name: X-Kyr-Token
+          required: false
+          schema: { type: string }
+          description: Segredo compartilhado com o backend-core. Obrigatório quando o serviço tem um configurado.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pontos]
+              properties:
+                pontos:
+                  type: array
+                  maxItems: 50
+                  items:
+                    $ref: '#/components/schemas/PontoBruto'
+            example:
+              pontos:
+                - nome: "Parque das Aves"
+                  categoria: "tourist_attraction"
+                  coordenadas: [-25.6396, -54.4353]
+      responses:
+        '200':
+          description: POIs curados ou, individualmente, sem curadoria
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pontos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PontoCurado'
+                  curado_por_ia:
+                    type: boolean
+                    description: true quando algum provedor da cadeia respondeu.
+                  modelo_utilizado:
+                    type: string
+                    nullable: true
+                    description: Modelo que respondeu, ou nulo.
+        '400':
+          description: Corpo inválido (lista ausente, mais de 50 pontos, nome ou categoria vazios, coordenadas sem 2 valores)
+        '401':
+          description: Token do backend ausente ou inválido (`nao_autorizado`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+
 components:
   securitySchemes:
     sessao:
@@ -288,6 +487,22 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErroResponse'
+    MuitasTentativas:
+      description: >
+        Limite de uso atingido (`muitas_tentativas`). O cabeçalho `Retry-After` traz, em segundos,
+        quanto falta para a janela acabar. Login: 5 senhas erradas por e-mail e 30 por IP a cada
+        15 min; cadastro: 10 por IP por hora; roteiros: ver `POST /roteiros`.
+      headers:
+        Retry-After:
+          schema: { type: integer }
+          description: Segundos até a próxima tentativa ser aceita.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErroResponse'
+          example:
+            codigo: "muitas_tentativas"
+            mensagem: "Muitas tentativas. Tente de novo em 15 minutos."
   schemas:
     CadastroRequest:
       type: object
@@ -318,7 +533,11 @@ components:
       type: object
       required: [nome]
       properties:
-        nome: { type: string }
+        nome:
+          type: string
+          description: >
+            Vazio depois de 30 dias: o nome costuma vir das sugestões do Google e é apagado junto com
+            as coordenadas.
         latitude:
           type: number
           format: double
@@ -551,6 +770,46 @@ components:
               description: Meio de transporte usado nas distâncias e tempos.
               enum: [DRIVING, WALKING, BICYCLING, TRANSIT]
               example: "DRIVING"
+            distanciaTotalMetros:
+              type: integer
+              format: int64
+              nullable: true
+              description: >
+                Soma de todos os trechos da rota ordenada, da origem ao destino. Inclui o trecho do
+                último ponto até o destino, que não aparece em nenhum ponto. Nulo sem ordenação.
+              example: 22850
+            duracaoTotalSegundos:
+              type: integer
+              format: int64
+              nullable: true
+              description: Mesma soma, para a duração. Nulo sem ordenação.
+              example: 1980
+
+    PontoBruto:
+      type: object
+      required: [nome, categoria, coordenadas]
+      properties:
+        nome: { type: string, maxLength: 300 }
+        categoria: { type: string, maxLength: 100, description: Tipo principal do lugar no Google. }
+        coordenadas:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items: { type: number }
+          description: "[latitude, longitude]"
+
+    PontoCurado:
+      type: object
+      properties:
+        nome: { type: string }
+        categoria: { type: string }
+        coordenadas:
+          type: array
+          items: { type: number }
+        trilha: { type: string, nullable: true, enum: [turismo, compras] }
+        tipo: { type: string, nullable: true, enum: [alimentacao, lazer] }
+        descricao: { type: string, nullable: true }
+        curado: { type: boolean }
 
     ErroResponse:
       type: object

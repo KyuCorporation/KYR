@@ -6,8 +6,9 @@ import type { LocalRoteiro, RoteiroResponse } from "@/types/roteiro";
 //
 // O que NÃO é guardado: nome, endereço e nota dos lugares sugeridos. Os termos do Google Maps só deixam
 // guardar o ID do lugar (sem prazo) e latitude/longitude (por até 30 dias). Por isso um roteiro salvo
-// guarda a origem e o destino que a pessoa escolheu, os IDs dos lugares e quantos eram; para ver os
-// lugares de novo, o roteiro é gerado outra vez ("Abrir roteiro").
+// guarda os IDs dos lugares e quantos eram, mais a origem e o destino escolhidos (nome e coordenadas),
+// que costumam vir das sugestões do Google e por isso são apagados em 30 dias. Para ver os lugares de
+// novo, o roteiro é gerado outra vez ("Abrir roteiro").
 
 const STORAGE_KEY = "kyr:roteiros-salvos";
 export const DIAS_DE_VALIDADE_DAS_COORDENADAS = 30;
@@ -62,8 +63,9 @@ function lerRegistroLocal(valor: unknown): RoteiroSalvo | null {
   const destino = lerLocal(registro.destino);
   if (typeof registro.id !== "string" || !origem || !destino || typeof registro.criadoEm !== "string") return null;
 
+  // Vencido o prazo, some a origem e o destino inteiros: o nome costuma vir das sugestões do Google.
   const semCoordenadas = vencido(registro.criadoEm);
-  const limpar = (local: LocalSalvo): LocalSalvo => (semCoordenadas ? { ...local, latitude: null, longitude: null } : local);
+  const limpar = (local: LocalSalvo): LocalSalvo => (semCoordenadas ? { nome: "", latitude: null, longitude: null } : local);
   const origemFinal = limpar(origem);
   const destinoFinal = limpar(destino);
   const pontosAntigos = Array.isArray(registro.pontos) ? registro.pontos.length : 0;

@@ -122,10 +122,13 @@ export default function RoteirosClient() {
                 .map((slug) => NOMES_DESTINOS.get(slug))
                 .filter((nome): nome is string => Boolean(nome));
               const abrindo = abrindoId === roteiro.id;
+              // Depois de 30 dias o nome da origem e do destino é apagado junto com as coordenadas.
+              const origem = roteiro.origem.nome || "Origem apagada";
+              const destino = roteiro.destino.nome || "destino apagado";
               return (
                 <li className={styles.card} key={`${roteiro.onde}-${roteiro.id}`}>
                   <div className={styles.cardInfo}>
-                    <h2>{roteiro.origem.nome} <ArrowRight size={14} aria-hidden="true" /> {roteiro.destino.nome}</h2>
+                    <h2>{origem} <ArrowRight size={14} aria-hidden="true" /> {destino}</h2>
                     <p className={styles.meta}>
                       {roteiro.totalPontos} {roteiro.totalPontos === 1 ? "ponto sugerido" : "pontos sugeridos"}
                       {formatarData(roteiro.criadoEm) && ` · salvo em ${formatarData(roteiro.criadoEm)}`}
@@ -146,7 +149,7 @@ export default function RoteirosClient() {
                       </button>
                     ) : (
                       <p className={styles.vencido}>
-                        Salvo há mais de {DIAS_DE_VALIDADE_DAS_COORDENADAS} dias: para abrir de novo,{" "}
+                        Salvo há mais de {DIAS_DE_VALIDADE_DAS_COORDENADAS} dias: a origem e o destino foram apagados. Para abrir de novo,{" "}
                         <Link href="/criar-roteiro">crie o roteiro outra vez</Link>.
                       </p>
                     )}
@@ -155,7 +158,7 @@ export default function RoteirosClient() {
                     type="button"
                     className={styles.remove}
                     onClick={() => void remover(roteiro)}
-                    aria-label={`Remover roteiro ${roteiro.origem.nome} para ${roteiro.destino.nome}`}
+                    aria-label={`Remover roteiro ${origem} para ${destino}`}
                   >
                     <Trash size={18} aria-hidden="true" />
                   </button>
