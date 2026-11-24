@@ -93,6 +93,25 @@ describe("tela Criar roteiro", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it("limita a oito paradas e permite remover uma do meio sem perder as outras", () => {
+    render(<CriarRoteiroPage />);
+
+    for (let i = 0; i < 8; i++) {
+      fireEvent.click(screen.getByRole("button", { name: /Adicionar parada/ }));
+    }
+    const limite = screen.getByRole("button", { name: /Limite de 8 paradas/ });
+    expect((limite as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getAllByRole("combobox", { name: /Parada/ })).toHaveLength(8);
+
+    fireEvent.change(screen.getByRole("combobox", { name: "3ª Parada" }), { target: { value: "Rua da terceira" } });
+    fireEvent.click(screen.getByRole("button", { name: "Remover a 2ª parada" }));
+
+    expect(screen.getAllByRole("combobox", { name: /Parada/ })).toHaveLength(7);
+    // A antiga terceira parada passa a ser a segunda, com o texto que já tinha.
+    expect((screen.getByRole("combobox", { name: "2ª Parada" }) as HTMLInputElement).value).toBe("Rua da terceira");
+    expect(screen.getByRole("button", { name: /Adicionar parada/ })).toBeTruthy();
+  });
+
   it("mostra o erro do servidor e oferece tentar de novo", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(respostaJson(502, { detail: "Não foi possível conectar ao backend." })));
     render(<CriarRoteiroPage />);

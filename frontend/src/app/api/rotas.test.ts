@@ -44,6 +44,7 @@ let fetch: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   cookies.clear();
+  vi.unstubAllEnvs();
   vi.stubEnv("INTERNAL_API_URL", `${BACKEND}/`);
   fetch = vi.fn();
   vi.stubGlobal("fetch", fetch);
@@ -120,17 +121,43 @@ describe("/api/auth", () => {
     expect(cookies.get(COOKIE_DA_SESSAO)?.value).toBe("token-novo");
   });
 
-  it("login e cadastro repassam o X-Forwarded-For para o limite de tentativas do backend", async () => {
+  it("login e cadastro informam ao backend o IP anotado pelo proxy, com o segredo compartilhado", async () => {
+    vi.stubEnv("KYR_PROXY_TOKEN", "segredo-do-next");
+    vi.stubEnv("KYR_PROXIES_CONFIAVEIS", "1");
     fetch.mockResolvedValue(json(401, { codigo: "credenciais_invalidas" }));
+    // "10.0.0.1" foi escrito pelo navegador; "203.0.113.7" foi anotado pelo proxy da hospedagem.
     const ip = { "x-forwarded-for": "10.0.0.1, 203.0.113.7" };
 
     await login(requisicao({ email: USUARIO.email, senha: "x" }, undefined, ip));
     await cadastro(requisicao({ ...USUARIO, senha: "segredo-123" }, undefined, ip));
     await login(requisicao({ email: USUARIO.email, senha: "x" }));
 
-    expect(chamada(0).init.headers["X-Forwarded-For"]).toBe("10.0.0.1, 203.0.113.7");
-    expect(chamada(1).init.headers["X-Forwarded-For"]).toBe("10.0.0.1, 203.0.113.7");
-    expect(chamada(2).init.headers["X-Forwarded-For"]).toBeUndefined();
+    for (const indice of [0, 1]) {
+      expect(chamada(indice).init.headers["X-Kyr-Client-Ip"]).toBe("203.0.113.7");
+      expect(chamada(indice).init.headers["X-Kyr-Proxy-Token"]).toBe("segredo-do-next");
+      expect(chamada(indice).init.headers["X-Forwarded-For"]).toBeUndefined();
+    }
+    expect(chamada(2).init.headers["X-Kyr-Client-Ip"]).toBeUndefined();
+  });
+
+  it("sem segredo configurado não repassa nenhum IP, nem o X-Forwarded-For que o navegador mandou", async () => {
+    vi.stubEnv("KYR_PROXY_TOKEN", "");
+    vi.stubEnv("KYR_PROXIES_CONFIAVEIS", "1");
+    fetch.mockResolvedValue(json(401, { codigo: "credenciais_invalidas" }));
+
+    await login(requisicao({ email: USUARIO.email, senha: "x" }, undefined, { "x-forwarded-for": "10.0.0.1" }));
+
+    expect(chamada().init.headers["X-Kyr-Client-Ip"]).toBeUndefined();
+    expect(chamada().init.headers["X-Forwarded-For"]).toBeUndefined();
+  });
+
+  it("responde 400 com o corpo legível a cada pedido inválido, não só ao primeiro", async () => {
+    for (let i = 0; i < 3; i++) {
+      const resposta = await login(requisicao(undefined, "email=ana"));
+      expect(resposta.status).toBe(400);
+      expect(await resposta.json()).toEqual({ codigo: "dados_invalidos", mensagem: "O corpo da requisição deve ser JSON válido." });
+    }
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("login bloqueado repassa o 429 com a mensagem de espera e não cria cookie", async () => {
@@ -312,6 +339,18 @@ describe("/api/roteiros", () => {
     expect(await resposta.json()).toEqual({ pontos: [] });
     expect(chamada().url).toBe(`${BACKEND}/roteiros`);
     expect(JSON.parse(chamada().init.body as string)).toEqual(corpo);
+  });
+
+  it("informa o IP do navegador para o limite de roteiros e repassa o 429 com a mensagem", async () => {
+    vi.stubEnv("KYR_PROXY_TOKEN", "segredo-do-next");
+    vi.stubEnv("KYR_PROXIES_CONFIAVEIS", "1");
+    fetch.mockResolvedValue(json(429, { codigo: "muitas_tentativas", mensagem: "Muitos roteiros pedidos em pouco tempo. Tente de novo em 30 minutos." }));
+
+    const resposta = await roteiros(requisicao(corpo, undefined, { "x-forwarded-for": "203.0.113.7" }));
+
+    expect(chamada().init.headers["X-Kyr-Client-Ip"]).toBe("203.0.113.7");
+    expect(resposta.status).toBe(429);
+    expect((await resposta.json()).detail).toBe("Muitos roteiros pedidos em pouco tempo. Tente de novo em 30 minutos.");
   });
 
   it("devolve 400 para corpo inválido e repassa erros de validação do backend", async () => {

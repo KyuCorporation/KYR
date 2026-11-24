@@ -42,6 +42,12 @@ export interface Metadados {
   fonteRota: FonteRota | "";
   /** Meio de transporte das distâncias e tempos. */
   transporte: Transporte;
+  /**
+   * Soma de todos os trechos, da origem ao destino (inclui o trecho do último ponto ao destino).
+   * Opcionais: nulos sem ordenação pela Directions e ausentes em roteiros guardados antes do campo existir.
+   */
+  distanciaTotalMetros?: number | null;
+  duracaoTotalSegundos?: number | null;
 }
 
 export interface RoteiroResponse {
@@ -74,5 +80,7 @@ export interface RespostaRoteiroApi {
     curadoPorIa: boolean;
     fonteRota: FonteRota;
     transporte?: Transporte;
+    distanciaTotalMetros?: number | null;
+    duracaoTotalSegundos?: number | null;
   };
 }

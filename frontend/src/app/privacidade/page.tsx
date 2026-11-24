@@ -77,7 +77,7 @@ export default function PrivacidadePage() {
                 <tr>
                   <td>Roteiros salvos</td>
                   <td>Reabrir os roteiros em qualquer aparelho. Guardamos o nome e as coordenadas da origem e do destino e os identificadores dos lugares sugeridos.</td>
-                  <td>Coordenadas: 30 dias. O restante: até você remover o roteiro ou excluir a conta</td>
+                  <td>Nome e coordenadas da origem e do destino: 30 dias. O restante: até você remover o roteiro ou excluir a conta</td>
                 </tr>
                 <tr>
                   <td>Avaliações de destinos</td>
@@ -86,15 +86,16 @@ export default function PrivacidadePage() {
                 </tr>
                 <tr>
                   <td>Endereço IP</td>
-                  <td>Limitar tentativas de login e de cadastro, contra ataques. Fica só na memória do servidor, sem gravação.</td>
-                  <td>Até 1 hora</td>
+                  <td>Limitar tentativas de login e de cadastro e a quantidade de roteiros pedidos, contra ataques e abuso. Fica só na memória do servidor, sem gravação.</td>
+                  <td>Até 70 minutos</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <p>
             A conta existe para prestar o serviço que você pediu ao criá-la (art. 7º, V, da LGPD). O uso do IP para
-            bloquear ataques se apoia no legítimo interesse de manter as contas seguras (art. 7º, IX).
+            bloquear ataques e abuso se apoia no legítimo interesse de manter as contas seguras e o serviço disponível
+            (art. 7º, IX).
           </p>
         </section>
 

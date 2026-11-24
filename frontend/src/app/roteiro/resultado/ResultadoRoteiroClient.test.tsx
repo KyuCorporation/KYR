@@ -65,6 +65,21 @@ describe("tela Resultado do roteiro", () => {
     expect(screen.getAllByText("Indisponível")).toHaveLength(2);
   });
 
+  it("usa o total da rota informado pela API, que inclui o trecho até o destino", async () => {
+    abrir(roteiro({ distanciaTotalMetros: 2400, duracaoTotalSegundos: 480 }));
+
+    expect(await screen.findByText("2,4 km")).toBeTruthy();
+    expect(screen.getByText("8 min")).toBeTruthy();
+    expect(screen.getByText("Distância total")).toBeTruthy();
+  });
+
+  it("avisa quando só parte dos lugares ficou sem curadoria", async () => {
+    abrir(roteiro({ curadoPorIa: true }, [PONTO, { ...PONTO, id: "poi-2", nome: "Sem resposta", curado: false }]));
+
+    expect(await screen.findByText(/Alguns lugares aparecem sem descrição/)).toBeTruthy();
+    expect(screen.queryByText(/curadoria por IA não está disponível/)).toBeNull();
+  });
+
   it("não fala de curadoria quando o roteiro só tem paradas da pessoa", async () => {
     abrir(roteiro({ curadoPorIa: false }, [{ ...PONTO, parada: true }]));
 

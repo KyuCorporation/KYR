@@ -57,7 +57,7 @@ describe("roteiros salvos neste dispositivo", () => {
     expect(window.localStorage.getItem(CHAVE)).not.toContain("Paris 6");
   });
 
-  it("apaga as coordenadas depois de 30 dias e deixa de permitir reabrir", () => {
+  it("apaga a origem e o destino (nome e coordenadas) depois de 30 dias e deixa de permitir reabrir", () => {
     const haQuarentaDias = new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString();
     window.localStorage.setItem(CHAVE, JSON.stringify([{
       id: "velho", origem: roteiro.origem, destino: roteiro.destino, totalPontos: 2, placeIds: ["place-paris6"],
@@ -66,11 +66,13 @@ describe("roteiros salvos neste dispositivo", () => {
 
     const [lido] = lerRoteirosDoDispositivo();
 
-    expect(lido.origem).toEqual({ nome: "Aeroporto de Foz", latitude: null, longitude: null });
+    expect(lido.origem).toEqual({ nome: "", latitude: null, longitude: null });
+    expect(lido.destino).toEqual({ nome: "", latitude: null, longitude: null });
     expect(lido.podeReabrir).toBe(false);
     expect(paraReabrir(lido)).toBeNull();
     expect(lido.placeIds).toEqual(["place-paris6"]);
     expect(window.localStorage.getItem(CHAVE)).not.toContain("-25.6");
+    expect(window.localStorage.getItem(CHAVE)).not.toContain("Aeroporto de Foz");
   });
 
   it("devolve origem e destino para gerar de novo um roteiro recente, e remove", async () => {

@@ -1,4 +1,4 @@
-import { chamarBackend, CORPO_INVALIDO, encerrarSessao, lerCorpo, responder } from "@/core/servidor";
+import { chamarBackend, corpoInvalido, encerrarSessao, lerCorpo, responder } from "@/core/servidor";
 
 export async function GET() {
   const resposta = await chamarBackend("/auth/eu", { autenticado: true });
@@ -10,6 +10,6 @@ export async function GET() {
 // Correção do nome da conta (LGPD, art. 18, III).
 export async function PUT(request: Request) {
   const corpo = await lerCorpo(request);
-  if (corpo === undefined) return CORPO_INVALIDO;
+  if (corpo === undefined) return corpoInvalido();
   return responder(await chamarBackend("/auth/eu", { method: "PUT", body: corpo, autenticado: true }));
 }

@@ -18,10 +18,34 @@ interface OpcoesDeChamada {
   /** Envia o token do cookie em Authorization. Sem cookie, responde 401 sem chamar o backend. */
   autenticado?: boolean;
   /**
-   * Requisição do navegador cujo X-Forwarded-For é repassado, para o backend limitar as tentativas
-   * de login e cadastro por cliente. O backend usa o último endereço da lista.
+   * Requisição do navegador cujo IP é informado ao backend, para os limites de uso por cliente
+   * (login, cadastro e geração de roteiros). Ver cabecalhosDoCliente.
    */
   repassarIpDe?: Request;
+}
+
+/**
+ * IP do navegador, para o backend aplicar os limites por cliente.
+ *
+ * O X-Forwarded-For que chega aqui pode ter sido escrito pelo próprio navegador. Só vale o que os proxies
+ * confiáveis na frente deste servidor anotaram (KYR_PROXIES_CONFIAVEIS, por exemplo 1 atrás do balanceador
+ * da hospedagem): o endereço do cliente é o N-ésimo contado do fim. O IP vai ao backend em X-Kyr-Client-Ip,
+ * junto com o segredo compartilhado KYR_PROXY_TOKEN; sem o segredo, nada é enviado e o backend usa o
+ * endereço da conexão.
+ */
+export function cabecalhosDoCliente(request: Request): Record<string, string> {
+  const token = process.env.KYR_PROXY_TOKEN?.trim();
+  const proxies = Number.parseInt(process.env.KYR_PROXIES_CONFIAVEIS ?? "0", 10);
+  if (!token || !Number.isFinite(proxies) || proxies < 1) return {};
+
+  const enderecos = (request.headers.get("x-forwarded-for") ?? "")
+    .split(",")
+    .map((endereco) => endereco.trim())
+    .filter(Boolean);
+  if (enderecos.length === 0) return {};
+
+  const ip = enderecos[Math.max(enderecos.length - proxies, 0)];
+  return { "X-Kyr-Client-Ip": ip, "X-Kyr-Proxy-Token": token };
 }
 
 export interface RespostaDoBackend {
@@ -32,8 +56,7 @@ export interface RespostaDoBackend {
 export async function chamarBackend(caminho: string, opcoes: OpcoesDeChamada = {}): Promise<RespostaDoBackend> {
   const headers: Record<string, string> = { Accept: "application/json" };
   if (opcoes.body !== undefined) headers["Content-Type"] = "application/json";
-  const encaminhado = opcoes.repassarIpDe?.headers.get("x-forwarded-for");
-  if (encaminhado) headers["X-Forwarded-For"] = encaminhado;
+  if (opcoes.repassarIpDe) Object.assign(headers, cabecalhosDoCliente(opcoes.repassarIpDe));
 
   if (opcoes.autenticado) {
     const token = (await cookies()).get(COOKIE_DA_SESSAO)?.value;
@@ -77,10 +100,14 @@ export async function lerCorpo(request: Request): Promise<unknown | undefined> {
   }
 }
 
-export const CORPO_INVALIDO = Response.json(
-  { codigo: "dados_invalidos", mensagem: "O corpo da requisição deve ser JSON válido." },
-  { status: 400 },
-);
+// Uma Response nova a cada chamada: o corpo de uma Response só pode ser lido uma vez, então uma constante
+// compartilhada falharia a partir do segundo pedido inválido ("Body has already been read").
+export function corpoInvalido(): Response {
+  return Response.json(
+    { codigo: "dados_invalidos", mensagem: "O corpo da requisição deve ser JSON válido." },
+    { status: 400 },
+  );
+}
 
 // Cadastro e login devolvem { token, usuario }. O token vai para o cookie e só o usuário vai para a página.
 export async function abrirSessao(resposta: RespostaDoBackend): Promise<Response> {

@@ -1,4 +1,5 @@
 import { ApiError, apiFetch } from "@/core/api";
+import { cabecalhosDoCliente } from "@/core/servidor";
 import type { RespostaRoteiroApi } from "@/types/roteiro";
 
 export async function POST(request: Request) {
@@ -13,7 +14,8 @@ export async function POST(request: Request) {
   try {
     const result = await apiFetch<RespostaRoteiroApi>("/roteiros", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      // O IP do navegador vai junto para o limite de roteiros por cliente do backend.
+      headers: { "Content-Type": "application/json", ...cabecalhosDoCliente(request) },
       body: JSON.stringify(payload),
     });
 

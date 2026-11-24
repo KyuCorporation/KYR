@@ -193,6 +193,34 @@
   background: #f6e2d4;
 }
 
+.addStopButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.stopRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.removeStopButton {
+  align-self: flex-end;
+  border: none;
+  background: none;
+  color: #8a3a0a;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.removeStopButton:hover,
+.removeStopButton:focus-visible {
+  color: #5c2606;
+}
+
 .transportGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

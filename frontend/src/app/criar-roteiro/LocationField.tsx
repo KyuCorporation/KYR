@@ -40,7 +40,9 @@ export default function LocationField({
     suggestions: googleSuggestions,
     isSearching,
     resolveSuggestion,
-  } = usePlacesAutocomplete(value.text);
+    // Com um lugar já escolhido, o texto do campo é o nome dele: buscar de novo abriria outra sessão de
+    // autocomplete no Google (cobrada por requisição) só para mostrar sugestões que ninguém pediu.
+  } = usePlacesAutocomplete(value.place ? "" : value.text);
 
   const suggestions = googleSuggestions.length > 0
     ? googleSuggestions.map((suggestion) => ({
