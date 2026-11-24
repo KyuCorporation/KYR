@@ -107,7 +107,11 @@ public class RotaPoiService {
         if (rota.overviewPolyline() == null || rota.overviewPolyline().points() == null) {
             throw new GoogleMapsIntegrationException("Directions API não retornou overview_polyline");
         }
-        return PolylineDecoder.decode(rota.overviewPolyline().points());
+        try {
+            return PolylineDecoder.decode(rota.overviewPolyline().points());
+        } catch (IndexOutOfBoundsException e) {
+            throw new GoogleMapsIntegrationException("Directions API devolveu uma overview_polyline malformada", e);
+        }
     }
 
     private Coordenada paraCoordenada(LatLngDto latLng) {

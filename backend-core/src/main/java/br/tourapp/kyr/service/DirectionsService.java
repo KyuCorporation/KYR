@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
- 
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,11 @@ public class DirectionsService {
  
  
     public record ResultadoRota(List<Integer> ordemOtimizada, List<TrechoRotaDTO> trechos) {}
+
+    // "latitude,longitude" sem notação científica: Double.toString(0.0001) daria "1.0E-4", que a API recusa.
+    static String formatar(PontoDTO ponto) {
+        return BigDecimal.valueOf(ponto.latitude()).toPlainString() + "," + BigDecimal.valueOf(ponto.longitude()).toPlainString();
+    }
  
 
     public ResultadoRota calcularRotaOtimizada(PontoDTO origem, PontoDTO destino, List<PontoDTO> waypoints) {
@@ -40,13 +46,13 @@ public class DirectionsService {
         }
  
         String waypointsParam = "optimize:true|" + waypoints.stream()
-            .map(p -> p.latitude() + "," + p.longitude())
+            .map(DirectionsService::formatar)
             .reduce((a, b) -> a + "|" + b)
             .orElse("");
 
         String url = UriComponentsBuilder.fromUriString(DIRECTIONS_URL)
-            .queryParam("origin", origem.latitude() + "," + origem.longitude())
-            .queryParam("destination", destino.latitude() + "," + destino.longitude())
+            .queryParam("origin", formatar(origem))
+            .queryParam("destination", formatar(destino))
             .queryParam("waypoints", waypointsParam)
             .queryParam("mode", modo)
             .queryParam("key", apiKey)

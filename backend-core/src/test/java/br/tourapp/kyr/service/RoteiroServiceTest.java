@@ -113,6 +113,9 @@ class RoteiroServiceTest {
         assertThat(resposta.metadados().fonteIA()).isEqualTo("gemini-2.5-flash");
         assertThat(resposta.metadados().fonteRota()).isEqualTo("google-directions-api");
         assertThat(resposta.metadados().tempoRespostaMs()).isGreaterThanOrEqualTo(0);
+        // O total inclui o último trecho (do segundo ponto ao destino), que não pertence a nenhum ponto.
+        assertThat(resposta.metadados().distanciaTotalMetros()).isEqualTo(6000L);
+        assertThat(resposta.metadados().duracaoTotalSegundos()).isEqualTo(720L);
     }
 
     @Test
@@ -198,6 +201,8 @@ class RoteiroServiceTest {
         });
         assertThat(resposta.metadados().fonteRota()).isEqualTo("fallback-sem-otimizacao");
         assertThat(resposta.metadados().fonteIA()).isEqualTo("gemini-2.5-flash");
+        assertThat(resposta.metadados().distanciaTotalMetros()).isNull();
+        assertThat(resposta.metadados().duracaoTotalSegundos()).isNull();
     }
 
     @Test

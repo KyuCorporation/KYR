@@ -42,9 +42,9 @@ public class LimiteDeTentativas {
         }
     }
 
-    private record Janela(Regra regra, Instant inicio, int tentativas) {
+    private record Janela(Duration duracao, Instant inicio, int tentativas) {
         Instant fim() {
-            return inicio.plus(regra.janela());
+            return inicio.plus(duracao);
         }
 
         boolean vencida(Instant agora) {
@@ -66,32 +66,45 @@ public class LimiteDeTentativas {
 
     /** Conta uma tentativa ou, se o limite da janela já foi atingido, recusa com 429. */
     public void consumir(Regra regra, String chave) {
+        consumir(regra.name(), chave, regra.maximo(), regra.janela(), null);
+    }
+
+    /**
+     * Mesma conta, para limites definidos fora do enum (por configuração). {@code mensagem} é o início do
+     * texto de erro; sem ela, vale "Muitas tentativas.".
+     */
+    public void consumir(String nome, String chave, int maximo, Duration duracao, String mensagem) {
         Instant agora = relogio.instant();
         boolean[] recusada = {false};
-        Janela atual = janelas.compute(id(regra, chave), (id, janela) -> {
+        Janela atual = janelas.compute(id(nome, chave), (id, janela) -> {
             if (janela == null || janela.vencida(agora)) {
-                return new Janela(regra, agora, 1);
+                return new Janela(duracao, agora, 1);
             }
-            if (janela.tentativas() >= regra.maximo()) {
+            if (janela.tentativas() >= maximo) {
                 recusada[0] = true;
                 return janela;
             }
-            return new Janela(regra, janela.inicio(), janela.tentativas() + 1);
+            return new Janela(janela.duracao(), janela.inicio(), janela.tentativas() + 1);
         });
         if (recusada[0]) {
-            throw new MuitasTentativasException(Duration.between(agora, atual.fim()));
+            Duration espera = Duration.between(agora, atual.fim());
+            throw mensagem == null ? new MuitasTentativasException(espera) : new MuitasTentativasException(espera, mensagem);
         }
     }
 
     /** Desconta uma tentativa que deu certo. */
     public void devolver(Regra regra, String chave) {
-        janelas.computeIfPresent(id(regra, chave), (id, janela) ->
-                janela.tentativas() <= 1 ? null : new Janela(regra, janela.inicio(), janela.tentativas() - 1));
+        devolver(regra.name(), chave);
+    }
+
+    public void devolver(String nome, String chave) {
+        janelas.computeIfPresent(id(nome, chave), (id, janela) ->
+                janela.tentativas() <= 1 ? null : new Janela(janela.duracao(), janela.inicio(), janela.tentativas() - 1));
     }
 
     /** Zera o contador da chave, por exemplo depois de um login certo. */
     public void esquecer(Regra regra, String chave) {
-        janelas.remove(id(regra, chave));
+        janelas.remove(id(regra.name(), chave));
     }
 
     @Scheduled(fixedDelay = 10, timeUnit = TimeUnit.MINUTES)
@@ -108,7 +121,7 @@ public class LimiteDeTentativas {
         janelas.clear();
     }
 
-    private static String id(Regra regra, String chave) {
-        return regra.name() + "|" + chave;
+    private static String id(String nome, String chave) {
+        return nome + "|" + chave;
     }
 }

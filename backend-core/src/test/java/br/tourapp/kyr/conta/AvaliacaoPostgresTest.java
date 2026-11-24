@@ -77,6 +77,17 @@ class AvaliacaoPostgresTest extends PostgresDeTeste {
     }
 
     @Test
+    void comCatalogoConfiguradoRecusaDestinoQueNaoExiste() {
+        AvaliacaoController doCatalogo = new AvaliacaoController(contas, jdbc, "parque-das-aves, itaipu-binacional");
+        String ana = cadastrar(contas, "Ana", "ana@exemplo.com");
+
+        assertThat(doCatalogo.avaliar(ana, "parque-das-aves", new AvaliacaoRequest(5, "")).total()).isEqualTo(1);
+        assertThatThrownBy(() -> doCatalogo.avaliar(ana, "destino-inventado", new AvaliacaoRequest(5, "spam")))
+                .isInstanceOfSatisfying(ContaException.class, e -> assertThat(e.status()).isEqualTo(HttpStatus.NOT_FOUND));
+        assertThat(jdbc.sql("select count(*) from avaliacao_destino").query(Integer.class).single()).isEqualTo(1);
+    }
+
+    @Test
     void excluirAContaApagaAsAvaliacoesDela() {
         String ana = cadastrar(contas, "Ana", "ana@exemplo.com");
         avaliacoes.avaliar(ana, "parque-das-aves", new AvaliacaoRequest(4, ""));
